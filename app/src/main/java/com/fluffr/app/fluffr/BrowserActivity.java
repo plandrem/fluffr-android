@@ -1,6 +1,7 @@
 package com.fluffr.app.fluffr;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -113,10 +114,11 @@ public class BrowserActivity extends ActionBarActivity {
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, View convertView, ViewGroup parent) {
 
             TextView title;
             TextView subtitle;
+            Button favoritesButton;
 
             View rowView = convertView;
 
@@ -127,10 +129,19 @@ public class BrowserActivity extends ActionBarActivity {
                 // create references to views defined in custom row layout
                 title = (TextView) rowView.findViewById(R.id.title);
                 subtitle = (TextView) rowView.findViewById(R.id.subtitle);
+                favoritesButton = (Button) rowView.findViewById(R.id.favoritesButton);
 
                 // configure views based on source data
                 title.setText(values.get(position));
                 subtitle.setText(Integer.toString(position));
+
+                favoritesButton.setOnClickListener(new View.OnClickListener(){
+
+                    @Override
+                    public void onClick(View v) {
+                        Log.d("Favorites Button",String.format("Favorites Button Pressed for position %d.",position));
+                    }
+                });
 
             }
 
