@@ -82,6 +82,8 @@ public class ItemView extends RelativeLayout {
 
         ButtonClickListener buttonClickListener = new ButtonClickListener(item);
         favoritesButton.setOnClickListener(buttonClickListener);
+        sendToFriendButton.setOnClickListener(buttonClickListener);
+        deleteButton.setOnClickListener(buttonClickListener);
 
     }
 
@@ -97,6 +99,20 @@ public class ItemView extends RelativeLayout {
         @Override
         public void onClick(View v) {
             Log.d("ItemView OnClickListener", item.title);
+
+            // identify which button was pressed
+            if (v.getId() == favoritesButton.getId()) {
+                Log.d("ItemView OnClickListener", "Added to Favorites.");
+            }
+
+            else if (v.getId() == sendToFriendButton.getId()) {
+                Log.d("ItemView OnClickListener", "Send to Friend.");
+            }
+
+            else if (v.getId() == deleteButton.getId()) {
+                Log.d("ItemView OnClickListener", "DELETE'D.");
+            }
+
         }
     };
 
