@@ -2,6 +2,8 @@ package com.fluffr.app.fluffr;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.drawable.Drawable;
+import android.media.Image;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -39,11 +41,9 @@ public class BrowserActivity extends ActionBarActivity {
         setContentView(R.layout.activity_browser);
 
         // create dummy array for testing listview
-        final ArrayList<String> list = new ArrayList<String>();
-
-        for (int i=1; i<=100; i++) {
-            list.add(Integer.toString(i));
-        }
+        final ArrayList<Item> list = getDevelopmentItems();
+        Log.d("Dev Data", list.get(0).title);
+        Log.d("Dev Data", list.get(1).title);
 
         // instantiate adapter for communicating between data and listview
         final CustomAdapter adapter = new CustomAdapter(this,list);
@@ -57,8 +57,8 @@ public class BrowserActivity extends ActionBarActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, final View view, int position, long id) {
 
-                String value = list.get(position);
-                Log.d("OnItemClick", String.format("value: %s, position %d, id %d", value, position, id));
+                Item item = list.get(position);
+                Log.d("OnItemClick", String.format("title: %s, position %d, id %d", item.title, position, id));
             }
         });
 
@@ -88,24 +88,24 @@ public class BrowserActivity extends ActionBarActivity {
 
     private class CustomAdapter extends BaseAdapter {
         private final Context context;
-        private final ArrayList<String> values;
+        private final ArrayList<Item> items;
         private LayoutInflater inflater;
 
         // constructor for class
-        CustomAdapter(Context context, ArrayList<String> values) {
+        CustomAdapter(Context context, ArrayList<Item> list) {
             this.context = context;
-            this.values = values;
+            this.items = list;
             this.inflater = LayoutInflater.from(context);
         }
 
         @Override
         public int getCount() {
-            return values.size();
+            return items.size();
         }
 
         @Override
-        public Object getItem(int position) {
-            return values.get(position);
+        public Item getItem(int position) {
+            return items.get(position);
         }
 
         @Override
@@ -116,38 +116,37 @@ public class BrowserActivity extends ActionBarActivity {
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
 
-            TextView title;
-            TextView subtitle;
-            Button favoritesButton;
+            ItemView itemView = (ItemView) convertView;
 
-            View rowView = convertView;
-
-            if (rowView == null) {
+            if (itemView == null) {
                 // add custom row layout into parent viewgroup (the row)
-                rowView = inflater.inflate(R.layout.row_layout, parent, false);
-
-                // create references to views defined in custom row layout
-                title = (TextView) rowView.findViewById(R.id.title);
-                subtitle = (TextView) rowView.findViewById(R.id.subtitle);
-                favoritesButton = (Button) rowView.findViewById(R.id.favoritesButton);
-
-                // configure views based on source data
-                title.setText(values.get(position));
-                subtitle.setText(Integer.toString(position));
-
-                favoritesButton.setOnClickListener(new View.OnClickListener(){
-
-                    @Override
-                    public void onClick(View v) {
-                        Log.d("Favorites Button",String.format("Favorites Button Pressed for position %d.",position));
-                    }
-                });
-
+                itemView = ItemView.inflate(parent);
             }
 
-            return rowView;
+            itemView.setItem(getItem(position));
+
+            return itemView;
 
         }
+    }
+
+    private ArrayList<Item> getDevelopmentItems() {
+
+        final ArrayList<Item> list = new ArrayList<Item>();
+
+
+        for (int i=1; i<=100; i++) {
+            
+            Item item = new Item();
+            item.title = String.format("Item %d", i);
+            item.subtitle = Integer.toString(i);
+            item.image = getResources().getDrawable(R.drawable.pandafail);
+
+            list.add(item);
+        }
+
+        return list;
+
     }
 
 }
