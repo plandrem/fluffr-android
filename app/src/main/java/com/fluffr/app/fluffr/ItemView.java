@@ -64,22 +64,42 @@ public class ItemView extends RelativeLayout {
 
         imageView = (ImageView) findViewById(R.id.item_imageView);
 
-//        favoritesButton.setOnClickListener(new View.OnClickListener(){
-//
-//            @Override
-//            public void onClick(View v) {
-//                Log.d("Favorites Button", String.format("Favorites Button Pressed for position %d.", position));
-//            }
-//        });
-
-
-
     }
 
 
     public void setItem(Item item) {
+
+        // Attach this View object to an item. The item is the
+        // abstract class which contains the useful data, whereas the
+        // ItemView is the UI representation.
+
+        // As part of the attachment, all the UI functionality should
+        // be created at this point (eg. button clicks)
+
         title.setText(item.title);
         subtitle.setText(item.subtitle);
         imageView.setImageDrawable(item.image);
+
+        ButtonClickListener buttonClickListener = new ButtonClickListener(item);
+        favoritesButton.setOnClickListener(buttonClickListener);
+
     }
+
+    private class ButtonClickListener implements OnClickListener {
+
+        private Item item;
+
+        ButtonClickListener(Item item) {
+            super();
+            this.item = item;
+        }
+
+        @Override
+        public void onClick(View v) {
+            Log.d("ItemView OnClickListener", item.title);
+        }
+    };
+
+
+
 }

@@ -136,7 +136,7 @@ public class BrowserActivity extends ActionBarActivity {
 
 
         for (int i=1; i<=100; i++) {
-            
+
             Item item = new Item();
             item.title = String.format("Item %d", i);
             item.subtitle = Integer.toString(i);
