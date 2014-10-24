@@ -19,6 +19,9 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.parse.Parse;
+import com.parse.ParseAnalytics;
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
