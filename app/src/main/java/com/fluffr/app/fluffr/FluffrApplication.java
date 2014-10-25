@@ -3,14 +3,11 @@ package com.fluffr.app.fluffr;
 import android.app.Application;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.util.Log;
 
 import com.parse.Parse;
-import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
-import com.parse.SaveCallback;
 
 import java.io.ByteArrayOutputStream;
 
@@ -30,7 +27,11 @@ public class FluffrApplication extends Application {
 
         Log.d("FluffrApplication","Parse Initialized.");
 
-        uploadParseImages();
+//        uploadParseImage("fluff_0", R.drawable.imgres_0);
+//        uploadParseImage("fluff_1",R.drawable.imgres_1);
+//        uploadParseImage("fluff_2",R.drawable.imgres_2);
+//        uploadParseImage("fluff_3",R.drawable.imgres_3);
+//        uploadParseImage("fluff_4",R.drawable.imgres_4);
 
     }
 
@@ -43,16 +44,16 @@ public class FluffrApplication extends Application {
         return data;
     }
 
-    private void uploadParseImages() {
+    private void uploadParseImage(String title, int res) {
 
-        byte[] bytes = convertDrawableResourceToBytes(R.drawable.pandafail);
+        byte[] bytes = convertDrawableResourceToBytes(res);
         ParseFile file = new ParseFile("fluff.jpg",bytes);
 
         file.saveInBackground();
 
         ParseObject newFluff = new ParseObject("fluff");
 
-        newFluff.put("title","pandafail");
+        newFluff.put("title",title);
         newFluff.put("image",file);
 
         newFluff.saveInBackground();

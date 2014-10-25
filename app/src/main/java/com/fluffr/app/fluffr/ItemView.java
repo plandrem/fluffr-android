@@ -1,6 +1,8 @@
 package com.fluffr.app.fluffr;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -11,6 +13,13 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.parse.GetCallback;
+import com.parse.GetDataCallback;
+import com.parse.ParseException;
+import com.parse.ParseFile;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 
 import org.w3c.dom.Text;
 
@@ -76,9 +85,14 @@ public class ItemView extends RelativeLayout {
         // As part of the attachment, all the UI functionality should
         // be created at this point (eg. button clicks)
 
+//        Log.d("setItem",item.id);
+//        Log.d("setItem",item.title);
+
+
         title.setText(item.title);
         subtitle.setText(item.subtitle);
-        imageView.setImageDrawable(item.image);
+
+        setImageDrawable(item.id);
 
         ButtonClickListener buttonClickListener = new ButtonClickListener(item);
         favoritesButton.setOnClickListener(buttonClickListener);
@@ -115,6 +129,56 @@ public class ItemView extends RelativeLayout {
 
         }
     };
+
+    public void setImageDrawable(String id) {
+        // depending on the server backend implementation, the means of storing and retrieving
+        // images may change. Therefore, this method provides a static API such that the rest of the
+        // application is not sensitive to the specific server details.
+
+        getParseDrawable(id);
+    }
+
+    private void getParseDrawable(String id) {
+
+        // Async call to Parse DB. Find the ParseObject associated with the current item;
+        // once found, take the 'image' field in the object and download the file on a
+        // background thread. Once finished, apply the image to the current ImageView.
+
+        Log.d("getParseDrawable","called for id: " + id);
+
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("fluff");
+        query.getInBackground(id, new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject parseObject, ParseException e) {
+                if (e == null) {
+
+                    // object received; download associated image file
+                    ParseFile pf = (ParseFile) parseObject.get("image");
+
+                    pf.getDataInBackground(new GetDataCallback() {
+                        public void done(byte[] data, ParseException e) {
+                            if (e == null) {
+
+                                Bitmap bmp = BitmapFactory.decodeByteArray(data, 0, data.length);
+                                imageView.setImageBitmap(bmp);
+
+                            } else {
+                                Log.e("ItemView.getParseDrawable", "Parse Error while retrieving image: " + e.getMessage());
+                            }
+                        }
+                    });
+
+                } else {
+                    Log.e("ItemView.getParseDrawable", "Parse Error while retrieving object: " + e.getMessage());
+                }
+            }
+        });
+
+
+
+    }
+
+
 
 
 

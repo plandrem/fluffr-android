@@ -19,11 +19,17 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.parse.FindCallback;
 import com.parse.Parse;
 import com.parse.ParseAnalytics;
+import com.parse.ParseException;
+import com.parse.ParseFile;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class BrowserActivity extends ActionBarActivity {
@@ -35,6 +41,8 @@ public class BrowserActivity extends ActionBarActivity {
     */
 
     private ListView listView;
+    private ArrayList<Item> list = new ArrayList<Item>();
+    private CustomAdapter adapter;
 
     // STANDARD CLASS METHODS
 
@@ -43,27 +51,25 @@ public class BrowserActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_browser);
 
-        // create dummy array for testing listview
-        final ArrayList<Item> list = getDevelopmentItems();
-        Log.d("Dev Data", list.get(0).title);
-        Log.d("Dev Data", list.get(1).title);
-
         // instantiate adapter for communicating between data and listview
-        final CustomAdapter adapter = new CustomAdapter(this,list);
-
+        this.adapter = new CustomAdapter(this,list);
 
         // configure listview widget
         listView = (ListView) findViewById(R.id.listview);
         listView.setAdapter(adapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
-            @Override
-            public void onItemClick(AdapterView<?> parent, final View view, int position, long id) {
+        // create dummy array for testing listview - notifies listview to update when finished.
+        getDevelopmentItems();
 
-                Item item = list.get(position);
-                Log.d("OnItemClick", String.format("title: %s, position %d, id %d", item.title, position, id));
-            }
-        });
+//        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, final View view, int position, long id) {
+//
+//                Item item = list.get(position);
+//                Log.d("OnItemClick", String.format("title: %s, position %d, id %d", item.title, position, id));
+//            }
+//        });
 
     }
 
@@ -133,22 +139,84 @@ public class BrowserActivity extends ActionBarActivity {
         }
     }
 
-    private ArrayList<Item> getDevelopmentItems() {
+    private class MyCallback extends FindCallback<ParseObject> {
 
-        final ArrayList<Item> list = new ArrayList<Item>();
+        private ArrayList<Item> list;
 
-
-        for (int i=1; i<=100; i++) {
-
-            Item item = new Item();
-            item.title = String.format("Item %d", i);
-            item.subtitle = Integer.toString(i);
-            item.image = getResources().getDrawable(R.drawable.pandafail);
-
-            list.add(item);
+        public MyCallback(ArrayList<Item> list) {
+            super();
+            this.list = list;
         }
 
-        return list;
+        @Override
+        public void done(List<ParseObject> parseObjects, ParseException e) {
+            if (e == null) {
+
+                for (ParseObject object : parseObjects) {
+
+                    Item item = new Item();
+                    item.title = (String) object.get("title");
+                    item.subtitle = "subtitle";
+                    item.id = (String) object.get("objectId");
+
+                    this.list.add(item);
+
+                }
+            } else {
+
+                Log.d("getDevelopmentItems", "Parse Error: " + e.getMessage());
+
+            }
+        }
+    }
+
+
+    private void getDevelopmentItems() {
+
+        // get data from Parse
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("fluff");
+//        query.findInBackground(MyCallback(this.list));
+
+        query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> parseObjects, ParseException e) {
+                if (e == null) {
+
+                    for (ParseObject object : parseObjects) {
+
+                        Item item = new Item();
+                        item.title = (String) object.get("title");
+                        item.subtitle = "subtitle";
+                        item.id = object.getObjectId();
+
+                        Log.d("getDevelopmentItems","objectId: " + object.getObjectId());
+
+                        BrowserActivity.this.list.add(item);
+                        BrowserActivity.this.adapter.notifyDataSetChanged();
+
+                    }
+
+
+                } else {
+                    Log.d("getDevelopmentItems","Parse Error: " + e.getMessage());
+                }
+            }
+        });
+
+        // static list of panda images
+
+//        for (int i=1; i<=100; i++) {
+//
+//            Item item = new Item();
+//            item.title = String.format("Item %d", i);
+//            item.subtitle = Integer.toString(i);
+//            item.image = getResources().getDrawable(R.drawable.pandafail);
+//
+//            list.add(item);
+//        }
+
+//        this.list = list;
+//        this.adapter.notifyDataSetChanged();
 
     }
 
