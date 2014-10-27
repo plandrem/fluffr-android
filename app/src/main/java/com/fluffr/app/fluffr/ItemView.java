@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.parse.GetCallback;
 import com.parse.GetDataCallback;
 import com.parse.ParseException;
@@ -92,7 +93,9 @@ public class ItemView extends RelativeLayout {
         title.setText(item.title);
         subtitle.setText(item.subtitle);
 
-        setImageDrawable(item.id);
+        getDrawableWithImageLoader(item);
+
+//        setImageDrawable(item.id);
 
         ButtonClickListener buttonClickListener = new ButtonClickListener(item);
         favoritesButton.setOnClickListener(buttonClickListener);
@@ -130,12 +133,24 @@ public class ItemView extends RelativeLayout {
         }
     };
 
+    public void setBitmap(Bitmap bm) {
+        imageView.setImageBitmap(bm);
+    }
+
     public void setImageDrawable(String id) {
         // depending on the server backend implementation, the means of storing and retrieving
         // images may change. Therefore, this method provides a static API such that the rest of the
         // application is not sensitive to the specific server details.
 
         getParseDrawable(id);
+    }
+
+    private void getDrawableWithImageLoader(Item item) {
+        ImageLoader imageLoader = ImageLoader.getInstance();
+        String imageUrl = item.parseFile.getUrl();
+
+        if (imageUrl != null) imageLoader.displayImage(imageUrl, imageView);
+
     }
 
     private void getParseDrawable(String id) {

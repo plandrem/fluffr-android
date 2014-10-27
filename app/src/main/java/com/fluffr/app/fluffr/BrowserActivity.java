@@ -19,6 +19,10 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.parse.FindCallback;
 import com.parse.Parse;
 import com.parse.ParseAnalytics;
@@ -61,16 +65,22 @@ public class BrowserActivity extends ActionBarActivity {
         // create dummy array for testing listview - notifies listview to update when finished.
         getDevelopmentItems();
 
-//        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, final View view, int position, long id) {
-//
-//                Item item = list.get(position);
-//                Log.d("OnItemClick", String.format("title: %s, position %d, id %d", item.title, position, id));
-//            }
-//        });
+        // Instantiate Universal Image Loader (https://github.com/nostra13/Android-Universal-Image-Loader)
+        DisplayImageOptions options = new DisplayImageOptions.Builder()
+                // display options go here
+                .showImageOnLoading(R.drawable.pandafail)
+                .cacheInMemory(true)
+                .cacheOnDisk(true)
+                .build();
 
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this)
+                // configuration options go here
+                .defaultDisplayImageOptions(options)
+                .memoryCache(new LruMemoryCache(4 * 1024 * 1024))
+                .build();
+
+
+        ImageLoader.getInstance().init(config);
     }
 
 
@@ -133,6 +143,7 @@ public class BrowserActivity extends ActionBarActivity {
             }
 
             itemView.setItem(getItem(position));
+//            itemView.setBitmap(bm);
 
             return itemView;
 
@@ -188,6 +199,7 @@ public class BrowserActivity extends ActionBarActivity {
                         item.title = (String) object.get("title");
                         item.subtitle = "subtitle";
                         item.id = object.getObjectId();
+                        item.parseFile = object.getParseFile("image");
 
                         Log.d("getDevelopmentItems","objectId: " + object.getObjectId());
 

@@ -14,5 +14,6 @@ public class Item {
     public Drawable image;
     public String title;
     public String subtitle;
+    public ParseFile parseFile;
 
 }
