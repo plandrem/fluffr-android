@@ -8,5 +8,7 @@
     <string name="favorites_button_text">Star</string>
     <string name="delete_button_text">delete</string>
     <string name="send_to_friend_button_text">Send</string>
+    <string name="title_activity_startup">StartupActivity</string>
+    <string name="welcome_message">Welcome to Fluffr!</string>
 
 </resources>
