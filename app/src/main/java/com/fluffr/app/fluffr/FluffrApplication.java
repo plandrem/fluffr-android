@@ -5,6 +5,10 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
 
+import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.parse.Parse;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
@@ -26,6 +30,24 @@ public class FluffrApplication extends Application {
         Parse.initialize(this, app_id, client_key);
 
         Log.d("FluffrApplication","Parse Initialized.");
+
+        // Instantiate Universal Image Loader (https://github.com/nostra13/Android-Universal-Image-Loader)
+        DisplayImageOptions options = new DisplayImageOptions.Builder()
+                // display options go here
+                .showImageOnLoading(R.drawable.pandafail)
+                .cacheInMemory(true)
+                .cacheOnDisk(true)
+                .build();
+
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this)
+                // configuration options go here
+                .defaultDisplayImageOptions(options)
+                .memoryCache(new LruMemoryCache(4 * 1024 * 1024))
+                .build();
+
+
+        ImageLoader.getInstance().init(config);
+
 
 //        uploadParseImage("fluff_0", R.drawable.imgres_0);
 //        uploadParseImage("fluff_1",R.drawable.imgres_1);

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 import android.media.Image;
+import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -45,6 +46,7 @@ public class BrowserActivity extends ActionBarActivity {
     */
 
     private ListView listView;
+    private TextView status;
     private ArrayList<Item> list = new ArrayList<Item>();
     private CustomAdapter adapter;
 
@@ -55,32 +57,14 @@ public class BrowserActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_browser);
 
-        // instantiate adapter for communicating between data and listview
-        this.adapter = new CustomAdapter(this,list);
-
-        // configure listview widget
+        // assign views
+        status = (TextView) findViewById(R.id.status);
         listView = (ListView) findViewById(R.id.listview);
-        listView.setAdapter(adapter);
 
-        // create dummy array for testing listview - notifies listview to update when finished.
-        getDevelopmentItems();
+        // Load starting list of fluffs, so that the user doesn't see a bunch of blank items
+        // on first load. More fluffs will get loaded upon scrolling events.
+        new loadInitialFluffs().execute();
 
-        // Instantiate Universal Image Loader (https://github.com/nostra13/Android-Universal-Image-Loader)
-        DisplayImageOptions options = new DisplayImageOptions.Builder()
-                // display options go here
-                .showImageOnLoading(R.drawable.pandafail)
-                .cacheInMemory(true)
-                .cacheOnDisk(true)
-                .build();
-
-        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this)
-                // configuration options go here
-                .defaultDisplayImageOptions(options)
-                .memoryCache(new LruMemoryCache(4 * 1024 * 1024))
-                .build();
-
-
-        ImageLoader.getInstance().init(config);
     }
 
 
@@ -143,55 +127,32 @@ public class BrowserActivity extends ActionBarActivity {
             }
 
             itemView.setItem(getItem(position));
-//            itemView.setBitmap(bm);
 
             return itemView;
 
         }
     }
 
-    private class MyCallback extends FindCallback<ParseObject> {
+    private class loadInitialFluffs extends AsyncTask<Void, Void, ArrayList<Item>> {
 
-        private ArrayList<Item> list;
-
-        public MyCallback(ArrayList<Item> list) {
-            super();
-            this.list = list;
+        protected void onPreExecute() {
+            // activate any kind of loading spinners here.
+            status.setText("Loading...");
         }
 
-        @Override
-        public void done(List<ParseObject> parseObjects, ParseException e) {
-            if (e == null) {
+        protected ArrayList<Item> doInBackground(Void... params) {
 
-                for (ParseObject object : parseObjects) {
+            ArrayList<Item> fluffs = new ArrayList<Item>();
 
-                    Item item = new Item();
-                    item.title = (String) object.get("title");
-                    item.subtitle = "subtitle";
-                    item.id = (String) object.get("objectId");
+            // get data from Parse
+            ParseQuery<ParseObject> query = ParseQuery.getQuery("fluff");
 
-                    this.list.add(item);
+            try {
+                List<ParseObject> parseObjects = query.find();
 
-                }
-            } else {
-
-                Log.d("getDevelopmentItems", "Parse Error: " + e.getMessage());
-
-            }
-        }
-    }
-
-
-    private void getDevelopmentItems() {
-
-        // get data from Parse
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("fluff");
-//        query.findInBackground(MyCallback(this.list));
-
-        query.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> parseObjects, ParseException e) {
-                if (e == null) {
+                if (parseObjects.size() == 0) {
+                    Log.e("loadInitialFluffs","Error: no parse objects found.");
+                } else {
 
                     for (ParseObject object : parseObjects) {
 
@@ -201,35 +162,44 @@ public class BrowserActivity extends ActionBarActivity {
                         item.id = object.getObjectId();
                         item.parseFile = object.getParseFile("image");
 
-                        Log.d("getDevelopmentItems","objectId: " + object.getObjectId());
+                        if (item.parseFile != null) {
+                            ImageLoader.getInstance().loadImageSync(item.parseFile.getUrl());
+                        } else {
+                            Log.e("loadInitialFluffs",String.format("Error: no ParseFile found for item with objectId %s",item.id));
+                        }
 
-                        BrowserActivity.this.list.add(item);
-                        BrowserActivity.this.adapter.notifyDataSetChanged();
+                        Log.d("loadInitialFluffs", "objectId: " + object.getObjectId());
 
+                        fluffs.add(item);
                     }
-
-
-                } else {
-                    Log.d("getDevelopmentItems","Parse Error: " + e.getMessage());
                 }
+
+            } catch (ParseException e) {
+                e.printStackTrace();
             }
-        });
 
-        // static list of panda images
+            return fluffs;
 
-//        for (int i=1; i<=100; i++) {
-//
-//            Item item = new Item();
-//            item.title = String.format("Item %d", i);
-//            item.subtitle = Integer.toString(i);
-//            item.image = getResources().getDrawable(R.drawable.pandafail);
-//
-//            list.add(item);
-//        }
+        }
 
-//        this.list = list;
-//        this.adapter.notifyDataSetChanged();
+        protected void onPostExecute(ArrayList<Item> fluffs) {
 
+            // disable any loading spinners and announce to the listview that data is ready.
+
+            if (fluffs == null) {
+                Log.e("loadInitialFluffs","Error: fluffs array returned null.");
+            } else {
+
+                // instantiate adapter for communicating between data and listview
+                list = fluffs;
+                adapter = new CustomAdapter(BrowserActivity.this,list);
+
+                // configure listview widget
+                listView.setAdapter(adapter);
+
+                status.setText("Done!");
+
+            }
+        }
     }
-
 }
