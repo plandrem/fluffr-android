@@ -2,6 +2,7 @@ package com.fluffr.app.fluffr;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.support.v7.app.ActionBarActivity;
@@ -42,6 +43,9 @@ public class BrowserActivity extends ActionBarActivity {
     This is the generic scrolling browser view to be used for the Home, Favorites, and Inbox screens.
     The primary element is a custom ListView widget, in which each row contains the image and
     buttons for user interaction.
+
+    BrowserActivities are launched by intents. The intent should contain an ArrayList<Item>
+    holding some prefetched fluffs to display. More fluffs can be loaded dynamically as the user scrolls.
     */
 
     private ListView listView;
@@ -55,6 +59,12 @@ public class BrowserActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_browser);
 
+        // retreive starting data from intent
+        Intent i = this.getIntent();
+        this.list = (ArrayList<Item>) i.getSerializableExtra("list");
+
+        Log.d("BrowserActivity onCreate","initial list: " + String.valueOf(this.list.size()));
+
         // instantiate adapter for communicating between data and listview
         this.adapter = new CustomAdapter(this,list);
 
@@ -62,25 +72,6 @@ public class BrowserActivity extends ActionBarActivity {
         listView = (ListView) findViewById(R.id.listview);
         listView.setAdapter(adapter);
 
-        // create dummy array for testing listview - notifies listview to update when finished.
-        getDevelopmentItems();
-
-        // Instantiate Universal Image Loader (https://github.com/nostra13/Android-Universal-Image-Loader)
-        DisplayImageOptions options = new DisplayImageOptions.Builder()
-                // display options go here
-                .showImageOnLoading(R.drawable.pandafail)
-                .cacheInMemory(true)
-                .cacheOnDisk(true)
-                .build();
-
-        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this)
-                // configuration options go here
-                .defaultDisplayImageOptions(options)
-                .memoryCache(new LruMemoryCache(4 * 1024 * 1024))
-                .build();
-
-
-        ImageLoader.getInstance().init(config);
     }
 
 
@@ -148,88 +139,6 @@ public class BrowserActivity extends ActionBarActivity {
             return itemView;
 
         }
-    }
-
-    private class MyCallback extends FindCallback<ParseObject> {
-
-        private ArrayList<Item> list;
-
-        public MyCallback(ArrayList<Item> list) {
-            super();
-            this.list = list;
-        }
-
-        @Override
-        public void done(List<ParseObject> parseObjects, ParseException e) {
-            if (e == null) {
-
-                for (ParseObject object : parseObjects) {
-
-                    Item item = new Item();
-                    item.title = (String) object.get("title");
-                    item.subtitle = "subtitle";
-                    item.id = (String) object.get("objectId");
-
-                    this.list.add(item);
-
-                }
-            } else {
-
-                Log.d("getDevelopmentItems", "Parse Error: " + e.getMessage());
-
-            }
-        }
-    }
-
-
-    private void getDevelopmentItems() {
-
-        // get data from Parse
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("fluff");
-//        query.findInBackground(MyCallback(this.list));
-
-        query.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> parseObjects, ParseException e) {
-                if (e == null) {
-
-                    for (ParseObject object : parseObjects) {
-
-                        Item item = new Item();
-                        item.title = (String) object.get("title");
-                        item.subtitle = "subtitle";
-                        item.id = object.getObjectId();
-                        item.parseFile = object.getParseFile("image");
-
-                        Log.d("getDevelopmentItems","objectId: " + object.getObjectId());
-
-                        BrowserActivity.this.list.add(item);
-                        BrowserActivity.this.adapter.notifyDataSetChanged();
-
-                    }
-
-
-                } else {
-                    Log.d("getDevelopmentItems","Parse Error: " + e.getMessage());
-                }
-            }
-        });
-
-        // static list of panda images
-
-//        for (int i=1; i<=100; i++) {
-//
-//            Item item = new Item();
-//            item.title = String.format("Item %d", i);
-//            item.subtitle = Integer.toString(i);
-//            item.image = getResources().getDrawable(R.drawable.pandafail);
-//
-//            list.add(item);
-//        }
-
-//        this.list = list;
-//        this.adapter.notifyDataSetChanged();
-
     }
 
 }

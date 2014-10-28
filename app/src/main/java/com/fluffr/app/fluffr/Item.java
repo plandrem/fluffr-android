@@ -5,6 +5,8 @@ import android.graphics.drawable.Drawable;
 
 import com.parse.ParseFile;
 
+import java.io.Serializable;
+
 /**
  * Created by Patrick on 10/20/14.
  */
