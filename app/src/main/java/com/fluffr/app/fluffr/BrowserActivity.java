@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
@@ -49,10 +50,10 @@ public class BrowserActivity extends ActionBarActivity {
     */
 
     private ListView listView;
-    private TextView status;
     private ArrayList<Item> list = new ArrayList<Item>();
     private CustomAdapter adapter;
-    private final LoadingDialogFragment spinner = new LoadingDialogFragment();
+//    private final LoadingDialogFragment spinner = new LoadingDialogFragment();
+    private LoadingSpinner spinner = new LoadingSpinner();
 
     // STANDARD CLASS METHODS
 
@@ -62,7 +63,6 @@ public class BrowserActivity extends ActionBarActivity {
         setContentView(R.layout.activity_browser);
 
         // assign views
-        status = (TextView) findViewById(R.id.status);
         listView = (ListView) findViewById(R.id.listview);
 
         // Load starting list of fluffs, so that the user doesn't see a bunch of blank items
@@ -141,10 +141,7 @@ public class BrowserActivity extends ActionBarActivity {
 
         protected void onPreExecute() {
             // activate any kind of loading spinners here.
-            status.setText("Loading...");
-
-
-            spinner.show(getFragmentManager(), "dialog");
+            spinner.show();
         }
 
         protected ArrayList<Item> doInBackground(Void... params) {
@@ -204,11 +201,28 @@ public class BrowserActivity extends ActionBarActivity {
                 // configure listview widget
                 listView.setAdapter(adapter);
 
-                status.setText("Done!");
-
+                // disable loading spinner
                 spinner.dismiss();
 
             }
+        }
+    }
+
+    private class LoadingSpinner {
+
+        private Dialog dialog;
+
+        public void show() {
+            dialog = new Dialog(BrowserActivity.this, R.style.Theme_Transparent);
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialog.setContentView(R.layout.loading_dialog);
+
+            dialog.show();
+
+        }
+
+        public void dismiss() {
+            dialog.dismiss();
         }
     }
 
