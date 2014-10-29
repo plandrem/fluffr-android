@@ -1,5 +1,8 @@
 package com.fluffr.app.fluffr;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
@@ -49,6 +52,7 @@ public class BrowserActivity extends ActionBarActivity {
     private TextView status;
     private ArrayList<Item> list = new ArrayList<Item>();
     private CustomAdapter adapter;
+    private final LoadingDialogFragment spinner = new LoadingDialogFragment();
 
     // STANDARD CLASS METHODS
 
@@ -138,6 +142,9 @@ public class BrowserActivity extends ActionBarActivity {
         protected void onPreExecute() {
             // activate any kind of loading spinners here.
             status.setText("Loading...");
+
+
+            spinner.show(getFragmentManager(), "dialog");
         }
 
         protected ArrayList<Item> doInBackground(Void... params) {
@@ -199,7 +206,10 @@ public class BrowserActivity extends ActionBarActivity {
 
                 status.setText("Done!");
 
+                spinner.dismiss();
+
             }
         }
     }
+
 }
