@@ -49,11 +49,11 @@ public class BrowserActivity extends ActionBarActivity {
     buttons for user interaction.
     */
 
-    private ListView listView;
-    private ArrayList<Item> list = new ArrayList<Item>();
-    private CustomAdapter adapter;
+    public ListView listView;
+    public ArrayList<Item> list = new ArrayList<Item>();
+    public CustomAdapter adapter;
 //    private final LoadingDialogFragment spinner = new LoadingDialogFragment();
-    private LoadingSpinner spinner = new LoadingSpinner();
+    public LoadingSpinner spinner = new LoadingSpinner();
 
     // STANDARD CLASS METHODS
 
@@ -64,10 +64,6 @@ public class BrowserActivity extends ActionBarActivity {
 
         // assign views
         listView = (ListView) findViewById(R.id.listview);
-
-        // Load starting list of fluffs, so that the user doesn't see a bunch of blank items
-        // on first load. More fluffs will get loaded upon scrolling events.
-        new loadInitialFluffs().execute();
 
     }
 
@@ -93,7 +89,7 @@ public class BrowserActivity extends ActionBarActivity {
 
     // HELPER CLASSES FOR LISTVIEW
 
-    private class CustomAdapter extends BaseAdapter {
+    public class CustomAdapter extends BaseAdapter {
         private final Context context;
         private final ArrayList<Item> items;
         private LayoutInflater inflater;
@@ -137,78 +133,8 @@ public class BrowserActivity extends ActionBarActivity {
         }
     }
 
-    private class loadInitialFluffs extends AsyncTask<Void, Void, ArrayList<Item>> {
 
-        protected void onPreExecute() {
-            // activate any kind of loading spinners here.
-            spinner.show();
-        }
-
-        protected ArrayList<Item> doInBackground(Void... params) {
-
-            ArrayList<Item> fluffs = new ArrayList<Item>();
-
-            // get data from Parse
-            ParseQuery<ParseObject> query = ParseQuery.getQuery("fluff");
-
-            try {
-                List<ParseObject> parseObjects = query.find();
-
-                if (parseObjects.size() == 0) {
-                    Log.e("loadInitialFluffs","Error: no parse objects found.");
-                } else {
-
-                    for (ParseObject object : parseObjects) {
-
-                        Item item = new Item();
-                        item.title = (String) object.get("title");
-                        item.subtitle = "subtitle";
-                        item.id = object.getObjectId();
-                        item.parseFile = object.getParseFile("image");
-
-                        if (item.parseFile != null) {
-                            ImageLoader.getInstance().loadImageSync(item.parseFile.getUrl());
-                        } else {
-                            Log.e("loadInitialFluffs",String.format("Error: no ParseFile found for item with objectId %s",item.id));
-                        }
-
-                        Log.d("loadInitialFluffs", "objectId: " + object.getObjectId());
-
-                        fluffs.add(item);
-                    }
-                }
-
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-
-            return fluffs;
-
-        }
-
-        protected void onPostExecute(ArrayList<Item> fluffs) {
-
-            // disable any loading spinners and announce to the listview that data is ready.
-
-            if (fluffs == null) {
-                Log.e("loadInitialFluffs","Error: fluffs array returned null.");
-            } else {
-
-                // instantiate adapter for communicating between data and listview
-                list = fluffs;
-                adapter = new CustomAdapter(BrowserActivity.this,list);
-
-                // configure listview widget
-                listView.setAdapter(adapter);
-
-                // disable loading spinner
-                spinner.dismiss();
-
-            }
-        }
-    }
-
-    private class LoadingSpinner {
+    public class LoadingSpinner {
 
         private Dialog dialog;
 
