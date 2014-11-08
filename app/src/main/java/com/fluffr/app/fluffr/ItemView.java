@@ -29,6 +29,8 @@ import org.w3c.dom.Text;
  */
 public class ItemView extends RelativeLayout {
 
+    private Context context;
+
     private Button favoritesButton;
     private Button sendToFriendButton;
     private Button deleteButton;
@@ -37,6 +39,8 @@ public class ItemView extends RelativeLayout {
 
     private TextView title;
     private TextView subtitle;
+
+    private ContactsDialog contactsDialog;
 
     public static ItemView inflate(ViewGroup parent) {
         ItemView itemView = (ItemView) LayoutInflater.from(parent.getContext())
@@ -55,6 +59,9 @@ public class ItemView extends RelativeLayout {
 
     public ItemView (Context context, AttributeSet attributeSet, int defStyle){
         super(context,attributeSet,defStyle);
+
+        this.context = context;
+        this.contactsDialog = new ContactsDialog(context);
 
         // inflate the actual view layout and attach it to this instance,
         // giving us access to the views contained therein
@@ -124,6 +131,8 @@ public class ItemView extends RelativeLayout {
 
             else if (v.getId() == sendToFriendButton.getId()) {
                 Log.d("ItemView OnClickListener", "Send to Friend.");
+                contactsDialog.show();
+
             }
 
             else if (v.getId() == deleteButton.getId()) {
