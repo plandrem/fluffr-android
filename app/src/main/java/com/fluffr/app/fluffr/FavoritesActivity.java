@@ -21,6 +21,9 @@ public class FavoritesActivity extends BrowserActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        new loadInitialFluffs().execute();
+
     }
 
 
