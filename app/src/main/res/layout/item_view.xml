@@ -3,7 +3,6 @@
 <com.fluffr.app.fluffr.ItemView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:padding="5dp">
+    android:layout_height="wrap_content">
 
 </com.fluffr.app.fluffr.ItemView>

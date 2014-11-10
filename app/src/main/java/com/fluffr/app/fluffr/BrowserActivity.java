@@ -56,18 +56,20 @@ public class BrowserActivity extends ActionBarActivity {
     buttons for user interaction.
     */
 
+    //UI Stuff
+    private static String currentState = "Browse";
+
+    // ListView and Data Stuff
     public ListView listView;
     public ArrayList<Item> list = new ArrayList<Item>();
     public CustomAdapter adapter;
-//    private final LoadingDialogFragment spinner = new LoadingDialogFragment();
     public LoadingSpinner spinner = new LoadingSpinner();
 
+    // Nav Drawer Stuff
     private ArrayList<NavItem> pages = new ArrayList<NavItem>();
     private DrawerLayout drawerLayout;
     private ListView drawerList;
     private ActionBarDrawerToggle drawerToggle;
-    private CharSequence drawerTitle;
-    private CharSequence title;
 
     // STANDARD CLASS METHODS
 
@@ -89,21 +91,17 @@ public class BrowserActivity extends ActionBarActivity {
         drawerList.setAdapter(new NavAdapter(this, pages));
         drawerList.setOnItemClickListener(new DrawerItemClickListener());
 
-        title = drawerTitle = getTitle();
-
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
                 R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
 
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
-                getSupportActionBar().setTitle(title);
+                updateActionBar();
                 invalidateOptionsMenu(); // forces redraw of options menu
             }
 
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
-                getSupportActionBar().setTitle(drawerTitle);
-                invalidateOptionsMenu();
             }
 
         };
@@ -119,6 +117,9 @@ public class BrowserActivity extends ActionBarActivity {
 
         //Load initial data
         new LoadFluffs(this, "init").execute();
+
+        //Finalize UI
+        updateActionBar();
 
     }
 
@@ -291,24 +292,26 @@ public class BrowserActivity extends ActionBarActivity {
         if (pages.get(position).text.equals("Browse")) {
             // replace contents of browser's array
             new LoadFluffs(this,"init").execute();
+            currentState = "Browse";
 
         } else if (pages.get(position).text.equals("Favorites")) {
             // replace contents of browser's array
             new LoadFluffs(this, "favorites").execute();
+            currentState = "Favorites";
         }
 
+//        updateActionBar();
+    }
 
+    private void updateActionBar() {
 
+        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
 
-
-
-//        // launch selected activity
-//        Intent i;
-//        if (pages.get(position).text.equals("Favorites")) {
-//            i = new Intent(this,FavoritesActivity.class);
-//            startActivity(i);
-//        }
-
+        if (currentState.equals("Browse")) {
+            actionBar.setTitle("Browse");
+        } else if (currentState.equals("Favorites")) {
+            actionBar.setTitle("Favorites");
+        }
     }
 
 }

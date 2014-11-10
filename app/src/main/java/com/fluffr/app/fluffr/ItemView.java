@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -31,9 +32,9 @@ public class ItemView extends RelativeLayout {
 
     private Context context;
 
-    private Button favoritesButton;
-    private Button sendToFriendButton;
-    private Button deleteButton;
+    private ImageButton favoritesButton;
+    private ImageButton sendToFriendButton;
+    private ImageButton deleteButton;
 
     private ImageView imageView;
 
@@ -72,9 +73,9 @@ public class ItemView extends RelativeLayout {
     }
 
     private void setupChildren() {
-        favoritesButton = (Button) findViewById(R.id.item_favoritesButton);
-        sendToFriendButton = (Button) findViewById(R.id.item_sendToFriendButton);
-        deleteButton = (Button) findViewById(R.id.item_deleteButton);
+        favoritesButton = (ImageButton ) findViewById(R.id.item_favoritesButton);
+        sendToFriendButton = (ImageButton ) findViewById(R.id.item_sendToFriendButton);
+        deleteButton = (ImageButton) findViewById(R.id.item_deleteButton);
 
         title = (TextView) findViewById(R.id.item_title);
         subtitle = (TextView) findViewById(R.id.item_subtitle);

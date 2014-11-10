@@ -4,49 +4,78 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <ImageView
-        android:layout_width="300dp"
-        android:layout_height="300dp"
-        android:layout_margin="20dp"
-        android:layout_centerInParent="true"
-        android:id="@+id/item_imageView"/>
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/favorites_button_text"
-        android:id="@+id/item_favoritesButton"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"/>
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/delete_button_text"
-        android:id="@+id/item_deleteButton"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"/>
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/send_to_friend_button_text"
-        android:id="@+id/item_sendToFriendButton"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"/>
-
-
-
-    <TextView
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/item_title"/>
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        >
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/item_subtitle"
-        android:layout_below="@id/title"/>
+        <RelativeLayout
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:elevation="5dp"
+            android:layout_margin="5dp"
+            android:layout_centerInParent="true"
+            android:background="@drawable/card_shadow">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:id="@+id/item_imageView"/>
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/favorites_button_text"
+                android:id="@+id/item_favoritesButton"
+                android:src="@drawable/ic_action_not_important"
+                android:background="@android:color/transparent"
+                android:layout_margin="15dp"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"/>
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/delete_button_text"
+                android:id="@+id/item_deleteButton"
+                android:src="@drawable/ic_action_discard"
+                android:background="@android:color/transparent"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentLeft="true"
+                android:layout_margin="15dp"/>
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/send_to_friend_button_text"
+                android:src="@drawable/ic_action_share"
+                android:background="@android:color/transparent"
+                android:id="@+id/item_sendToFriendButton"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:layout_margin="15dp"/>
+
+
+
+            <TextView
+                android:visibility="invisible"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/item_title"
+                android:text="title"/>
+
+            <TextView
+                android:visibility="invisible"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/item_subtitle"
+                android:text="subtitle"
+                android:layout_below="@id/item_title"/>
+        </RelativeLayout>
+
+    </RelativeLayout>
 
 
 </merge>

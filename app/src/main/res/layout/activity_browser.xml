@@ -2,7 +2,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/browser_background">
 
     <LinearLayout
         android:layout_height="match_parent"
@@ -16,7 +17,10 @@
         <ListView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:id="@+id/listview"/>
+            android:id="@+id/listview"
+            android:footerDividersEnabled="false"
+            android:headerDividersEnabled="false"
+            android:dividerHeight="0dp" />
 
     </LinearLayout>
 
