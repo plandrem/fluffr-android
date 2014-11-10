@@ -113,6 +113,13 @@ public class BrowserActivity extends ActionBarActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
+        //Configure Adapter; dataset will be empty.
+        adapter = new CustomAdapter(this, list);
+        listView.setAdapter(adapter);
+        
+        //Load initial data
+        new LoadFluffs(this, "init").execute();
+
     }
 
     @Override
@@ -281,8 +288,19 @@ public class BrowserActivity extends ActionBarActivity {
         drawerList.setItemChecked(position,true);
         drawerLayout.closeDrawer(drawerList);
 
-        // replace contents of browser's array
-        new LoadFavoriteFluffs(this).execute();
+        if (pages.get(position).text.equals("Browse")) {
+            // replace contents of browser's array
+            new LoadFluffs(this,"init").execute();
+
+        } else if (pages.get(position).text.equals("Favorites")) {
+            // replace contents of browser's array
+            new LoadFluffs(this, "favorites").execute();
+        }
+
+
+
+
+
 
 //        // launch selected activity
 //        Intent i;
