@@ -116,7 +116,7 @@ public class BrowserActivity extends ActionBarActivity {
         //Configure Adapter; dataset will be empty.
         adapter = new CustomAdapter(this, list);
         listView.setAdapter(adapter);
-        
+
         //Load initial data
         new LoadFluffs(this, "init").execute();
 
