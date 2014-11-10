@@ -272,22 +272,25 @@ public class BrowserActivity extends ActionBarActivity {
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView parent, View view, int position, long id) {
-            selectItem(position);
+            selectNavigationItem(position);
         }
     }
 
-    private void selectItem(int position) {
-
-        Intent i;
+    private void selectNavigationItem(int position) {
 
         drawerList.setItemChecked(position,true);
         drawerLayout.closeDrawer(drawerList);
 
-        // launch selected activity
-        if (pages.get(position).text.equals("Favorites")) {
-            i = new Intent(this,FavoritesActivity.class);
-            startActivity(i);
-        }
+        // replace contents of browser's array
+        new LoadFavoriteFluffs(this).execute();
+
+//        // launch selected activity
+//        Intent i;
+//        if (pages.get(position).text.equals("Favorites")) {
+//            i = new Intent(this,FavoritesActivity.class);
+//            startActivity(i);
+//        }
+
     }
 
 }
