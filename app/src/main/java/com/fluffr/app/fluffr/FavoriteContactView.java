@@ -32,58 +32,54 @@ import org.w3c.dom.Text;
 /**
  * Created by Patrick on 10/20/14.
  */
-public class ContactView extends RelativeLayout {
+public class FavoriteContactView extends RelativeLayout {
 
     private Context context;
     private TextView name;
-    private TextView number;
-    private ImageView image;
+    private ImageView picture;
 
-    public static ContactView inflate(ViewGroup parent) {
-        ContactView contactView = (ContactView) LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.contact_view, parent, false);
+    public static FavoriteContactView inflate(ViewGroup parent) {
+        FavoriteContactView contactView = (FavoriteContactView) LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.favorite_contact_view, parent, false);
         return contactView;
     }
 
     // Constructors
-    public ContactView(Context c) {
+    public FavoriteContactView (Context c) {
         this(c,null);
     }
 
-    public ContactView(Context context, AttributeSet attributeSet) {
+    public FavoriteContactView (Context context, AttributeSet attributeSet) {
         this(context, attributeSet, 0);
     }
 
-    public ContactView (Context context, AttributeSet attributeSet, int defStyle){
+    public FavoriteContactView (Context context, AttributeSet attributeSet, int defStyle){
         super(context,attributeSet,defStyle);
 
         this.context = context;
 
         // inflate the actual view layout and attach it to this instance,
         // giving us access to the views contained therein
-        LayoutInflater.from(context).inflate(R.layout.contact_view_children, this, true);
+        LayoutInflater.from(context).inflate(R.layout.favorite_contact_view_children, this, true);
 
         // connect references between this object's view properties and the inflated layout
         setupChildren();
     }
 
     private void setupChildren() {
-        name = (TextView) findViewById(R.id.contact_name);
-        number = (TextView) findViewById(R.id.contact_number);
-        image = (ImageView) findViewById(R.id.contact_image);
+        name = (TextView) findViewById(R.id.favorite_contact_name);
+        picture = (ImageView) findViewById(R.id.favorite_contact_image);
     }
 
 
     public void setItem(PhoneContact contact) {
 
         name.setText(contact.name);
-        number.setText(contact.number);
-
-        if (contact.photo != null) image.setImageBitmap(contact.photo);
+        picture.setImageURI(getPhotoUri(contact.id));
 
     }
 
-    public Uri getPhotoUri(long contactId) {
+    private Uri getPhotoUri(long contactId) {
         ContentResolver contentResolver = context.getContentResolver();
 
         try {
@@ -118,6 +114,5 @@ public class ContactView extends RelativeLayout {
         return Uri.withAppendedPath(person,
                 ContactsContract.Contacts.Photo.CONTENT_DIRECTORY);
     }
-
 
 }

@@ -6,22 +6,35 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_margin="10dp">
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
 
-        <TextView
-            android:text="Name"
+        <ImageView
+            android:id="@+id/contact_image"
+            android:layout_width="70dp"
+            android:layout_height="70dp" />
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/contact_name"
-            android:paddingBottom="5dp"/>
+            android:orientation="vertical"
+            android:layout_margin="10dp">
 
-        <TextView
-            android:text="Number"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/contact_number"/>
+            <TextView
+                android:text="Name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/contact_name"
+                android:paddingBottom="5dp"
+                android:textSize="17dp"/>
+
+            <TextView
+                android:text="Number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/contact_number"/>
+
+        </LinearLayout>
 
     </LinearLayout>
 

@@ -23,6 +23,7 @@
         <!--</View>-->
 
         <GridView
+            android:id="@+id/favorite_contacts_grid"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="3"
