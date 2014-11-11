@@ -3,4 +3,5 @@
     <color name="black">#000000</color>
     <color name="browser_background">#ffcecece</color>
     <color name="browser_card_background">#fff7f7f7</color>
+    <color name="edit_text_hint">#ffa6a6a6</color>
 </resources>

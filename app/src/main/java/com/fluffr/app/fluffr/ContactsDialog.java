@@ -30,7 +30,7 @@ public class ContactsDialog {
     }
 
     public void show() {
-        dialog = new Dialog(context, R.style.Theme_Transparent);
+        dialog = new Dialog(context, R.style.Theme_Contact_Chooser);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.contacts_dialog);
 

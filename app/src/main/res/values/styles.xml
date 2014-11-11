@@ -15,4 +15,7 @@
         <item name="android:windowFrame">@null</item>
     </style>
 
+    <style name="Theme.Contact_Chooser" parent="android:Theme.Dialog">
+    </style>
+
 </resources>
