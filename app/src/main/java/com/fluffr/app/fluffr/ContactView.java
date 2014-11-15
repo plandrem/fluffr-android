@@ -79,45 +79,13 @@ public class ContactView extends RelativeLayout {
         name.setText(contact.name);
         number.setText(contact.number);
 
-        if (contact.photo != null) image.setImageBitmap(contact.photo);
-
-    }
-
-    public Uri getPhotoUri(long contactId) {
-        ContentResolver contentResolver = context.getContentResolver();
-
-        try {
-            Cursor cursor = contentResolver
-                    .query(ContactsContract.Data.CONTENT_URI,
-                            null,
-                            ContactsContract.Data.CONTACT_ID
-                                    + "="
-                                    + contactId
-                                    + " AND "
-
-                                    + ContactsContract.Data.MIMETYPE
-                                    + "='"
-                                    + ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE
-                                    + "'", null, null);
-
-            if (cursor != null) {
-                if (!cursor.moveToFirst()) {
-                    return null; // no photo
-                }
-            } else {
-                return null; // error in cursor process
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+        if (contact.photoUri != null) {
+            image.setImageURI(contact.photoUri);
+        } else {
+            image.setImageBitmap(null);
         }
 
-        Uri person = ContentUris.withAppendedId(
-                ContactsContract.Contacts.CONTENT_URI, contactId);
-        return Uri.withAppendedPath(person,
-                ContactsContract.Contacts.Photo.CONTENT_DIRECTORY);
-    }
 
+    }
 
 }

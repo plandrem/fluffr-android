@@ -75,44 +75,15 @@ public class FavoriteContactView extends RelativeLayout {
     public void setItem(PhoneContact contact) {
 
         name.setText(contact.name);
-        picture.setImageURI(getPhotoUri(contact.id));
+//        picture.setImageURI(getPhotoUri(contact.id));
 
-    }
-
-    private Uri getPhotoUri(long contactId) {
-        ContentResolver contentResolver = context.getContentResolver();
-
-        try {
-            Cursor cursor = contentResolver
-                    .query(ContactsContract.Data.CONTENT_URI,
-                            null,
-                            ContactsContract.Data.CONTACT_ID
-                                    + "="
-                                    + contactId
-                                    + " AND "
-
-                                    + ContactsContract.Data.MIMETYPE
-                                    + "='"
-                                    + ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE
-                                    + "'", null, null);
-
-            if (cursor != null) {
-                if (!cursor.moveToFirst()) {
-                    return null; // no photo
-                }
-            } else {
-                return null; // error in cursor process
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+        if (contact.photoUri != null) {
+            picture.setImageURI(contact.photoUri);
+        } else {
+            picture.setImageBitmap(null);
         }
 
-        Uri person = ContentUris.withAppendedId(
-                ContactsContract.Contacts.CONTENT_URI, contactId);
-        return Uri.withAppendedPath(person,
-                ContactsContract.Contacts.Photo.CONTENT_DIRECTORY);
+
     }
 
 }

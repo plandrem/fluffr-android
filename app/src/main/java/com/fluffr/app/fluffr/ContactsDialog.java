@@ -78,7 +78,7 @@ public class ContactsDialog {
         Cursor cursor = context.getContentResolver().query(uri, new String[] {ContactsContract.CommonDataKinds.Phone.NUMBER,
                 ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
                 ContactsContract.CommonDataKinds.Phone._ID,
-                ContactsContract.CommonDataKinds.Photo.PHOTO}, null, null, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC");
+                ContactsContract.Contacts.PHOTO_THUMBNAIL_URI}, null, null, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC");
         cursor.moveToFirst();
 
         while (cursor.isAfterLast() == false)
@@ -86,13 +86,15 @@ public class ContactsDialog {
             String contactNumber= cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
             String contactName =  cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
             long phoneContactID = cursor.getInt(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone._ID));
-            String contactPhoto = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Photo.PHOTO));
+            String thumbnailUri = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.PHOTO_THUMBNAIL_URI));
+
 
             phoneContactInfo = new PhoneContact();
             phoneContactInfo.id = phoneContactID;
             phoneContactInfo.name = contactName;
             phoneContactInfo.number = contactNumber;
-            phoneContactInfo.setPhotoFromString(contactPhoto);
+
+            if (thumbnailUri != null) phoneContactInfo.photoUri = Uri.parse(thumbnailUri);
 
             if (phoneContactInfo != null)
             {
@@ -108,6 +110,7 @@ public class ContactsDialog {
 
         return arrContacts;
     }
+
 
     private class ContactsAdapter extends BaseAdapter {
         private final Context context;
