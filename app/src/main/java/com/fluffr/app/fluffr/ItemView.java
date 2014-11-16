@@ -3,13 +3,11 @@ package com.fluffr.app.fluffr;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -23,14 +21,13 @@ import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
-import org.w3c.dom.Text;
-
 /**
  * Created by Patrick on 10/20/14.
  */
 public class ItemView extends RelativeLayout {
 
     private Context context;
+    private ButtonInterface buttonInterface;
 
     private ImageButton favoritesButton;
     private ImageButton sendToFriendButton;
@@ -85,7 +82,7 @@ public class ItemView extends RelativeLayout {
     }
 
 
-    public void setItem(Item item) {
+    public void setItem(Item item, BrowserActivity parent) {
 
         // Attach this View object to an item. The item is the
         // abstract class which contains the useful data, whereas the
@@ -110,6 +107,8 @@ public class ItemView extends RelativeLayout {
         sendToFriendButton.setOnClickListener(buttonClickListener);
         deleteButton.setOnClickListener(buttonClickListener);
 
+        buttonInterface = parent;
+
     }
 
     private class ButtonClickListener implements OnClickListener {
@@ -128,6 +127,8 @@ public class ItemView extends RelativeLayout {
             // identify which button was pressed
             if (v.getId() == favoritesButton.getId()) {
                 Log.d("ItemView OnClickListener", "Added to Favorites.");
+                buttonInterface.FavoritesButtonPressed(item);
+
             }
 
             else if (v.getId() == sendToFriendButton.getId()) {

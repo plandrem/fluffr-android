@@ -1,22 +1,13 @@
 package com.fluffr.app.fluffr;
 
-import android.app.ActionBar;
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.res.Configuration;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
-import android.media.Image;
-import android.os.AsyncTask;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -25,30 +16,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.ListView;
-import android.widget.TextView;
 
-import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.parse.FindCallback;
-import com.parse.Parse;
-import com.parse.ParseAnalytics;
 import com.parse.ParseException;
-import com.parse.ParseFile;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
 
 
-public class BrowserActivity extends ActionBarActivity {
+public class BrowserActivity extends ActionBarActivity implements ButtonInterface {
 
     /*
     This is the generic scrolling browser view to be used for the Home, Favorites, and Inbox screens.
@@ -62,6 +39,7 @@ public class BrowserActivity extends ActionBarActivity {
     // ListView and Data Stuff
     public ListView listView;
     public ArrayList<Item> list = new ArrayList<Item>();
+    public ArrayList<Item> favorites = new ArrayList<Item>();
     public CustomAdapter adapter;
     public LoadingSpinner spinner = new LoadingSpinner();
 
@@ -110,6 +88,9 @@ public class BrowserActivity extends ActionBarActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
+
+        //Handle Parse User Account
+        setParseUser();
 
         //Configure Adapter; dataset will be empty.
         adapter = new CustomAdapter(this, list);
@@ -206,7 +187,7 @@ public class BrowserActivity extends ActionBarActivity {
                 itemView = ItemView.inflate(parent);
             }
 
-            itemView.setItem(getItem(position));
+            itemView.setItem(getItem(position), BrowserActivity.this);
 
             return itemView;
 
@@ -296,8 +277,18 @@ public class BrowserActivity extends ActionBarActivity {
 
         } else if (pages.get(position).text.equals("Favorites")) {
             // replace contents of browser's array
-            new LoadFluffs(this, "favorites").execute();
+//            new LoadFluffs(this, "favorites").execute();
             currentState = "Favorites";
+
+            // replace browser's existing data with new list
+            this.list.clear();
+
+            for (Item fluff : favorites) {
+                this.list.add(fluff);
+            }
+
+            this.adapter.notifyDataSetChanged();
+
         }
 
 //        updateActionBar();
@@ -312,6 +303,56 @@ public class BrowserActivity extends ActionBarActivity {
         } else if (currentState.equals("Favorites")) {
             actionBar.setTitle("Favorites");
         }
+    }
+
+    @Override
+    public void FavoritesButtonPressed(Item item) {
+
+        // check if current fluff is already in user's favorites
+        // Add to current application favorites list
+        this.favorites.add(item);
+
+        // Add to Parse Database
+        ParseUser user = ParseUser.getCurrentUser();
+        user.addUnique("favorites",item.id);
+        user.saveInBackground();
+
+        Log.d("FavoritesButtonInterface","Item added!");
+    }
+
+    private void setParseUser() {
+
+        ParseUser user = ParseUser.getCurrentUser();
+
+        if (user == null) {
+            // user has not been registered - create new account
+
+            spinner.show();
+
+            TelephonyManager tMgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+            String userPhoneNumber = tMgr.getLine1Number();
+
+            Log.d("setParseUser","New account for user: " + userPhoneNumber);
+
+            user = new ParseUser();
+            user.setUsername(userPhoneNumber);
+            user.setPassword("password");
+            try {
+                user.signUp();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            spinner.dismiss();
+
+            //TODO - display tutorial modal screen
+
+        } else {
+            // user already registered
+
+            Log.d("setParseUser","Resuming session for this user.");
+        }
+
     }
 
 }
