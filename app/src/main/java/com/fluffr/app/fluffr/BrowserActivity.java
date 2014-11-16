@@ -23,6 +23,8 @@ import com.parse.ParseException;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 
 public class BrowserActivity extends ActionBarActivity implements ButtonInterface {
@@ -309,15 +311,43 @@ public class BrowserActivity extends ActionBarActivity implements ButtonInterfac
     public void FavoritesButtonPressed(Fluff fluff) {
 
         // check if current fluff is already in user's favorites
-        // Add to current application favorites list
-        this.favorites.add(fluff);
+        if (fluff.favorited) {
+            //already favorited - remove from favorites
+            fluff.favorited = false;
 
-        // Add to Parse Database
-        ParseUser user = ParseUser.getCurrentUser();
-        user.addUnique("favorites", fluff.id);
-        user.saveInBackground();
+            //remove from current application favorites list
+            int i = 0;
+            for (Fluff f : favorites) {
+                if (f.id == fluff.id) {
+                    favorites.remove(i);
+                    break;
+                }
+                i++;
+            }
 
-        Log.d("FavoritesButtonInterface","Item added!");
+            //remove from Parse Database
+
+            List<String> toRemove = new ArrayList<String>(1);
+            toRemove.add(fluff.id);
+
+            ParseUser user = ParseUser.getCurrentUser();
+            user.removeAll("favorites", toRemove);
+            user.saveInBackground();
+
+
+        } else {
+            fluff.favorited = true;
+
+            // Add to current application favorites list
+            this.favorites.add(fluff);
+
+            // Add to Parse Database
+            ParseUser user = ParseUser.getCurrentUser();
+            user.addUnique("favorites", fluff.id);
+            user.saveInBackground();
+
+            Log.d("FavoritesButtonInterface", "Item added!");
+        }
     }
 
     private void setParseUser() {
@@ -351,6 +381,7 @@ public class BrowserActivity extends ActionBarActivity implements ButtonInterfac
             // user already registered
 
             Log.d("setParseUser","Resuming session for this user.");
+
         }
 
     }

@@ -100,12 +100,16 @@ public class FluffView extends RelativeLayout {
 
         getDrawableWithImageLoader(fluff);
 
-//        setImageDrawable(item.id);
-
         ButtonClickListener buttonClickListener = new ButtonClickListener(fluff);
         favoritesButton.setOnClickListener(buttonClickListener);
         sendToFriendButton.setOnClickListener(buttonClickListener);
         deleteButton.setOnClickListener(buttonClickListener);
+
+        if (fluff.favorited) {
+            favoritesButton.setImageResource(R.drawable.ic_action_important);
+        } else {
+            favoritesButton.setImageResource(R.drawable.ic_action_not_important);
+        }
 
         buttonInterface = parent;
 
@@ -127,6 +131,15 @@ public class FluffView extends RelativeLayout {
             // identify which button was pressed
             if (v.getId() == favoritesButton.getId()) {
                 Log.d("ItemView OnClickListener", "Added to Favorites.");
+
+                // toggle button view
+                if (fluff.favorited) {
+                    // already favorited - unstar
+                    favoritesButton.setImageResource(R.drawable.ic_action_not_important);
+                } else {
+                    favoritesButton.setImageResource(R.drawable.ic_action_important);
+                }
+
                 buttonInterface.FavoritesButtonPressed(fluff);
 
             }
@@ -144,18 +157,6 @@ public class FluffView extends RelativeLayout {
         }
     };
 
-    public void setBitmap(Bitmap bm) {
-        imageView.setImageBitmap(bm);
-    }
-
-    public void setImageDrawable(String id) {
-        // depending on the server backend implementation, the means of storing and retrieving
-        // images may change. Therefore, this method provides a static API such that the rest of the
-        // application is not sensitive to the specific server details.
-
-        getParseDrawable(id);
-    }
-
     private void getDrawableWithImageLoader(Fluff fluff) {
         ImageLoader imageLoader = ImageLoader.getInstance();
         String imageUrl = fluff.parseFile.getUrl();
@@ -163,49 +164,5 @@ public class FluffView extends RelativeLayout {
         if (imageUrl != null) imageLoader.displayImage(imageUrl, imageView);
 
     }
-
-    private void getParseDrawable(String id) {
-
-        // Async call to Parse DB. Find the ParseObject associated with the current item;
-        // once found, take the 'image' field in the object and download the file on a
-        // background thread. Once finished, apply the image to the current ImageView.
-
-        Log.d("getParseDrawable","called for id: " + id);
-
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("fluff");
-        query.getInBackground(id, new GetCallback<ParseObject>() {
-            @Override
-            public void done(ParseObject parseObject, ParseException e) {
-                if (e == null) {
-
-                    // object received; download associated image file
-                    ParseFile pf = (ParseFile) parseObject.get("image");
-
-                    pf.getDataInBackground(new GetDataCallback() {
-                        public void done(byte[] data, ParseException e) {
-                            if (e == null) {
-
-                                Bitmap bmp = BitmapFactory.decodeByteArray(data, 0, data.length);
-                                imageView.setImageBitmap(bmp);
-
-                            } else {
-                                Log.e("ItemView.getParseDrawable", "Parse Error while retrieving image: " + e.getMessage());
-                            }
-                        }
-                    });
-
-                } else {
-                    Log.e("ItemView.getParseDrawable", "Parse Error while retrieving object: " + e.getMessage());
-                }
-            }
-        });
-
-
-
-    }
-
-
-
-
 
 }

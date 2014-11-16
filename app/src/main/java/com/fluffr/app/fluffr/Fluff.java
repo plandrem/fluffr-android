@@ -15,5 +15,6 @@ public class Fluff {
     public String title;
     public String subtitle;
     public ParseFile parseFile;
+    public boolean favorited = false;
 
 }

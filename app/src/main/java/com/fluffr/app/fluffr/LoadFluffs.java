@@ -7,6 +7,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,6 +59,7 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
 
         try {
             List<ParseObject> parseObjects = query.find();
+            ArrayList<String> favorites = (ArrayList) ParseUser.getCurrentUser().get("favorites");
 
             if (parseObjects.size() == 0) {
                 Log.e("LoadFluffs", "Error: no parse objects found.");
@@ -75,6 +77,10 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
                         ImageLoader.getInstance().loadImageSync(fluff.parseFile.getUrl());
                     } else {
                         Log.e("LoadFluffs",String.format("Error: no ParseFile found for item with objectId %s", fluff.id));
+                    }
+
+                    if (favorites.contains(fluff.id)) {
+                        fluff.favorited = true;
                     }
 
                     Log.d("LoadFluffs", "objectId: " + object.getObjectId());
