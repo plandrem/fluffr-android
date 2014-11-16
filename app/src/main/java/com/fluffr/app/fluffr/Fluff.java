@@ -8,7 +8,7 @@ import com.parse.ParseFile;
 /**
  * Created by Patrick on 10/20/14.
  */
-public class Item {
+public class Fluff {
 
     public String id;
     public Drawable image;

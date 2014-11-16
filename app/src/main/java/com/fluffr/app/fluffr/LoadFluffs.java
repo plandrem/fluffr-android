@@ -1,6 +1,5 @@
 package com.fluffr.app.fluffr;
 
-import android.app.Activity;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -20,7 +19,7 @@ import java.util.List;
  * Inputs:
  * String mode: ['init','favorites'] - selects which data to be retrieved
  */
-public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Item>> {
+public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
 
     private BrowserActivity parentActivity;
     private String mode;
@@ -36,9 +35,9 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Item>> {
         parentActivity.spinner.show();
     }
 
-    protected ArrayList<Item> doInBackground(Void... params) {
+    protected ArrayList<Fluff> doInBackground(Void... params) {
 
-        ArrayList<Item> fluffs = new ArrayList<Item>();
+        ArrayList<Fluff> fluffs = new ArrayList<Fluff>();
 
         // get data from Parse
         ParseQuery<ParseObject> query;
@@ -66,21 +65,21 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Item>> {
 
                 for (ParseObject object : parseObjects) {
 
-                    Item item = new Item();
-                    item.title = (String) object.get("title");
-                    item.subtitle = "subtitle";
-                    item.id = object.getObjectId();
-                    item.parseFile = object.getParseFile("image");
+                    Fluff fluff = new Fluff();
+                    fluff.title = (String) object.get("title");
+                    fluff.subtitle = "subtitle";
+                    fluff.id = object.getObjectId();
+                    fluff.parseFile = object.getParseFile("image");
 
-                    if (item.parseFile != null) {
-                        ImageLoader.getInstance().loadImageSync(item.parseFile.getUrl());
+                    if (fluff.parseFile != null) {
+                        ImageLoader.getInstance().loadImageSync(fluff.parseFile.getUrl());
                     } else {
-                        Log.e("LoadFluffs",String.format("Error: no ParseFile found for item with objectId %s",item.id));
+                        Log.e("LoadFluffs",String.format("Error: no ParseFile found for item with objectId %s", fluff.id));
                     }
 
                     Log.d("LoadFluffs", "objectId: " + object.getObjectId());
 
-                    fluffs.add(item);
+                    fluffs.add(fluff);
                 }
             }
 
@@ -92,7 +91,7 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Item>> {
 
     }
 
-    protected void onPostExecute(ArrayList<Item> fluffs) {
+    protected void onPostExecute(ArrayList<Fluff> fluffs) {
 
         // disable any loading spinners and announce to the listview that data is ready.
 
@@ -103,7 +102,7 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Item>> {
             // replace browser's existing data with new list
             parentActivity.list.clear();
 
-            for (Item fluff : fluffs) {
+            for (Fluff fluff : fluffs) {
                 parentActivity.list.add(fluff);
             }
 

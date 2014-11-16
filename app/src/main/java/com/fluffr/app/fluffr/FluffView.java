@@ -24,7 +24,7 @@ import com.parse.ParseQuery;
 /**
  * Created by Patrick on 10/20/14.
  */
-public class ItemView extends RelativeLayout {
+public class FluffView extends RelativeLayout {
 
     private Context context;
     private ButtonInterface buttonInterface;
@@ -40,22 +40,22 @@ public class ItemView extends RelativeLayout {
 
     private ContactsDialog contactsDialog;
 
-    public static ItemView inflate(ViewGroup parent) {
-        ItemView itemView = (ItemView) LayoutInflater.from(parent.getContext())
+    public static FluffView inflate(ViewGroup parent) {
+        FluffView fluffView = (FluffView) LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_view, parent, false);
-        return itemView;
+        return fluffView;
     }
 
     // Constructors
-    public ItemView(Context c) {
+    public FluffView(Context c) {
         this(c,null);
     }
 
-    public ItemView(Context context, AttributeSet attributeSet) {
+    public FluffView(Context context, AttributeSet attributeSet) {
         this(context, attributeSet, 0);
     }
 
-    public ItemView (Context context, AttributeSet attributeSet, int defStyle){
+    public FluffView(Context context, AttributeSet attributeSet, int defStyle){
         super(context,attributeSet,defStyle);
 
         this.context = context;
@@ -82,7 +82,7 @@ public class ItemView extends RelativeLayout {
     }
 
 
-    public void setItem(Item item, BrowserActivity parent) {
+    public void setItem(Fluff fluff, BrowserActivity parent) {
 
         // Attach this View object to an item. The item is the
         // abstract class which contains the useful data, whereas the
@@ -95,14 +95,14 @@ public class ItemView extends RelativeLayout {
 //        Log.d("setItem",item.title);
 
 
-        title.setText(item.title);
-        subtitle.setText(item.subtitle);
+        title.setText(fluff.title);
+        subtitle.setText(fluff.subtitle);
 
-        getDrawableWithImageLoader(item);
+        getDrawableWithImageLoader(fluff);
 
 //        setImageDrawable(item.id);
 
-        ButtonClickListener buttonClickListener = new ButtonClickListener(item);
+        ButtonClickListener buttonClickListener = new ButtonClickListener(fluff);
         favoritesButton.setOnClickListener(buttonClickListener);
         sendToFriendButton.setOnClickListener(buttonClickListener);
         deleteButton.setOnClickListener(buttonClickListener);
@@ -113,21 +113,21 @@ public class ItemView extends RelativeLayout {
 
     private class ButtonClickListener implements OnClickListener {
 
-        private Item item;
+        private Fluff fluff;
 
-        ButtonClickListener(Item item) {
+        ButtonClickListener(Fluff fluff) {
             super();
-            this.item = item;
+            this.fluff = fluff;
         }
 
         @Override
         public void onClick(View v) {
-            Log.d("ItemView OnClickListener", item.title);
+            Log.d("ItemView OnClickListener", fluff.title);
 
             // identify which button was pressed
             if (v.getId() == favoritesButton.getId()) {
                 Log.d("ItemView OnClickListener", "Added to Favorites.");
-                buttonInterface.FavoritesButtonPressed(item);
+                buttonInterface.FavoritesButtonPressed(fluff);
 
             }
 
@@ -156,9 +156,9 @@ public class ItemView extends RelativeLayout {
         getParseDrawable(id);
     }
 
-    private void getDrawableWithImageLoader(Item item) {
+    private void getDrawableWithImageLoader(Fluff fluff) {
         ImageLoader imageLoader = ImageLoader.getInstance();
-        String imageUrl = item.parseFile.getUrl();
+        String imageUrl = fluff.parseFile.getUrl();
 
         if (imageUrl != null) imageLoader.displayImage(imageUrl, imageView);
 

@@ -38,8 +38,8 @@ public class BrowserActivity extends ActionBarActivity implements ButtonInterfac
 
     // ListView and Data Stuff
     public ListView listView;
-    public ArrayList<Item> list = new ArrayList<Item>();
-    public ArrayList<Item> favorites = new ArrayList<Item>();
+    public ArrayList<Fluff> list = new ArrayList<Fluff>();
+    public ArrayList<Fluff> favorites = new ArrayList<Fluff>();
     public CustomAdapter adapter;
     public LoadingSpinner spinner = new LoadingSpinner();
 
@@ -152,24 +152,24 @@ public class BrowserActivity extends ActionBarActivity implements ButtonInterfac
 
     public class CustomAdapter extends BaseAdapter {
         private final Context context;
-        private final ArrayList<Item> items;
+        private final ArrayList<Fluff> fluffs;
         private LayoutInflater inflater;
 
         // constructor for class
-        CustomAdapter(Context context, ArrayList<Item> list) {
+        CustomAdapter(Context context, ArrayList<Fluff> list) {
             this.context = context;
-            this.items = list;
+            this.fluffs = list;
             this.inflater = LayoutInflater.from(context);
         }
 
         @Override
         public int getCount() {
-            return items.size();
+            return fluffs.size();
         }
 
         @Override
-        public Item getItem(int position) {
-            return items.get(position);
+        public Fluff getItem(int position) {
+            return fluffs.get(position);
         }
 
         @Override
@@ -180,16 +180,16 @@ public class BrowserActivity extends ActionBarActivity implements ButtonInterfac
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
 
-            ItemView itemView = (ItemView) convertView;
+            FluffView fluffView = (FluffView) convertView;
 
-            if (itemView == null) {
+            if (fluffView == null) {
                 // add custom row layout into parent viewgroup (the row)
-                itemView = ItemView.inflate(parent);
+                fluffView = FluffView.inflate(parent);
             }
 
-            itemView.setItem(getItem(position), BrowserActivity.this);
+            fluffView.setItem(getItem(position), BrowserActivity.this);
 
-            return itemView;
+            return fluffView;
 
         }
     }
@@ -283,7 +283,7 @@ public class BrowserActivity extends ActionBarActivity implements ButtonInterfac
             // replace browser's existing data with new list
             this.list.clear();
 
-            for (Item fluff : favorites) {
+            for (Fluff fluff : favorites) {
                 this.list.add(fluff);
             }
 
@@ -306,15 +306,15 @@ public class BrowserActivity extends ActionBarActivity implements ButtonInterfac
     }
 
     @Override
-    public void FavoritesButtonPressed(Item item) {
+    public void FavoritesButtonPressed(Fluff fluff) {
 
         // check if current fluff is already in user's favorites
         // Add to current application favorites list
-        this.favorites.add(item);
+        this.favorites.add(fluff);
 
         // Add to Parse Database
         ParseUser user = ParseUser.getCurrentUser();
-        user.addUnique("favorites",item.id);
+        user.addUnique("favorites", fluff.id);
         user.saveInBackground();
 
         Log.d("FavoritesButtonInterface","Item added!");
