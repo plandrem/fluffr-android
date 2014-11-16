@@ -39,6 +39,7 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
     protected ArrayList<Fluff> doInBackground(Void... params) {
 
         ArrayList<Fluff> fluffs = new ArrayList<Fluff>();
+        ArrayList<String> favorites = (ArrayList) ParseUser.getCurrentUser().get("favorites");
 
         // get data from Parse
         ParseQuery<ParseObject> query;
@@ -49,8 +50,9 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
             query = ParseQuery.getQuery("fluff");
 
         } else if (mode.equals("favorites")) {
+
             query = ParseQuery.getQuery("fluff");
-            query.whereEqualTo("title","fluff_2");
+            query.whereContainedIn("objectId", favorites);
 
         } else {
             query = ParseQuery.getQuery("fluff");
@@ -59,7 +61,6 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
 
         try {
             List<ParseObject> parseObjects = query.find();
-            ArrayList<String> favorites = (ArrayList) ParseUser.getCurrentUser().get("favorites");
 
             if (parseObjects.size() == 0) {
                 Log.e("LoadFluffs", "Error: no parse objects found.");
@@ -105,16 +106,28 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
             Log.e("LoadFluffs","Error: fluffs array returned null.");
         } else {
 
-            // replace browser's existing data with new list
-            parentActivity.list.clear();
+            if (mode.equals("init")) {
 
-            for (Fluff fluff : fluffs) {
-                parentActivity.list.add(fluff);
+                // replace browser's existing data with new list
+                parentActivity.list.clear();
+
+                for (Fluff fluff : fluffs) {
+                    parentActivity.list.add(fluff);
+                }
+
+                parentActivity.adapter.notifyDataSetChanged();
+
+            } else if (mode.equals("favorites")) {
+                parentActivity.favorites.clear();
+
+                for (Fluff fluff : fluffs) {
+                    parentActivity.favorites.add(fluff);
+                }
+
             }
 
-            parentActivity.adapter.notifyDataSetChanged();
-
             // disable loading spinner
+            Log.d("LoadFluffs","Disabling Spinner");
             parentActivity.spinner.dismiss();
 
         }

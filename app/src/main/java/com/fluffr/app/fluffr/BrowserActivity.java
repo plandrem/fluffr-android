@@ -318,7 +318,7 @@ public class BrowserActivity extends ActionBarActivity implements ButtonInterfac
             //remove from current application favorites list
             int i = 0;
             for (Fluff f : favorites) {
-                if (f.id == fluff.id) {
+                if (f.id.equals(fluff.id)) {
                     favorites.remove(i);
                     break;
                 }
@@ -381,6 +381,10 @@ public class BrowserActivity extends ActionBarActivity implements ButtonInterfac
             // user already registered
 
             Log.d("setParseUser","Resuming session for this user.");
+
+            // get favorites list
+            new LoadFluffs(this,"favorites").execute();
+
 
         }
 
