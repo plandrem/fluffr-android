@@ -6,15 +6,19 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.ContactsContract;
+import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +51,7 @@ public class ContactsDialog {
         adapter = new ContactsAdapter(context,allContacts);
 
         list.setAdapter(adapter);
+        list.setOnItemClickListener(new SelectContactListener());
 
         // setup grid of favorite contacts
         favoriteContacts = new ArrayList<PhoneContact>(8);
@@ -196,6 +201,62 @@ public class ContactsDialog {
             contactView.setItem(getItem(position));
 
             return contactView;
+
+        }
+    }
+
+    private class SelectContactListener implements AdapterView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+            PhoneContact selectedContact = allContacts.get(position);
+            Log.d("SelectContactListener","User clicked: " + selectedContact.name);
+
+            SmsManager smsManager = SmsManager.getDefault();
+            String ownerName = "";
+            String message = "";
+            String number = "16518155005";
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                Cursor c = context.getContentResolver().query(ContactsContract.Profile.CONTENT_URI, null, null, null, null);
+                int count = c.getCount();
+                String[] columnNames = {ContactsContract.Profile.DISPLAY_NAME};
+                boolean b = c.moveToFirst();
+                int p = c.getPosition();
+                if (count == 1 && p == 0) {
+                    for (int j = 0; j < columnNames.length; j++) {
+                        String columnName = columnNames[j];
+                        String columnValue = c.getString(c.getColumnIndex(columnName));
+                        Log.d("SelectContactListener", columnName + " - " + columnValue);
+
+                        if (columnName != null) {
+                            if (columnName.equals(ContactsContract.Profile.DISPLAY_NAME)) {
+                                ownerName = columnValue.split(" ")[0];
+                            }
+                        }
+
+                    }
+                }
+                c.close();
+
+                // Send SMS message
+                message = context.getResources().getString(R.string.non_user_sms);
+                smsManager.sendTextMessage(number, null, ownerName + " " + message, null, null);
+
+
+            } else {
+                // Pre-Ice-Cream-Sandwich
+                message = context.getResources().getString(R.string.old_non_user_sms);
+                smsManager.sendTextMessage(number, null, message, null, null);
+
+            }
+
+            //TODO - add selected contact to recent contacts list
+
+            ContactsDialog.this.dismiss();
+
+            Toast.makeText(context.getApplicationContext(),"Fluff sent!", Toast.LENGTH_SHORT).show();
+
 
         }
     }

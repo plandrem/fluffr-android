@@ -88,4 +88,11 @@ public class ContactView extends RelativeLayout {
 
     }
 
+    public String getName() {
+        return name.getText().toString();
+    }
+
+    public String getNumber() {
+        return number.getText().toString();
+    }
 }

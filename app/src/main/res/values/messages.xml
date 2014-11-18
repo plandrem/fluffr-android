@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="non_user_sms">has sent you something ridiculous on Fluffr. Get the app from http://fluffr.co to check it out!</string>
+    <string name="old_non_user_sms">Someone has sent you something ridiculous on Fluffr. Get the app from http://fluffr.co to check it out!</string>
+</resources>
