@@ -20,6 +20,7 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 
 import com.parse.ParseException;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
@@ -97,6 +98,7 @@ public class BrowserActivity extends ActionBarActivity implements ButtonInterfac
         //Configure Adapter; dataset will be empty.
         adapter = new CustomAdapter(this, list);
         listView.setAdapter(adapter);
+        listView.setOnScrollListener(new FluffScrollListener());
 
         //Load initial data
         new LoadFluffs(this, "init").execute();
@@ -352,40 +354,73 @@ public class BrowserActivity extends ActionBarActivity implements ButtonInterfac
 
     private void setParseUser() {
 
+        //TODO - check if phone number already registered
+
         ParseUser user = ParseUser.getCurrentUser();
 
         if (user == null) {
             // user has not been registered - create new account
 
-            spinner.show();
+//            spinner.show();
 
             TelephonyManager tMgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
             String userPhoneNumber = tMgr.getLine1Number();
 
-            Log.d("setParseUser","New account for user: " + userPhoneNumber);
+            if (userPhoneNumber == null) {
+                Log.e("SetParseUser","Bypassing Current Phone Settings and using 16518155005 as user");
+                userPhoneNumber = "16518155005";
+            }
 
-            user = new ParseUser();
-            user.setUsername(userPhoneNumber);
-            user.setPassword("password");
+            // check if user exists in database
+            ParseQuery query = ParseUser.getQuery();
+            query.whereEqualTo("username",userPhoneNumber);
+
+            ParseUser existingUser = null;
+
             try {
-                user.signUp();
+                existingUser = (ParseUser) query.getFirst();
             } catch (ParseException e) {
                 e.printStackTrace();
             }
 
-            spinner.dismiss();
+            if (existingUser != null) {
+                Log.e("setParseUser","Logging in user: " + userPhoneNumber);
+                try {
+                    ParseUser.logIn(userPhoneNumber, "password");
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            } else {
 
-            //TODO - display tutorial modal screen
+                Log.d("setParseUser", "New account for user: " + userPhoneNumber);
+
+                user = new ParseUser();
+                user.setUsername(userPhoneNumber);
+                user.setPassword("password");
+                try {
+                    user.signUp();
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                //            spinner.dismiss();
+
+                //TODO - display tutorial modal screen
+            }
 
         } else {
             // user already registered
 
-            Log.d("setParseUser","Resuming session for this user.");
+            Log.d("setParseUser", "Resuming session for this user.");
 
             // get favorites list
             new LoadFluffs(this,"favorites").execute();
 
 
+        }
+
+        if (user == null) {
+            Log.e("setParseUser","user setup failed.");
         }
 
     }

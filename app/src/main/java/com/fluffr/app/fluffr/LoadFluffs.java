@@ -33,7 +33,7 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
 
     protected void onPreExecute() {
         // activate any kind of loading spinners here.
-        parentActivity.spinner.show();
+//        parentActivity.spinner.show();
     }
 
     protected ArrayList<Fluff> doInBackground(Void... params) {
@@ -128,7 +128,7 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
 
             // disable loading spinner
             Log.d("LoadFluffs","Disabling Spinner");
-            parentActivity.spinner.dismiss();
+//            parentActivity.spinner.dismiss();
 
         }
     }
