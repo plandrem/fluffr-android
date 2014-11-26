@@ -12,8 +12,11 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.parse.Parse;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
+import com.parse.ParsePush;
+import com.parse.SaveCallback;
 
 import java.io.ByteArrayOutputStream;
+import java.text.ParseException;
 
 /**
  * Created by Patrick on 10/23/14.
@@ -28,6 +31,17 @@ public class FluffrApplication extends Application {
         String client_key = getResources().getString(R.string.parse_client_key);
 
         Parse.initialize(this, app_id, client_key);
+
+        ParsePush.subscribeInBackground("", new SaveCallback() {
+            @Override
+            public void done(com.parse.ParseException e) {
+                if (e == null) {
+                    Log.d("com.parse.push", "successfully subscribed to the broadcast channel.");
+                } else {
+                    Log.e("com.parse.push", "failed to subscribe for push", e);
+                }
+            }
+        });
 
         Log.d("FluffrApplication","Parse Initialized.");
 

@@ -20,6 +20,7 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 
 import com.parse.ParseException;
+import com.parse.ParseInstallation;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
@@ -394,6 +395,7 @@ public class BrowserActivity extends ActionBarActivity implements ButtonInterfac
                 Log.e("setParseUser","Logging in user: " + userPhoneNumber);
                 try {
                     ParseUser.logIn(userPhoneNumber, "password");
+                    user = existingUser;
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
@@ -415,6 +417,7 @@ public class BrowserActivity extends ActionBarActivity implements ButtonInterfac
                 //TODO - display tutorial modal screen
             }
 
+
         } else {
             // user already registered
 
@@ -426,9 +429,22 @@ public class BrowserActivity extends ActionBarActivity implements ButtonInterfac
 
         }
 
+
         if (user == null) {
             Log.e("setParseUser","user setup failed.");
+            return;
         }
+
+        // either way, update the installation info for Parse Push
+
+        ParseInstallation parseInstallation = ParseInstallation.getCurrentInstallation();
+        String id = parseInstallation.getInstallationId();
+
+        Log.d("Send installation id","user: " + user.toString() + "\ninstallationId: " + id);
+
+        user.put("installationId",id);
+        user.saveInBackground();
+
 
     }
 
