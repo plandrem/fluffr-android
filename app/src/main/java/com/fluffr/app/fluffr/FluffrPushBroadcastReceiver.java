@@ -19,7 +19,7 @@ public class FluffrPushBroadcastReceiver extends ParsePushBroadcastReceiver {
 
     @Override
     protected void onPushOpen(Context context, Intent intent) {
-//        super.onPushOpen(context, intent);
+        super.onPushOpen(context, intent);
 
 //        Toast.makeText()
         Log.d("onPushOpen", "Intent: " + intent.toString());

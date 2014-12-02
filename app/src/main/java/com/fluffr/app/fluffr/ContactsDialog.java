@@ -219,51 +219,46 @@ public class ContactsDialog {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
             //TODO - convert message sending to an Async Task
+            PhoneContact selectedContact = allContacts.get(position);
+            Log.d("SelectContactListener","User clicked: " + selectedContact.name);
 
-            boolean pushSuccessful = sendReceivedFluffPushNotification();
+            SmsManager smsManager = SmsManager.getDefault();
+            String ownerName = "";
+            String message = "";
+            String number = "16518155005";
 
-            if (pushSuccessful == false) {
-                PhoneContact selectedContact = allContacts.get(position);
-                Log.d("SelectContactListener", "User clicked: " + selectedContact.name);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                Cursor c = context.getContentResolver().query(ContactsContract.Profile.CONTENT_URI, null, null, null, null);
+                int count = c.getCount();
+                String[] columnNames = {ContactsContract.Profile.DISPLAY_NAME};
+                boolean b = c.moveToFirst();
+                int p = c.getPosition();
+                if (count == 1 && p == 0) {
+                    for (int j = 0; j < columnNames.length; j++) {
+                        String columnName = columnNames[j];
+                        String columnValue = c.getString(c.getColumnIndex(columnName));
+                        Log.d("SelectContactListener", columnName + " - " + columnValue);
 
-                SmsManager smsManager = SmsManager.getDefault();
-                String ownerName = "";
-                String message = "";
-                String number = "16518155005";
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-                    Cursor c = context.getContentResolver().query(ContactsContract.Profile.CONTENT_URI, null, null, null, null);
-                    int count = c.getCount();
-                    String[] columnNames = {ContactsContract.Profile.DISPLAY_NAME};
-                    boolean b = c.moveToFirst();
-                    int p = c.getPosition();
-                    if (count == 1 && p == 0) {
-                        for (int j = 0; j < columnNames.length; j++) {
-                            String columnName = columnNames[j];
-                            String columnValue = c.getString(c.getColumnIndex(columnName));
-                            Log.d("SelectContactListener", columnName + " - " + columnValue);
-
-                            if (columnName != null) {
-                                if (columnName.equals(ContactsContract.Profile.DISPLAY_NAME)) {
-                                    ownerName = columnValue.split(" ")[0];
-                                }
+                        if (columnName != null) {
+                            if (columnName.equals(ContactsContract.Profile.DISPLAY_NAME)) {
+                                ownerName = columnValue.split(" ")[0];
                             }
-
                         }
+
                     }
-                    c.close();
-
-                    // Send SMS message
-                    message = context.getResources().getString(R.string.non_user_sms);
-                    smsManager.sendTextMessage(number, null, ownerName + " " + message, null, null);
-
-
-                } else {
-                    // Pre-Ice-Cream-Sandwich
-                    message = context.getResources().getString(R.string.old_non_user_sms);
-                    smsManager.sendTextMessage(number, null, message, null, null);
-
                 }
+                c.close();
+
+                // Send SMS message
+                message = context.getResources().getString(R.string.non_user_sms);
+                smsManager.sendTextMessage(number, null, ownerName + " " + message, null, null);
+
+
+            } else {
+                // Pre-Ice-Cream-Sandwich
+                message = context.getResources().getString(R.string.old_non_user_sms);
+                smsManager.sendTextMessage(number, null, message, null, null);
+
             }
 
             //TODO - add selected contact to recent contacts list
