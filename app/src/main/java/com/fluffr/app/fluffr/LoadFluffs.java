@@ -24,11 +24,19 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
 
     private BrowserActivity parentActivity;
     private String mode;
+    private int startIndex;
+
+    private int QUERY_LIMIT = 20;
 
     public LoadFluffs(BrowserActivity a, String mode) {
+        this(a,mode,0);
+    }
+
+    public LoadFluffs(BrowserActivity a, String mode, int startIndex) {
         super();
         this.parentActivity = a;
         this.mode = mode;
+        this.startIndex = startIndex;
     }
 
     protected void onPreExecute() {
@@ -42,23 +50,22 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
         ArrayList<String> favorites = (ArrayList) ParseUser.getCurrentUser().get("favorites");
 
         // get data from Parse
-        ParseQuery<ParseObject> query;
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("fluff");
+        query.setLimit(QUERY_LIMIT);
+        query.whereGreaterThanOrEqualTo("index",startIndex);
 
         Log.d("LoadFluffs","Running " + mode + " query");
 
         if (mode.equals("init")) {
-            query = ParseQuery.getQuery("fluff");
 
         } else if (mode.equals("favorites")) {
-
-            query = ParseQuery.getQuery("fluff");
             query.whereContainedIn("objectId", favorites);
 
-        } else {
-            query = ParseQuery.getQuery("fluff");
-        }
+        } else if (mode.equals("more_browse")) {
 
-        query.setLimit(10);
+        } else {
+
+        }
 
 
         try {
@@ -66,6 +73,8 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
 
             if (parseObjects.size() == 0) {
                 Log.e("LoadFluffs", "Error: no parse objects found.");
+                return null;
+
             } else {
 
                 for (ParseObject object : parseObjects) {
@@ -118,6 +127,7 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
                 }
 
                 parentActivity.adapter.notifyDataSetChanged();
+                parentActivity.increaseBrowseIndex(QUERY_LIMIT);
 
             } else if (mode.equals("favorites")) {
                 parentActivity.favorites.clear();
@@ -126,11 +136,18 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
                     parentActivity.favorites.add(fluff);
                 }
 
+            } else if (mode.equals("more_browse")) {
+                parentActivity.adapter.addFluffs(fluffs);
+                parentActivity.increaseBrowseIndex(QUERY_LIMIT);
+
             }
 
             // disable loading spinner
             Log.d("LoadFluffs","Disabling Spinner");
 //            parentActivity.spinner.dismiss();
+
+            // allow new download events
+            parentActivity.downloading = false;
 
         }
     }

@@ -14,6 +14,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.imageaware.ImageAware;
+import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
 import com.parse.GetCallback;
 import com.parse.GetDataCallback;
 import com.parse.ParseException;
@@ -152,18 +154,22 @@ public class FluffView extends RelativeLayout {
 
             else if (v.getId() == deleteButton.getId()) {
                 Log.d("ItemView OnClickListener", "DELETE'D.");
-
-                buttonInterface.DeleteButtonPressed(fluff);
             }
 
         }
-    }
+    };
 
     private void getDrawableWithImageLoader(Fluff fluff) {
         ImageLoader imageLoader = ImageLoader.getInstance();
         String imageUrl = fluff.parseFile.getUrl();
 
-        if (imageUrl != null) imageLoader.displayImage(imageUrl, imageView);
+        if (imageUrl != null) {
+//            imageLoader.displayImage(imageUrl, imageView);
+
+            ImageAware imageAware = new ImageViewAware(imageView, false);
+            imageLoader.displayImage(imageUrl, imageAware);
+        }
+
 
     }
 
