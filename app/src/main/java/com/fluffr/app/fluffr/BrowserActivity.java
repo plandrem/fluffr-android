@@ -39,8 +39,6 @@ public class BrowserActivity extends ActionBarActivity implements ButtonInterfac
 
     //UI Stuff
     private static String currentState = "Browse";
-    private static int currentBrowseIndex = 0;
-    private static int currentFavoritesIndex = 0;
 
     // ListView and Data Stuff
     public ListView listView;
@@ -48,7 +46,6 @@ public class BrowserActivity extends ActionBarActivity implements ButtonInterfac
     public ArrayList<Fluff> favorites = new ArrayList<Fluff>();
     public CustomAdapter adapter;
     public LoadingSpinner spinner = new LoadingSpinner();
-    public boolean downloading = false;
 
     // Nav Drawer Stuff
     private ArrayList<NavItem> pages = new ArrayList<NavItem>();
@@ -102,7 +99,7 @@ public class BrowserActivity extends ActionBarActivity implements ButtonInterfac
         //Configure Adapter; dataset will be empty.
         adapter = new CustomAdapter(this, list);
         listView.setAdapter(adapter);
-        listView.setOnScrollListener(new FluffScrollListener(this));
+        listView.setOnScrollListener(new FluffScrollListener());
 
         //Load initial data
         new LoadFluffs(this, "init").execute();
@@ -198,12 +195,6 @@ public class BrowserActivity extends ActionBarActivity implements ButtonInterfac
             fluffView.setItem(getItem(position), BrowserActivity.this);
 
             return fluffView;
-
-        }
-
-        public void addFluffs(ArrayList<Fluff> newFluffs) {
-            this.fluffs.addAll(newFluffs);
-            notifyDataSetChanged();
 
         }
     }
@@ -364,6 +355,8 @@ public class BrowserActivity extends ActionBarActivity implements ButtonInterfac
 
     private void setParseUser() {
 
+        //TODO - check if phone number already registered
+
         ParseUser user = ParseUser.getCurrentUser();
 
         if (user == null) {
@@ -448,20 +441,4 @@ public class BrowserActivity extends ActionBarActivity implements ButtonInterfac
 
     }
 
-    public static String getCurrentState() {
-        return currentState;
-    }
-
-    public static void increaseBrowseIndex(int count) {
-        currentBrowseIndex += count;
-        Log.d("increaseBrowseIndex","New Browse Index: " + Integer.toString(currentBrowseIndex));
-    }
-
-    public static void increaseFavoritesIndex(int count) {
-        currentFavoritesIndex += count;
-    }
-
-    public static int getCurrentBrowseIndex() {
-        return currentBrowseIndex;
-    }
 }

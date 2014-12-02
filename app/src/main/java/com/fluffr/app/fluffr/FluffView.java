@@ -14,8 +14,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.imageaware.ImageAware;
-import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
 import com.parse.GetCallback;
 import com.parse.GetDataCallback;
 import com.parse.ParseException;
@@ -163,13 +161,7 @@ public class FluffView extends RelativeLayout {
         ImageLoader imageLoader = ImageLoader.getInstance();
         String imageUrl = fluff.parseFile.getUrl();
 
-        if (imageUrl != null) {
-//            imageLoader.displayImage(imageUrl, imageView);
-
-            ImageAware imageAware = new ImageViewAware(imageView, false);
-            imageLoader.displayImage(imageUrl, imageAware);
-        }
-
+        if (imageUrl != null) imageLoader.displayImage(imageUrl, imageView);
 
     }
 
