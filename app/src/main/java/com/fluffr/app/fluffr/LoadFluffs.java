@@ -58,6 +58,8 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
             query = ParseQuery.getQuery("fluff");
         }
 
+        query.setLimit(10);
+
 
         try {
             List<ParseObject> parseObjects = query.find();

@@ -31,6 +31,20 @@ import com.parse.ParseInstallation;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+import org.apache.http.HttpHost;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.HttpParams;
+import org.apache.http.protocol.HttpContext;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -397,6 +411,11 @@ public class BrowserActivity extends ActionBarActivity implements ButtonInterfac
 
             Log.d("FavoritesButtonInterface", "Item added!");
         }
+    }
+
+    @Override
+    public void DeleteButtonPressed(Fluff fluff) {
+        new HttpTestTask().execute();
     }
 
     private void setParseUser() {

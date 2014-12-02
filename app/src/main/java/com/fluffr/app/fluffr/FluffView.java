@@ -152,10 +152,12 @@ public class FluffView extends RelativeLayout {
 
             else if (v.getId() == deleteButton.getId()) {
                 Log.d("ItemView OnClickListener", "DELETE'D.");
+
+                buttonInterface.DeleteButtonPressed(fluff);
             }
 
         }
-    };
+    }
 
     private void getDrawableWithImageLoader(Fluff fluff) {
         ImageLoader imageLoader = ImageLoader.getInstance();

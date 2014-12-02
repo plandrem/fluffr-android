@@ -6,4 +6,5 @@ package com.fluffr.app.fluffr;
 public interface ButtonInterface {
 
     public void FavoritesButtonPressed(Fluff fluff);
+    public void DeleteButtonPressed(Fluff fluff);
 }
