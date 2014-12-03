@@ -34,8 +34,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import im.delight.android.ddp.Meteor;
+import im.delight.android.ddp.MeteorCallback;
 
-public class BrowserActivity extends ActionBarActivity implements ButtonInterface {
+
+public class BrowserActivity extends ActionBarActivity
+        implements ButtonInterface, MeteorCallback {
 
     /*
     This is the generic scrolling browser view to be used for the Home, Favorites, and Inbox screens.
@@ -72,6 +76,9 @@ public class BrowserActivity extends ActionBarActivity implements ButtonInterfac
     public Context context;
     public GoogleCloudMessaging gcm;
     public SharedPreferences prefs;
+
+    //Meteor Stuff
+    private Meteor meteor;
 
 
     // STANDARD CLASS METHODS
@@ -137,6 +144,10 @@ public class BrowserActivity extends ActionBarActivity implements ButtonInterfac
 
         }
 
+        //Connect to Meteor Server
+        meteor = new Meteor("ws://www.fluffr.co/websocket");
+        meteor.setCallback(this);
+
         //Configure Adapter; dataset will be empty.
         adapter = new CustomAdapter(this, list);
         listView.setAdapter(adapter);
@@ -155,6 +166,12 @@ public class BrowserActivity extends ActionBarActivity implements ButtonInterfac
     protected void onResume() {
         super.onResume();
         checkPlayServices();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        meteor.disconnect();
     }
 
     @Override
@@ -200,6 +217,9 @@ public class BrowserActivity extends ActionBarActivity implements ButtonInterfac
 
         return super.onOptionsItemSelected(item);
     }
+
+
+
 
     // HELPER CLASSES FOR LISTVIEW
 
@@ -504,7 +524,7 @@ public class BrowserActivity extends ActionBarActivity implements ButtonInterfac
 
     public static void increaseBrowseIndex(int count) {
         currentBrowseIndex += count;
-        Log.d("increaseBrowseIndex","New Browse Index: " + Integer.toString(currentBrowseIndex));
+        Log.d("increaseBrowseIndex", "New Browse Index: " + Integer.toString(currentBrowseIndex));
     }
 
     public static void increaseFavoritesIndex(int count) {
@@ -609,5 +629,43 @@ public class BrowserActivity extends ActionBarActivity implements ButtonInterfac
         editor.putInt(PROPERTY_APP_VERSION, appVersion);
         editor.commit();
     }
+
+    /*************************************************/
+    // Meteor Interface Methods
+    /*************************************************/
+    @Override
+    public void onConnect() {
+        Log.d("Meteor Interface","onConnect");
+
+        meteor.call("test");
+    }
+
+    @Override
+    public void onDisconnect(int i, String s) {
+        Log.d("Meteor Interface","onDisconnect");
+
+    }
+
+    @Override
+    public void onDataAdded(String s, String s2, String s3) {
+
+    }
+
+    @Override
+    public void onDataChanged(String s, String s2, String s3, String s4) {
+
+    }
+
+    @Override
+    public void onDataRemoved(String s, String s2) {
+
+    }
+
+    @Override
+    public void onException(Exception e) {
+
+    }
+
+
 
 }
