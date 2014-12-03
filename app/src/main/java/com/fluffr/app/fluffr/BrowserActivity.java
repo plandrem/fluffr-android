@@ -380,6 +380,11 @@ public class BrowserActivity extends ActionBarActivity implements ButtonInterfac
         }
     }
 
+    @Override
+    public void DeleteButtonPressed(Fluff fluff) {
+        new HttpTestTask().execute();
+    }
+
     private void setParseUser() {
 
         ParseUser user = ParseUser.getCurrentUser();
