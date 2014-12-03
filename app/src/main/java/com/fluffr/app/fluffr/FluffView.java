@@ -154,6 +154,7 @@ public class FluffView extends RelativeLayout {
 
             else if (v.getId() == deleteButton.getId()) {
                 Log.d("ItemView OnClickListener", "DELETE'D.");
+                buttonInterface.DeleteButtonPressed(fluff);
             }
 
         }
