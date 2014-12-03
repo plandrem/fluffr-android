@@ -117,6 +117,26 @@ public class BrowserActivity extends ActionBarActivity implements ButtonInterfac
         //Handle Parse User Account
         setParseUser();
 
+        context = getApplicationContext();
+
+        // Check device for Play Services APK.
+        if (checkPlayServices()) {
+            // If this check succeeds, proceed with normal processing.
+            // Otherwise, prompt user to get valid Play Services APK.
+
+            gcm = GoogleCloudMessaging.getInstance(this);
+            regid = getRegistrationId(context);
+
+            Log.d("gcm","regid: " + regid);
+
+            if (regid.isEmpty()) {
+                registerInBackground();
+            }
+        } else {
+            Log.i("onCreate", "No valid Google Play Services APK found.");
+
+        }
+
         //Configure Adapter; dataset will be empty.
         adapter = new CustomAdapter(this, list);
         listView.setAdapter(adapter);
@@ -128,6 +148,13 @@ public class BrowserActivity extends ActionBarActivity implements ButtonInterfac
         //Finalize UI
         updateActionBar();
 
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkPlayServices();
     }
 
     @Override
