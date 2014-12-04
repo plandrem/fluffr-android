@@ -9,7 +9,11 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -47,19 +51,36 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
     protected ArrayList<Fluff> doInBackground(Void... params) {
 
         ArrayList<Fluff> fluffs = new ArrayList<Fluff>();
-        ArrayList<String> favorites = (ArrayList) ParseUser.getCurrentUser().get("favorites");
+
+        ParseUser user = ParseUser.getCurrentUser();
+        ArrayList<String> favorites = (ArrayList) user.get("favorites");
+        ArrayList<HashMap<String,String>> inbox = (ArrayList) user.get("inbox");
+
+        Log.d("LoadFluffs","inbox: " + inbox.toString());
 
         // get data from Parse
         ParseQuery<ParseObject> query = ParseQuery.getQuery("fluff");
         query.setLimit(QUERY_LIMIT);
         query.whereGreaterThanOrEqualTo("index",startIndex);
 
-        Log.d("LoadFluffs","Running " + mode + " query");
+        Log.d("LoadFluffs", "Running " + mode + " query");
+
+        //TODO -- update favorites and inbox as user scrolls
 
         if (mode.equals("init")) {
 
         } else if (mode.equals("favorites")) {
             query.whereContainedIn("objectId", favorites);
+
+        } else if (mode.equals("inbox")) {
+            ArrayList<String> ids = new ArrayList<String>();
+            for (HashMap<String,String> obj : inbox) {
+                ids.add(obj.get("fluffId"));
+            }
+
+            Log.d("LoadFluffs","Inbox query: " + ids.toString());
+
+            query.whereContainedIn("objectId", ids);
 
         } else if (mode.equals("more_browse")) {
 
@@ -138,6 +159,13 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
 
                 for (Fluff fluff : fluffs) {
                     parentActivity.favorites.add(fluff);
+                }
+
+            } else if (mode.equals("inbox")) {
+                parentActivity.inbox.clear();
+
+                for (Fluff fluff : fluffs) {
+                    parentActivity.inbox.add(fluff);
                 }
 
             } else if (mode.equals("more_browse")) {

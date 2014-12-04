@@ -36,6 +36,8 @@ import com.parse.ParseUser;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -66,6 +68,7 @@ public class BrowserActivity extends ActionBarActivity
     public ListView listView;
     public ArrayList<Fluff> list = new ArrayList<Fluff>();
     public ArrayList<Fluff> favorites = new ArrayList<Fluff>();
+    public ArrayList<Fluff> inbox = new ArrayList<Fluff>();
     public CustomAdapter adapter;
     public LoadingSpinner spinner = new LoadingSpinner();
     public boolean downloading = false;
@@ -98,6 +101,9 @@ public class BrowserActivity extends ActionBarActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_browser);
+
+        // start loading spinner
+        spinner.show();
 
         // assign views
         listView = (ListView) findViewById(R.id.listview);
@@ -174,6 +180,13 @@ public class BrowserActivity extends ActionBarActivity
         //Load initial data
         Log.d("onCreate","Executing initial LoadFluff...");
         new LoadFluffs(this, "init").execute();
+
+        // get favorites list
+        new LoadFluffs(this,"favorites").execute();
+
+        // get inbox list
+        new LoadFluffs(this,"inbox").execute();
+
 
         //Finalize UI
         Log.d("onCreate","finalize UI...");
@@ -385,6 +398,9 @@ public class BrowserActivity extends ActionBarActivity
 
         } else if (pages.get(position).text.equals("Favorites")) {
             goToFavorites();
+
+        } else if (pages.get(position).text.equals("Inbox")) {
+            goToInbox();
         }
 
     }
@@ -404,6 +420,20 @@ public class BrowserActivity extends ActionBarActivity
 
     }
 
+    private void goToInbox() {
+        currentState = "Inbox";
+
+        // replace browser's existing data with new list
+        Log.d("goToInbox","clearing current list...");
+        this.adapter.clear();
+
+        Log.d("goToInbox","replacing with inbox...");
+        this.adapter.addFluffs(inbox);
+
+        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+        actionBar.setTitle("Inbox");
+
+    }
 
     private void updateActionBar() {
 
@@ -413,6 +443,8 @@ public class BrowserActivity extends ActionBarActivity
             actionBar.setTitle("Browse");
         } else if (currentState.equals("Favorites")) {
             actionBar.setTitle("Favorites");
+        } else if (currentState.equals("Inbox")) {
+            actionBar.setTitle("Inbox");
         }
     }
 
@@ -529,10 +561,6 @@ public class BrowserActivity extends ActionBarActivity
             // user already registered
 
             Log.d("setParseUser", "Resuming session for this user.");
-
-            // get favorites list
-            new LoadFluffs(this,"favorites").execute();
-
 
         }
 
@@ -753,7 +781,17 @@ public class BrowserActivity extends ActionBarActivity
         sendingUser.saveEventually();
 
         // Update receiving user's inbox
-        recipientUser.add("inbox","{\"fluffId\":\"" + fluffId + "\",\"from\":\"" + userPhoneNumber + "\",\"date\":\"" + new Date().toString() + "\"}");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("fluffId",fluffId);
+            obj.put("from",userPhoneNumber);
+            obj.put("date", sdf.format(new Date()));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        recipientUser.add("inbox",obj);
         recipientUser.saveEventually();
 
 //        userQuery.getFirstInBackground(new updateInboxCallback(userPhoneNumber, fluffId));
@@ -814,6 +852,8 @@ public class BrowserActivity extends ActionBarActivity
                 }
             }
         }
+
+        spinner.dismiss();
 
     }
 }
