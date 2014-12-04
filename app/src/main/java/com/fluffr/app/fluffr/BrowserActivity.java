@@ -2,6 +2,7 @@ package com.fluffr.app.fluffr;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -172,6 +173,8 @@ public class BrowserActivity extends ActionBarActivity
         //Finalize UI
         updateActionBar();
 
+        // Check for Startup Instructions
+        checkStartupInstructions();
     }
 
 
@@ -179,6 +182,7 @@ public class BrowserActivity extends ActionBarActivity
     protected void onResume() {
         super.onResume();
         checkPlayServices();
+        checkStartupInstructions();
     }
 
     @Override
@@ -284,6 +288,11 @@ public class BrowserActivity extends ActionBarActivity
             notifyDataSetChanged();
 
         }
+
+        public void clear() {
+            this.fluffs.clear();
+        }
+
     }
 
     public class NavAdapter extends BaseAdapter {
@@ -368,23 +377,26 @@ public class BrowserActivity extends ActionBarActivity
             currentState = "Browse";
 
         } else if (pages.get(position).text.equals("Favorites")) {
-            // replace contents of browser's array
-//            new LoadFluffs(this, "favorites").execute();
-            currentState = "Favorites";
-
-            // replace browser's existing data with new list
-            this.list.clear();
-
-            for (Fluff fluff : favorites) {
-                this.list.add(fluff);
-            }
-
-            this.adapter.notifyDataSetChanged();
-
+            goToFavorites();
         }
 
-//        updateActionBar();
     }
+
+    private void goToFavorites() {
+        currentState = "Favorites";
+
+        // replace browser's existing data with new list
+        Log.d("goToFavorites","clearing current list...");
+        this.adapter.clear();
+
+        Log.d("goToFavorites","replacing with favorites...");
+        this.adapter.addFluffs(favorites);
+
+        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+        actionBar.setTitle("Favorites");
+
+    }
+
 
     private void updateActionBar() {
 
@@ -784,6 +796,25 @@ public class BrowserActivity extends ActionBarActivity
                 recipientUser.add("inbox","{\"fluffId\":\"" + fluffId + "\",\"from\":\"" + sender + "\",\"date\":\"" + date + "\"}");
                 recipientUser.saveEventually();
 
+            }
+        }
+
+    }
+
+    private void checkStartupInstructions() {
+        Intent i = getIntent();
+
+        if (i != null) {
+            if (i.hasExtra("startupMode")) {
+                Bundle b = i.getExtras();
+
+                String startupMode = b.getString("startupMode");
+                if (startupMode.equals("newFluff")) {
+                    // user has tapped a new fluff push notification
+                    // go to inbox
+                    Log.d("onCreate", "Startup Instructions: new Fluff");
+                    goToFavorites();
+                }
             }
         }
 

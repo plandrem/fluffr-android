@@ -66,9 +66,8 @@ public class GcmIntentService extends IntentService {
                 // Post notification of received message.
 //                sendNotification("Received: " + extras.toString());
 
-                processGcmMessage(intent);
-
                 Log.i(TAG, "Received: " + extras.toString());
+                processGcmMessage(extras);
             }
         }
         // Release the wake lock provided by the WakefulBroadcastReceiver.
@@ -97,15 +96,52 @@ public class GcmIntentService extends IntentService {
         mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
     }
 
-    private void processGcmMessage(Intent i) {
-
-        Bundle extras = i.getExtras();
+    private void processGcmMessage(Bundle extras) {
         Log.d("processGcmMessage",extras.toString());
 
-        for (String key : extras.keySet()) {
-            Object value = extras.get(key);
-            Log.d("processGcmMessage", String.format("%s %s (%s)", key,
-                    value.toString(), value.getClass().getName()));
+        // all of our GCM messages should contain a type.
+        if (extras.keySet().contains("type")) {
+            String type = extras.getString("type");
+
+            if (type.equals("receivedFluff")) {
+                // user has been sent a fluff from another user
+                String msg = extras.getString("msg");
+                String fluffId = extras.getString("fluffId");
+                String sender = extras.getString("sender");
+
+                // build notification
+                mNotificationManager = (NotificationManager)
+                        this.getSystemService(Context.NOTIFICATION_SERVICE);
+
+                Intent startupIntent = new Intent(this, BrowserActivity.class);
+                startupIntent.putExtra("startupMode","newFluff");
+                startupIntent.putExtra("fluffId",fluffId);
+
+                PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
+                        startupIntent, 0);
+
+                // set vibration pattern
+                long[] vib = new long[2];
+                vib[0] = 0;
+                vib[1] = 400;
+
+                NotificationCompat.Builder mBuilder =
+                        new NotificationCompat.Builder(this)
+                                .setAutoCancel(true)
+                                .setVibrate(vib)
+                                .setSmallIcon(R.drawable.ic_launcher)
+                                .setContentTitle("You've received a Fluff!")
+                                .setStyle(new NotificationCompat.BigTextStyle()
+                                        .bigText(msg))
+                                .setContentText(msg);
+
+                mBuilder.setContentIntent(contentIntent);
+                mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
+
+            }
+
+        } else {
+            // is some unknown kind of message...
         }
 
     }
