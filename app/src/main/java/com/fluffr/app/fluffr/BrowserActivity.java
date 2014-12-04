@@ -25,21 +25,30 @@ import android.widget.ListView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseInstallation;
+import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import im.delight.android.ddp.Meteor;
 import im.delight.android.ddp.MeteorCallback;
+import im.delight.android.ddp.ResultListener;
 
 
 public class BrowserActivity extends ActionBarActivity
-        implements ButtonInterface, MeteorCallback {
+        implements ButtonInterface, MeteorCallback, ResultListener {
 
     /*
     This is the generic scrolling browser view to be used for the Home, Favorites, and Inbox screens.
@@ -59,6 +68,7 @@ public class BrowserActivity extends ActionBarActivity
     public CustomAdapter adapter;
     public LoadingSpinner spinner = new LoadingSpinner();
     public boolean downloading = false;
+    public String userPhoneNumber = "";
 
     // Nav Drawer Stuff
     private ArrayList<NavItem> pages = new ArrayList<NavItem>();
@@ -120,6 +130,9 @@ public class BrowserActivity extends ActionBarActivity
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
+
+        // Store user's phone number for referencing account
+        setUserNumber();
 
         //Handle Parse User Account
         setParseUser();
@@ -432,6 +445,11 @@ public class BrowserActivity extends ActionBarActivity
         new HttpTestTask().execute();
     }
 
+    private void setUserNumber() {
+        TelephonyManager tMgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        userPhoneNumber = tMgr.getLine1Number();
+    }
+
     private void setParseUser() {
 
         ParseUser user = ParseUser.getCurrentUser();
@@ -440,14 +458,6 @@ public class BrowserActivity extends ActionBarActivity
             // user has not been registered - create new account
 
 //            spinner.show();
-
-            TelephonyManager tMgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-            String userPhoneNumber = tMgr.getLine1Number();
-
-            if (userPhoneNumber == null) {
-                Log.e("SetParseUser","Bypassing Current Phone Settings and using 16518155005 as user");
-                userPhoneNumber = "16518155005";
-            }
 
             // check if user exists in database
             ParseQuery query = ParseUser.getQuery();
@@ -633,11 +643,17 @@ public class BrowserActivity extends ActionBarActivity
     /*************************************************/
     // Meteor Interface Methods
     /*************************************************/
+
+    //MeteorCallback
     @Override
     public void onConnect() {
         Log.d("Meteor Interface","onConnect");
 
-        meteor.call("test");
+        Map<String,Object> payload = new HashMap<String, Object>();
+        payload.put("foo","bar");
+
+        Object[] data = {payload};
+        meteor.call("test",data,this);
     }
 
     @Override
@@ -666,6 +682,88 @@ public class BrowserActivity extends ActionBarActivity
 
     }
 
+    //ResultListener
+    @Override
+    public void onSuccess(String s) {
+        Log.d("Meteor Interface","onSuccess: " + s);
+
+    }
+
+    @Override
+    public void onError(String s, String s2, String s3) {
+        Log.e("Meteor Interface","onError:");
+        Log.e("Meteor Interface","error:" + s);
+        Log.e("Meteor Interface","reason:" + s2);
+        Log.e("Meteor Interface","details:" + s3);
+    }
+
+    public void sendFluff(String recipient, final String fluffId) throws ParseException {
+        // responds when the user selects a contact from the ContactsDialog. Pushes a notification
+        // to the recipient's phone with a data payload containing the sender and new Fluff id.
+        // Each users' DB entry is updated to note that the Fluff was sent, and the Fluff itself
+        // records that it has been sent another time.
+
+        //TODO - determine the recipient's platform type
+        String platform = "android";
+
+        // Send data to Meteor server, which will push to the recipient
+        Map<String,Object> payload = new HashMap<String, Object>();
+        payload.put("sender",userPhoneNumber);
+        payload.put("recipient",recipient);
+        payload.put("fluffId",fluffId);
+        payload.put("platform",platform);
+
+        Object[] data = {payload};
+        meteor.call("sendFluff",data,this);
+
+        // Update sending user's "sent" array
+        ParseUser sendingUser = ParseUser.getCurrentUser();
+        sendingUser.addUnique("sent",fluffId);
+        sendingUser.saveEventually();
+
+        // Update receiving user's inbox
+        ParseQuery userQuery = ParseUser.getQuery();
+        userQuery.whereEqualTo("username",recipient);
+        userQuery.getFirstInBackground(new updateInboxCallback(userPhoneNumber, fluffId) {
+        });
+
+        // Update fluff's times sent
+        ParseQuery fluffQuery = ParseQuery.getQuery("fluff");
+        ParseObject fluff = fluffQuery.get(fluffId);
+        fluff.increment("timesSent");
+        fluff.saveEventually();
 
 
+
+    }
+
+    private class updateInboxCallback extends GetCallback {
+        String sender = "";
+        String fluffId = "";
+        String date = new Date().toString();
+
+        private updateInboxCallback(String sender, String fluffId) {
+            super();
+            this.sender = sender;
+            this.fluffId = fluffId;
+        }
+
+        @Override
+        public void done(ParseObject parseObject, ParseException e) {
+
+            if (e != null) {
+                e.printStackTrace();
+
+            } else {
+                // insert an object into the inbox array, eg
+                // {"fluffId":"skh5215f","from":"16518155005","date":"2014-12-03 17:18:00"}
+
+                ParseUser recipientUser = (ParseUser) parseObject;
+                recipientUser.add("inbox","{\"fluffId\":\"" + fluffId + "\",\"from\":\"" + sender + "\",\"date\":\"" + date + "\"}");
+                recipientUser.saveEventually();
+
+            }
+        }
+
+    }
 }

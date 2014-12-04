@@ -218,19 +218,21 @@ public class ContactsDialog {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
+            PhoneContact selectedContact = allContacts.get(position);
+            Log.d("SelectContactListener", "User clicked: " + selectedContact.name);
+
             //TODO - convert message sending to an Async Task
 
             boolean pushSuccessful = sendReceivedFluffPushNotification();
 
             if (pushSuccessful == false) {
-                PhoneContact selectedContact = allContacts.get(position);
-                Log.d("SelectContactListener", "User clicked: " + selectedContact.name);
 
                 SmsManager smsManager = SmsManager.getDefault();
                 String ownerName = "";
                 String message = "";
                 String number = "16518155005";
 
+                // get name of user for personalized message
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                     Cursor c = context.getContentResolver().query(ContactsContract.Profile.CONTENT_URI, null, null, null, null);
                     int count = c.getCount();
@@ -276,51 +278,10 @@ public class ContactsDialog {
         }
     }
 
-    private boolean sendReceivedFluffPushNotification() {
+    private boolean sendReceivedFluffPushNotification(String recipient, String fluffId) {
         boolean returnVal = true;
 
         String number = "16518155005";
-
-        // get target's installation id
-        ParseQuery userQuery = ParseUser.getQuery();
-        userQuery.whereEqualTo("username",number);
-
-        ParseUser user = null;
-        try {
-            user = (ParseUser) userQuery.getFirst();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        if (user == null) {
-            Log.e("sendReceivedFluffPushNotification","No user found for phone number: " + number);
-            return false;
-        }
-
-        // at this point, should have user = target user
-
-        // Create our Installation query
-        ParseQuery pushQuery = ParseInstallation.getQuery();
-        pushQuery.whereEqualTo("installationId", user.get("installationId"));
-
-        // Send push notification to query
-        JSONObject data = new JSONObject();
-        try {
-            data.put("\"alert\"", "You have a new Fluff!");
-            data.put("\"badge\"","\"Increment\"");
-            data.put("\"toast\"","yay toast.");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        ParsePush push = new ParsePush();
-        push.setQuery(pushQuery); // Set our Installation query
-        push.setData(data);
-        try {
-            push.send();
-        } catch (ParseException e){
-            e.printStackTrace();
-        }
 
         return returnVal;
 
