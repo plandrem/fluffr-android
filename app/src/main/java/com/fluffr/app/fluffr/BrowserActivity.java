@@ -138,8 +138,10 @@ public class BrowserActivity extends ActionBarActivity
         //Handle Parse User Account
         setParseUser();
 
+        Log.d("onCreate","getting context...");
         context = getApplicationContext();
 
+        Log.d("onCreate","checking Play service...");
         // Check device for Play Services APK.
         if (checkPlayServices()) {
             // If this check succeeds, proceed with normal processing.
@@ -159,22 +161,27 @@ public class BrowserActivity extends ActionBarActivity
         }
 
         //Connect to Meteor Server
+        Log.d("onCreate","connecting to Meteor...");
         meteor = new Meteor("ws://www.fluffr.co/websocket");
         meteor.setCallback(this);
 
         //Configure Adapter; dataset will be empty.
+        Log.d("onCreate","configuring Fluff adapter...");
         adapter = new CustomAdapter(this, list);
         listView.setAdapter(adapter);
         listView.setOnScrollListener(new FluffScrollListener(this));
 
         //Load initial data
+        Log.d("onCreate","Executing initial LoadFluff...");
         new LoadFluffs(this, "init").execute();
 
         //Finalize UI
+        Log.d("onCreate","finalize UI...");
         updateActionBar();
 
-        // Check for Startup Instructions
-        checkStartupInstructions();
+//        // Check for Startup Instructions
+//        Log.d("onCreate","check for startup instructions...");
+//        checkStartupInstructions();
     }
 
 
@@ -535,17 +542,6 @@ public class BrowserActivity extends ActionBarActivity
             return;
         }
 
-        // either way, update the installation info for Parse Push
-
-        ParseInstallation parseInstallation = ParseInstallation.getCurrentInstallation();
-        String id = parseInstallation.getInstallationId();
-
-        Log.d("Send installation id","user: " + user.toString() + "\ninstallationId: " + id);
-
-        user.put("installationId",id);
-        user.saveInBackground();
-
-
     }
 
     public static String getCurrentState() {
@@ -571,6 +567,7 @@ public class BrowserActivity extends ActionBarActivity
      * the Google Play Store or enable it in the device's system settings.
      */
     private boolean checkPlayServices() {
+        Log.i("checkPlayServices", "Checking...");
         int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
         if (resultCode != ConnectionResult.SUCCESS) {
             if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
@@ -801,7 +798,7 @@ public class BrowserActivity extends ActionBarActivity
 
     }
 
-    private void checkStartupInstructions() {
+    public void checkStartupInstructions() {
         Intent i = getIntent();
 
         if (i != null) {

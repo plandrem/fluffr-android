@@ -129,6 +129,10 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
                 parentActivity.adapter.notifyDataSetChanged();
                 parentActivity.increaseBrowseIndex(QUERY_LIMIT);
 
+                // now that we've loaded initial data, handle any
+                // further instructions such as navigation to other pages
+                parentActivity.checkStartupInstructions();
+
             } else if (mode.equals("favorites")) {
                 parentActivity.favorites.clear();
 
