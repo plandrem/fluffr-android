@@ -51,18 +51,23 @@ public class GcmIntentService extends IntentService {
                 // If it's a regular GCM message, do some work.
             } else if (GoogleCloudMessaging.
                     MESSAGE_TYPE_MESSAGE.equals(messageType)) {
-                // This loop represents the service doing some work.
-                for (int i=0; i<5; i++) {
-                    Log.i(TAG, "Working... " + (i+1)
-                            + "/5 @ " + SystemClock.elapsedRealtime());
-                    try {
-                        Thread.sleep(5000);
-                    } catch (InterruptedException e) {
-                    }
-                }
-                Log.i(TAG, "Completed work @ " + SystemClock.elapsedRealtime());
+
+//                // This loop represents the service doing some work.
+//                for (int i=0; i<5; i++) {
+//                    Log.i(TAG, "Working... " + (i+1)
+//                            + "/5 @ " + SystemClock.elapsedRealtime());
+//                    try {
+//                        Thread.sleep(5000);
+//                    } catch (InterruptedException e) {
+//                    }
+//                }
+//                Log.i(TAG, "Completed work @ " + SystemClock.elapsedRealtime());
+
                 // Post notification of received message.
-                sendNotification("Received: " + extras.toString());
+//                sendNotification("Received: " + extras.toString());
+
+                processGcmMessage(intent);
+
                 Log.i(TAG, "Received: " + extras.toString());
             }
         }
@@ -90,5 +95,18 @@ public class GcmIntentService extends IntentService {
 
         mBuilder.setContentIntent(contentIntent);
         mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
+    }
+
+    private void processGcmMessage(Intent i) {
+
+        Bundle extras = i.getExtras();
+        Log.d("processGcmMessage",extras.toString());
+
+        for (String key : extras.keySet()) {
+            Object value = extras.get(key);
+            Log.d("processGcmMessage", String.format("%s %s (%s)", key,
+                    value.toString(), value.getClass().getName()));
+        }
+
     }
 }

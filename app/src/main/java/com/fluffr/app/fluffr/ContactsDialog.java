@@ -38,15 +38,19 @@ import java.util.List;
 public class ContactsDialog {
     private Dialog dialog;
     private Context context;
+    private BrowserActivity parentActivity;
     private ListView list;
     private GridView grid;
     private ContactsAdapter adapter;
     private FavoriteContactsAdapter gridAdapter;
     private ArrayList<PhoneContact> allContacts;
     private ArrayList<PhoneContact> favoriteContacts;
+    private Fluff fluff;
 
-    public ContactsDialog(Context c) {
-        this.context = c;
+    public ContactsDialog(BrowserActivity b, Fluff f) {
+        this.context = (Context) b;
+        this.fluff = f;
+        this.parentActivity = b;
     }
 
     public void show() {
@@ -221,9 +225,18 @@ public class ContactsDialog {
             PhoneContact selectedContact = allContacts.get(position);
             Log.d("SelectContactListener", "User clicked: " + selectedContact.name);
 
+            //TODO - use actual recipient number
+            String recipient = "16518155005";
+//            String recipient = selectedContact.number;
+
             //TODO - convert message sending to an Async Task
 
-            boolean pushSuccessful = sendReceivedFluffPushNotification();
+            boolean pushSuccessful = false;
+            try {
+                pushSuccessful = sendReceivedFluffPushNotification(recipient);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
 
             if (pushSuccessful == false) {
 
@@ -278,10 +291,29 @@ public class ContactsDialog {
         }
     }
 
-    private boolean sendReceivedFluffPushNotification(String recipient, String fluffId) {
+    private boolean sendReceivedFluffPushNotification(String recipient) throws ParseException {
+        // check if recipient already has an account. If yes, push as normal. If no, add the fluff to a pending account
+        // and return false to send an SMS message.
+
         boolean returnVal = true;
 
-        String number = "16518155005";
+        ParseQuery userQuery = ParseUser.getQuery();
+        userQuery.whereEqualTo("username",recipient);
+        if (userQuery.count() == 0) {
+            // account does not exist; check pending accounts
+
+            // if no pending accounts, create a pending account.
+
+            // need to send an SMS
+            returnVal = false;
+
+        } else {
+            // recipient account exists
+            parentActivity.sendFluffPushNotification(recipient,fluff.id);
+
+        }
+
+
 
         return returnVal;
 

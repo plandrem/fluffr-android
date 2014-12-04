@@ -60,8 +60,7 @@ public class FluffView extends RelativeLayout {
     public FluffView(Context context, AttributeSet attributeSet, int defStyle){
         super(context,attributeSet,defStyle);
 
-        this.context = context;
-        this.contactsDialog = new ContactsDialog(context);
+//        this.context = context;
 
         // inflate the actual view layout and attach it to this instance,
         // giving us access to the views contained therein
@@ -148,8 +147,7 @@ public class FluffView extends RelativeLayout {
 
             else if (v.getId() == sendToFriendButton.getId()) {
                 Log.d("ItemView OnClickListener", "Send to Friend.");
-                contactsDialog.show();
-
+                buttonInterface.SendButtonPressed(fluff);
             }
 
             else if (v.getId() == deleteButton.getId()) {

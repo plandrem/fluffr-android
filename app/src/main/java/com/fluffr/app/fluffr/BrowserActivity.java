@@ -442,7 +442,13 @@ public class BrowserActivity extends ActionBarActivity
 
     @Override
     public void DeleteButtonPressed(Fluff fluff) {
-        new HttpTestTask().execute();
+
+    }
+
+    @Override
+    public void SendButtonPressed(Fluff fluff) {
+        ContactsDialog dialog = new ContactsDialog(this, fluff);
+        dialog.show();
     }
 
     private void setUserNumber() {
@@ -481,11 +487,13 @@ public class BrowserActivity extends ActionBarActivity
                 }
             } else {
 
+                // create new user account
                 Log.d("setParseUser", "New account for user: " + userPhoneNumber);
 
                 user = new ParseUser();
                 user.setUsername(userPhoneNumber);
                 user.setPassword("password");
+                user.put("platform","android");
                 try {
                     user.signUp();
                 } catch (ParseException e) {
@@ -697,19 +705,33 @@ public class BrowserActivity extends ActionBarActivity
         Log.e("Meteor Interface","details:" + s3);
     }
 
-    public void sendFluff(String recipient, final String fluffId) throws ParseException {
-        // responds when the user selects a contact from the ContactsDialog. Pushes a notification
+    public void sendFluffPushNotification(String recipient, final String fluffId) throws ParseException {
+        // Responds when the user selects a contact from the ContactsDialog. Pushes a notification
         // to the recipient's phone with a data payload containing the sender and new Fluff id.
         // Each users' DB entry is updated to note that the Fluff was sent, and the Fluff itself
         // records that it has been sent another time.
 
-        //TODO - determine the recipient's platform type
-        String platform = "android";
+        // get details for recipient
+        ParseQuery userQuery = ParseUser.getQuery();
+        userQuery.whereEqualTo("username",recipient);
+        ParseUser recipientUser = (ParseUser) userQuery.getFirst();
+
+        String platform = recipientUser.getString("platform");
+        String deviceId = "";
+
+        // Get device id for recipient
+        if (platform.equals("android")) {
+            deviceId = recipientUser.getString("androidGcmRegistrationId");
+
+        } else if (platform.equals("iOS")) {
+            // handle iOS push notifications
+        }
 
         // Send data to Meteor server, which will push to the recipient
         Map<String,Object> payload = new HashMap<String, Object>();
         payload.put("sender",userPhoneNumber);
         payload.put("recipient",recipient);
+        payload.put("targetDevice",deviceId);
         payload.put("fluffId",fluffId);
         payload.put("platform",platform);
 
@@ -722,10 +744,10 @@ public class BrowserActivity extends ActionBarActivity
         sendingUser.saveEventually();
 
         // Update receiving user's inbox
-        ParseQuery userQuery = ParseUser.getQuery();
-        userQuery.whereEqualTo("username",recipient);
-        userQuery.getFirstInBackground(new updateInboxCallback(userPhoneNumber, fluffId) {
-        });
+        recipientUser.add("inbox","{\"fluffId\":\"" + fluffId + "\",\"from\":\"" + userPhoneNumber + "\",\"date\":\"" + new Date().toString() + "\"}");
+        recipientUser.saveEventually();
+
+//        userQuery.getFirstInBackground(new updateInboxCallback(userPhoneNumber, fluffId));
 
         // Update fluff's times sent
         ParseQuery fluffQuery = ParseQuery.getQuery("fluff");
