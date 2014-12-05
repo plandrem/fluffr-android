@@ -32,7 +32,7 @@ public class FluffScrollListener implements AbsListView.OnScrollListener {
                 String state = parent.getCurrentState().toLowerCase();
                 int index = parent.getCurrentBrowseIndex();
 
-                new LoadFluffs(parent, "more_" + state, index).execute();
+                new LoadFluffs(parent, "more_" + state, true, index).execute();
 
             }
 

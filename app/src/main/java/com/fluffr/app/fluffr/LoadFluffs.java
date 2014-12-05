@@ -29,24 +29,33 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
     private BrowserActivity parentActivity;
     private String mode;
     private int startIndex;
+    private boolean inBackground = false;
 
     private int QUERY_LIMIT = 20;
 
     public LoadFluffs(BrowserActivity a, String mode) {
-        this(a,mode,0);
+        this(a,mode,false,0);
     }
 
-    public LoadFluffs(BrowserActivity a, String mode, int startIndex) {
+    public LoadFluffs(BrowserActivity a, String mode, boolean inBackground) {
+        this(a,mode,inBackground,0);
+    }
+
+    public LoadFluffs(BrowserActivity a, String mode, boolean inBackground, int startIndex) {
         super();
         this.parentActivity = a;
         this.mode = mode;
         this.startIndex = startIndex;
+        this.inBackground = inBackground;
     }
 
     protected void onPreExecute() {
-        // activate any kind of loading spinners here.
-        parentActivity.spinner.show();
-        parentActivity.downloadsInProgress += 1;
+
+        if (!inBackground) {
+            // activate any kind of loading spinners here.
+            parentActivity.spinner.show();
+            parentActivity.downloadsInProgress += 1;
+        }
     }
 
     protected ArrayList<Fluff> doInBackground(Void... params) {
@@ -164,8 +173,10 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
 
             }
 
-            parentActivity.downloadsInProgress -= 1;
-            if (parentActivity.downloadsInProgress == 0) parentActivity.spinner.dismiss();
+            if (!inBackground) {
+                parentActivity.downloadsInProgress -= 1;
+                if (parentActivity.downloadsInProgress == 0) parentActivity.spinner.dismiss();
+            }
 
         }
     }
