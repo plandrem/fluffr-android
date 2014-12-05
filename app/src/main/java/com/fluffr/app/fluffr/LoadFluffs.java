@@ -54,8 +54,9 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
         if (!inBackground) {
             // activate any kind of loading spinners here.
             parentActivity.spinner.show();
-            parentActivity.downloadsInProgress += 1;
         }
+
+        parentActivity.downloadsInProgress += 1;
     }
 
     protected ArrayList<Fluff> doInBackground(Void... params) {
@@ -69,6 +70,7 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
         ParseQuery<ParseObject> query = ParseQuery.getQuery("fluff");
         query.setLimit(QUERY_LIMIT);
         query.whereGreaterThanOrEqualTo("index",startIndex);
+        query.addAscendingOrder("index");
 
         Log.d("LoadFluffs", "Running " + mode + " query");
 
@@ -173,8 +175,8 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
 
             }
 
+            parentActivity.downloadsInProgress -= 1;
             if (!inBackground) {
-                parentActivity.downloadsInProgress -= 1;
                 if (parentActivity.downloadsInProgress == 0) parentActivity.spinner.dismiss();
             }
 
