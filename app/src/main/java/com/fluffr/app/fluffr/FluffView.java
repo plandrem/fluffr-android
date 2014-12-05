@@ -83,7 +83,7 @@ public class FluffView extends RelativeLayout {
     }
 
 
-    public void setItem(Fluff fluff, BrowserActivity parent) {
+    public void setItem(Fluff fluff, BrowserActivity parent, int position) {
 
         // Attach this View object to an item. The item is the
         // abstract class which contains the useful data, whereas the
@@ -94,6 +94,8 @@ public class FluffView extends RelativeLayout {
 
 //        Log.d("setItem",item.id);
 //        Log.d("setItem",item.title);
+
+        fluff.position = position;
 
         title.setVisibility(INVISIBLE);
         subtitle.setVisibility(INVISIBLE);

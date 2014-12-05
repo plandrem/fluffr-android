@@ -23,6 +23,7 @@ public class Fluff {
     public boolean favorited = false;
     public String sender;
     public String sendDate;
+    public int position;
 
     public Fluff() {
 

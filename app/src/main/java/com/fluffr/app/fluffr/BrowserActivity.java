@@ -299,7 +299,7 @@ public class BrowserActivity extends ActionBarActivity
                 fluffView = FluffView.inflate(parent);
             }
 
-            fluffView.setItem(getItem(position), BrowserActivity.this);
+            fluffView.setItem(getItem(position), BrowserActivity.this, position);
 
             return fluffView;
 
@@ -313,6 +313,14 @@ public class BrowserActivity extends ActionBarActivity
 
         public void clear() {
             this.fluffs.clear();
+        }
+
+        public void removeFluffAtPosition(int position) {
+            this.fluffs.remove(position);
+        }
+
+        public void removeFluff(Fluff fluff) {
+            this.fluffs.remove(fluff);
         }
 
     }
@@ -475,6 +483,21 @@ public class BrowserActivity extends ActionBarActivity
     @Override
     public void FavoritesButtonPressed(Fluff fluff) {
 
+        // Get channel to DB
+        ParseQuery query = ParseQuery.getQuery("fluff");
+        ParseObject parseFluff = null;
+
+        try {
+            parseFluff = query.get(fluff.id);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        if (parseFluff == null) {
+            Log.e("FavoritesButtonPressed","unable to get fluff from Parse");
+            return;
+        }
+
         // check if current fluff is already in user's favorites
         if (fluff.favorited) {
             //already favorited - remove from favorites
@@ -491,13 +514,16 @@ public class BrowserActivity extends ActionBarActivity
             }
 
             //remove from Parse Database
-
             List<String> toRemove = new ArrayList<String>(1);
             toRemove.add(fluff.id);
 
             ParseUser user = ParseUser.getCurrentUser();
             user.removeAll("favorites", toRemove);
             user.saveInBackground();
+
+            // mark as liked in DB
+            parseFluff.increment("likes",-1);
+
 
 
         } else {
@@ -511,12 +537,56 @@ public class BrowserActivity extends ActionBarActivity
             user.addUnique("favorites", fluff.id);
             user.saveInBackground();
 
+            // mark as liked in DB
+            parseFluff.increment("likes");
+
+
             Log.d("FavoritesButtonInterface", "Item added!");
         }
+
+        parseFluff.saveInBackground();
     }
 
     @Override
     public void DeleteButtonPressed(Fluff fluff) {
+
+        //TODO -- show confirmation dialog
+
+        // remove fluff from all lists
+        list.remove(fluff);
+        favorites.remove(fluff);
+        inbox.remove(fluff);
+
+        // update listview
+        adapter.removeFluff(fluff);
+        adapter.notifyDataSetChanged();
+
+        // Update db
+        ParseQuery query = ParseQuery.getQuery("fluff");
+        ParseObject parseFluff = null;
+
+        try {
+            parseFluff = query.get(fluff.id);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        // mark as disliked in DB
+        parseFluff.increment("dislikes");
+
+        // Add to user's dislikes list
+        ParseUser user = ParseUser.getCurrentUser();
+        user.addUnique("dislikes", fluff.id);
+        user.saveInBackground();
+
+        // admin executive powers - mark fluff for permanent deletion!
+        if (isAdmin()) {
+
+            parseFluff.put("deletedByAdmin",true);
+
+        }
+
+        parseFluff.saveInBackground();
 
     }
 
@@ -866,5 +936,9 @@ public class BrowserActivity extends ActionBarActivity
 
 //        spinner.dismiss();
 
+    }
+
+    public boolean isAdmin() {
+        return userPhoneNumber.equals("16518155005");
     }
 }

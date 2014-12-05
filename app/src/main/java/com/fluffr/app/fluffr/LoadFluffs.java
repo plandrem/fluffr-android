@@ -65,12 +65,16 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
 
         ParseUser user = ParseUser.getCurrentUser();
         ArrayList<String> favorites = (ArrayList) user.get("favorites");
+        ArrayList<String> dislikes  = (ArrayList) user.get("dislikes");
 
         // get data from Parse
         ParseQuery<ParseObject> query = ParseQuery.getQuery("fluff");
         query.setLimit(QUERY_LIMIT);
         query.whereGreaterThanOrEqualTo("index",startIndex);
         query.addAscendingOrder("index");
+        query.whereNotEqualTo("deletedByAdmin",true);
+        if (dislikes != null) query.whereNotContainedIn("objectId",dislikes);
+
 
         Log.d("LoadFluffs", "Running " + mode + " query");
 
