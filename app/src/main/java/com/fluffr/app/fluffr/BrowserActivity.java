@@ -102,9 +102,6 @@ public class BrowserActivity extends ActionBarActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_browser);
 
-        // start loading spinner
-        spinner.show();
-
         // assign views
         listView = (ListView) findViewById(R.id.listview);
 
@@ -177,6 +174,9 @@ public class BrowserActivity extends ActionBarActivity
         listView.setAdapter(adapter);
         listView.setOnScrollListener(new FluffScrollListener(this));
 
+//        downloading = true;
+//        spinner.show();
+
         //Load initial data
         Log.d("onCreate","Executing initial LoadFluff...");
         new LoadFluffs(this, "init").execute();
@@ -200,6 +200,7 @@ public class BrowserActivity extends ActionBarActivity
 
     @Override
     protected void onResume() {
+        Log.d("onResume","onResume");
         super.onResume();
         checkPlayServices();
         checkStartupInstructions();
@@ -362,18 +363,27 @@ public class BrowserActivity extends ActionBarActivity
     public class LoadingSpinner {
 
         private Dialog dialog;
+        public boolean isVisible = false;
 
         public void show() {
+            // bail if already showing
+            if (isVisible) return;
+
             dialog = new Dialog(BrowserActivity.this, R.style.Theme_Transparent);
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             dialog.setContentView(R.layout.loading_dialog);
+            dialog.setCanceledOnTouchOutside(false);
 
+            Log.d("LoadingSpinner","showing dialog: " + dialog.toString());
             dialog.show();
+            isVisible = true;
 
         }
 
         public void dismiss() {
+            Log.d("LoadingSpinner","dismissing dialog: " + dialog.toString());
             dialog.dismiss();
+            isVisible = false;
         }
     }
 
@@ -853,7 +863,7 @@ public class BrowserActivity extends ActionBarActivity
             }
         }
 
-        spinner.dismiss();
+//        spinner.dismiss();
 
     }
 }

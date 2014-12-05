@@ -45,7 +45,7 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
 
     protected void onPreExecute() {
         // activate any kind of loading spinners here.
-//        parentActivity.spinner.show();
+        parentActivity.spinner.show();
     }
 
     protected ArrayList<Fluff> doInBackground(Void... params) {
@@ -54,9 +54,6 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
 
         ParseUser user = ParseUser.getCurrentUser();
         ArrayList<String> favorites = (ArrayList) user.get("favorites");
-//        ArrayList<HashMap<String,String>> inbox = (ArrayList) user.get("inbox");
-
-//        Log.d("LoadFluffs","inbox: " + inbox.toString());
 
         // get data from Parse
         ParseQuery<ParseObject> query = ParseQuery.getQuery("fluff");
@@ -71,16 +68,6 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
 
         } else if (mode.equals("favorites")) {
             query.whereContainedIn("objectId", favorites);
-
-//        } else if (mode.equals("inbox")) {
-//            ArrayList<String> ids = new ArrayList<String>();
-//            for (HashMap<String,String> obj : inbox) {
-//                ids.add(obj.get("fluffId"));
-//            }
-//
-//            Log.d("LoadFluffs","Inbox query: " + ids.toString());
-//
-//            query.whereContainedIn("objectId", ids);
 
         } else if (mode.equals("more_browse")) {
 
@@ -154,6 +141,8 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
                 // further instructions such as navigation to other pages
                 parentActivity.checkStartupInstructions();
 
+                parentActivity.spinner.dismiss();
+
             } else if (mode.equals("favorites")) {
                 parentActivity.favorites.clear();
 
@@ -161,22 +150,11 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
                     parentActivity.favorites.add(fluff);
                 }
 
-//            } else if (mode.equals("inbox")) {
-//                parentActivity.inbox.clear();
-//
-//                for (Fluff fluff : fluffs) {
-//                    parentActivity.inbox.add(fluff);
-//                }
-
             } else if (mode.equals("more_browse")) {
                 parentActivity.adapter.addFluffs(fluffs);
                 parentActivity.increaseBrowseIndex(QUERY_LIMIT);
 
             }
-
-            // disable loading spinner
-            Log.d("LoadFluffs","Disabling Spinner");
-//            parentActivity.spinner.dismiss();
 
             // allow new download events
             parentActivity.downloading = false;

@@ -52,6 +52,8 @@ public class ContactsDialog {
     private ArrayList<PhoneContact> favoriteContacts;
     private Fluff fluff;
 
+    //TODO -- prevent dialog from changing dimension when filtering contacts
+
     public ContactsDialog(BrowserActivity b, Fluff f) {
         this.context = (Context) b;
         this.fluff = f;
