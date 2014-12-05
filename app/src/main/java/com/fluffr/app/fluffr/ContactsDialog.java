@@ -357,8 +357,8 @@ public class ContactsDialog {
                 matches = allContacts;
 
             } else {
-                //generate regex pattern
-                Pattern pattern = Pattern.compile(".*" + s.toString().toLowerCase() + ".*");
+                //generate regex pattern (any characters + word boundary + string + any characters)
+                Pattern pattern = Pattern.compile(".*\\b" + s.toString().toLowerCase() + ".*");
 
                 //iterate through list of contacts and apply pattern filter
                 for (PhoneContact contact : allContacts) {
