@@ -64,7 +64,9 @@ public class LoadInbox extends AsyncTask<Void,Void,ArrayList<Fluff>> {
         // get image data from Parse
         for (HashMap<String,String> hm : inbox) {
 
-            Fluff f = new Fluff(hm.get("objectId"));
+            Fluff f = new Fluff(hm.get("fluffId"));
+            f.sender = hm.get("from");
+            f.sendDate = hm.get("date");
 
             if (favorites.contains(f.id)) {
                 f.favorited = true;

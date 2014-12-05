@@ -9,6 +9,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.provider.ContactsContract;
 import android.telephony.SmsManager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +18,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -31,6 +34,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Created by Patrick on 11/2/14.
@@ -39,6 +43,7 @@ public class ContactsDialog {
     private Dialog dialog;
     private Context context;
     private BrowserActivity parentActivity;
+    private EditText editText;
     private ListView list;
     private GridView grid;
     private ContactsAdapter adapter;
@@ -61,7 +66,9 @@ public class ContactsDialog {
         // setup list of contacts
         allContacts = getAllPhoneContacts();
         this.list = (ListView) dialog.findViewById(R.id.contacts_list);
-        adapter = new ContactsAdapter(context,allContacts);
+        adapter = new ContactsAdapter(context,new ArrayList<PhoneContact>());
+        adapter.addContacts(allContacts);
+        adapter.notifyDataSetChanged();
 
         list.setAdapter(adapter);
         list.setOnItemClickListener(new SelectContactListener());
@@ -76,6 +83,9 @@ public class ContactsDialog {
         gridAdapter = new FavoriteContactsAdapter(context,favoriteContacts);
         grid.setAdapter(gridAdapter);
 
+        // configure regex search for edittext element
+        this.editText = (EditText) dialog.findViewById(R.id.contact_filter);
+        editText.addTextChangedListener(new ContactFilterTextWatcher());
 
         dialog.show();
 
@@ -171,6 +181,14 @@ public class ContactsDialog {
 
             return contactView;
 
+        }
+
+        public void clear() {
+            phoneContacts.clear();
+        }
+
+        public void addContacts(ArrayList<PhoneContact> newContacts) {
+            phoneContacts.addAll(newContacts);
         }
     }
 
@@ -309,7 +327,7 @@ public class ContactsDialog {
 
         } else {
             // recipient account exists
-            parentActivity.sendFluffPushNotification(recipient,fluff);
+            parentActivity.sendFluffPushNotification(recipient, fluff);
 
         }
 
@@ -317,6 +335,50 @@ public class ContactsDialog {
 
         return returnVal;
 
+    }
+
+    private class ContactFilterTextWatcher implements TextWatcher {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            Log.d("ContactDialog:onTextChanged","new search: " + s);
+
+            //initialize array to return
+            ArrayList<PhoneContact> matches = new ArrayList<PhoneContact>();
+
+            //bail if user has deleted all characters
+            if (s.equals("") || s.length() == 0) {
+                Log.d("ContactDialog:onTextChanged","setting all contacts");
+                matches = allContacts;
+
+            } else {
+                //generate regex pattern
+                Pattern pattern = Pattern.compile(".*" + s.toString().toLowerCase() + ".*");
+
+                //iterate through list of contacts and apply pattern filter
+                for (PhoneContact contact : allContacts) {
+                    if (pattern.matcher(contact.name.toLowerCase()).matches()) {
+                        matches.add(contact);
+                    }
+                }
+            }
+
+            //replace adapter data with match data
+            adapter.clear();
+            adapter.addContacts(matches);
+            adapter.notifyDataSetChanged();
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+
+        }
     }
 }
 

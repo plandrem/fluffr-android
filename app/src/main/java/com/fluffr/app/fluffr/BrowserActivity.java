@@ -392,9 +392,7 @@ public class BrowserActivity extends ActionBarActivity
         drawerLayout.closeDrawer(drawerList);
 
         if (pages.get(position).text.equals("Browse")) {
-            // replace contents of browser's array
-            new LoadFluffs(this,"init").execute();
-            currentState = "Browse";
+            goToBrowse();
 
         } else if (pages.get(position).text.equals("Favorites")) {
             goToFavorites();
@@ -402,6 +400,21 @@ public class BrowserActivity extends ActionBarActivity
         } else if (pages.get(position).text.equals("Inbox")) {
             goToInbox();
         }
+
+    }
+
+    private void goToBrowse() {
+        currentState = "Browse";
+
+        // replace browser's existing data with new list
+        Log.d("goToBrowse","clearing current list...");
+        this.adapter.clear();
+
+        Log.d("goToBrowse","replacing with browse list...");
+        this.adapter.addFluffs(list);
+
+        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+        actionBar.setTitle("Fluffr");
 
     }
 
@@ -770,10 +783,15 @@ public class BrowserActivity extends ActionBarActivity
         // Update receiving user's inbox
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-        fluff.sender = userPhoneNumber;
-        fluff.sendDate = sdf.format(new Date());
-
-        recipientUser.add("inbox",fluff);
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("fluffId",fluff.id);
+            obj.put("from",userPhoneNumber);
+            obj.put("date", sdf.format(new Date()));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        recipientUser.add("inbox",obj);
         recipientUser.saveInBackground();
 
 //        userQuery.getFirstInBackground(new updateInboxCallback(userPhoneNumber, fluffId));
@@ -830,7 +848,7 @@ public class BrowserActivity extends ActionBarActivity
                     // user has tapped a new fluff push notification
                     // go to inbox
                     Log.d("onCreate", "Startup Instructions: new Fluff");
-                    goToFavorites();
+                    goToInbox();
                 }
             }
         }

@@ -95,6 +95,8 @@ public class FluffView extends RelativeLayout {
 //        Log.d("setItem",item.id);
 //        Log.d("setItem",item.title);
 
+        title.setVisibility(INVISIBLE);
+        subtitle.setVisibility(INVISIBLE);
 
         title.setText(fluff.title);
         subtitle.setText(fluff.subtitle);
@@ -110,6 +112,16 @@ public class FluffView extends RelativeLayout {
             favoritesButton.setImageResource(R.drawable.ic_action_important);
         } else {
             favoritesButton.setImageResource(R.drawable.ic_action_not_important);
+        }
+
+        // add tag if we're in the inbox
+        if (parent.getCurrentState().equals("Inbox")) {
+            title.setVisibility(VISIBLE);
+            subtitle.setVisibility(VISIBLE);
+
+            title.setText(fluff.sender);
+            subtitle.setText(fluff.sendDate);
+
         }
 
         buttonInterface = parent;
