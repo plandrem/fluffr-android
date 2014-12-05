@@ -5,6 +5,8 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v4.app.NotificationCompat;
@@ -125,11 +127,15 @@ public class GcmIntentService extends IntentService {
                 vib[0] = 0;
                 vib[1] = 400;
 
+                // load icon for pulldown menu
+                Bitmap icon = BitmapFactory.decodeResource(getResources(),R.drawable.fluffricon);
+
                 NotificationCompat.Builder mBuilder =
                         new NotificationCompat.Builder(this)
                                 .setAutoCancel(true)
                                 .setVibrate(vib)
-                                .setSmallIcon(R.drawable.ic_launcher)
+                                .setSmallIcon(R.drawable.fluffr_notification_icon)
+                                .setLargeIcon(icon)
                                 .setContentTitle("You've received a Fluff!")
                                 .setStyle(new NotificationCompat.BigTextStyle()
                                         .bigText(msg))
