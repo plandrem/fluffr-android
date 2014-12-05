@@ -46,6 +46,7 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
     protected void onPreExecute() {
         // activate any kind of loading spinners here.
         parentActivity.spinner.show();
+        parentActivity.downloadsInProgress += 1;
     }
 
     protected ArrayList<Fluff> doInBackground(Void... params) {
@@ -141,7 +142,7 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
                 // further instructions such as navigation to other pages
                 parentActivity.checkStartupInstructions();
 
-                parentActivity.spinner.dismiss();
+//                parentActivity.spinner.dismiss();
 
             } else if (mode.equals("favorites")) {
                 parentActivity.favorites.clear();
@@ -150,14 +151,20 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
                     parentActivity.favorites.add(fluff);
                 }
 
+                if (parentActivity.getCurrentState().equals("Favorites")) {
+                    parentActivity.adapter.clear();
+                    parentActivity.adapter.addFluffs(parentActivity.favorites);
+                    parentActivity.spinner.dismiss();
+                }
+
             } else if (mode.equals("more_browse")) {
                 parentActivity.adapter.addFluffs(fluffs);
                 parentActivity.increaseBrowseIndex(QUERY_LIMIT);
 
             }
 
-            // allow new download events
-            parentActivity.downloading = false;
+            parentActivity.downloadsInProgress -= 1;
+            if (parentActivity.downloadsInProgress == 0) parentActivity.spinner.dismiss();
 
         }
     }

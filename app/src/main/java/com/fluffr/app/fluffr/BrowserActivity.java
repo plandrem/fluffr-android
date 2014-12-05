@@ -71,7 +71,7 @@ public class BrowserActivity extends ActionBarActivity
     public ArrayList<Fluff> inbox = new ArrayList<Fluff>();
     public CustomAdapter adapter;
     public LoadingSpinner spinner = new LoadingSpinner();
-    public boolean downloading = false;
+    public int downloadsInProgress = 0;
     public String userPhoneNumber = "";
 
     // Nav Drawer Stuff

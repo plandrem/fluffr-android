@@ -9,6 +9,7 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -22,6 +23,7 @@ public class LoadInbox extends AsyncTask<Void,Void,ArrayList<Fluff>> {
     private String mode;
     private int startIndex;
 
+    //TODO -- implement query limit for inbox
     private int QUERY_LIMIT = 20;
 
     public LoadInbox(BrowserActivity a, String mode) {
@@ -38,6 +40,8 @@ public class LoadInbox extends AsyncTask<Void,Void,ArrayList<Fluff>> {
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
+        parentActivity.downloadsInProgress += 1;
+        parentActivity.spinner.show();
     }
 
     @Override
@@ -76,6 +80,8 @@ public class LoadInbox extends AsyncTask<Void,Void,ArrayList<Fluff>> {
 
         }
 
+        Collections.reverse(fluffs);
+
         return fluffs;
     }
 
@@ -83,5 +89,16 @@ public class LoadInbox extends AsyncTask<Void,Void,ArrayList<Fluff>> {
     protected void onPostExecute(ArrayList<Fluff> fluffs) {
         super.onPostExecute(fluffs);
         parentActivity.inbox = fluffs;
+
+        if (parentActivity.getCurrentState().equals("Inbox")) {
+            parentActivity.adapter.clear();
+            parentActivity.adapter.addFluffs(fluffs);
+            parentActivity.spinner.dismiss();
+        }
+
+        parentActivity.downloadsInProgress -= 1;
+        if (parentActivity.downloadsInProgress == 0) parentActivity.spinner.dismiss();
+
+
     }
 }
