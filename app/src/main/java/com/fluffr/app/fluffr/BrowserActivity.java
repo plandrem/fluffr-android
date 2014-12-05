@@ -185,7 +185,7 @@ public class BrowserActivity extends ActionBarActivity
         new LoadFluffs(this,"favorites").execute();
 
         // get inbox list
-        new LoadFluffs(this,"inbox").execute();
+        new LoadInbox(this,"inbox").execute();
 
 
         //Finalize UI
@@ -509,59 +509,46 @@ public class BrowserActivity extends ActionBarActivity
 
     private void setParseUser() {
 
-        ParseUser user = ParseUser.getCurrentUser();
+        ParseUser user = null;
 
-        if (user == null) {
-            // user has not been registered - create new account
+        // check if user exists in database
+        ParseQuery query = ParseUser.getQuery();
+        query.whereEqualTo("username",userPhoneNumber);
 
-//            spinner.show();
+        ParseUser existingUser = null;
 
-            // check if user exists in database
-            ParseQuery query = ParseUser.getQuery();
-            query.whereEqualTo("username",userPhoneNumber);
+        try {
+            existingUser = (ParseUser) query.getFirst();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
-            ParseUser existingUser = null;
-
+        if (existingUser != null) {
+            Log.e("setParseUser","Logging in user: " + userPhoneNumber);
             try {
-                existingUser = (ParseUser) query.getFirst();
+                ParseUser.logIn(userPhoneNumber, "password");
+                user = existingUser;
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        } else {
+
+            // create new user account
+            Log.d("setParseUser", "New account for user: " + userPhoneNumber);
+
+            user = new ParseUser();
+            user.setUsername(userPhoneNumber);
+            user.setPassword("password");
+            user.put("platform","android");
+            try {
+                user.signUp();
             } catch (ParseException e) {
                 e.printStackTrace();
             }
 
-            if (existingUser != null) {
-                Log.e("setParseUser","Logging in user: " + userPhoneNumber);
-                try {
-                    ParseUser.logIn(userPhoneNumber, "password");
-                    user = existingUser;
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-            } else {
+            //            spinner.dismiss();
 
-                // create new user account
-                Log.d("setParseUser", "New account for user: " + userPhoneNumber);
-
-                user = new ParseUser();
-                user.setUsername(userPhoneNumber);
-                user.setPassword("password");
-                user.put("platform","android");
-                try {
-                    user.signUp();
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-
-                //            spinner.dismiss();
-
-                //TODO - display tutorial modal screen
-            }
-
-
-        } else {
-            // user already registered
-
-            Log.d("setParseUser", "Resuming session for this user.");
-
+            //TODO - display tutorial modal screen
         }
 
 
@@ -742,7 +729,7 @@ public class BrowserActivity extends ActionBarActivity
         Log.e("Meteor Interface","details:" + s3);
     }
 
-    public void sendFluffPushNotification(String recipient, final String fluffId) throws ParseException {
+    public void sendFluffPushNotification(String recipient, final Fluff fluff) throws ParseException {
         // Responds when the user selects a contact from the ContactsDialog. Pushes a notification
         // to the recipient's phone with a data payload containing the sender and new Fluff id.
         // Each users' DB entry is updated to note that the Fluff was sent, and the Fluff itself
@@ -769,7 +756,7 @@ public class BrowserActivity extends ActionBarActivity
         payload.put("sender",userPhoneNumber);
         payload.put("recipient",recipient);
         payload.put("targetDevice",deviceId);
-        payload.put("fluffId",fluffId);
+        payload.put("fluffId",fluff.id);
         payload.put("platform",platform);
 
         Object[] data = {payload};
@@ -777,30 +764,25 @@ public class BrowserActivity extends ActionBarActivity
 
         // Update sending user's "sent" array
         ParseUser sendingUser = ParseUser.getCurrentUser();
-        sendingUser.addUnique("sent",fluffId);
-        sendingUser.saveEventually();
+        sendingUser.addUnique("sent",fluff.id);
+        sendingUser.saveInBackground();
 
         // Update receiving user's inbox
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-        JSONObject obj = new JSONObject();
-        try {
-            obj.put("fluffId",fluffId);
-            obj.put("from",userPhoneNumber);
-            obj.put("date", sdf.format(new Date()));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        recipientUser.add("inbox",obj);
-        recipientUser.saveEventually();
+        fluff.sender = userPhoneNumber;
+        fluff.sendDate = sdf.format(new Date());
+
+        recipientUser.add("inbox",fluff);
+        recipientUser.saveInBackground();
 
 //        userQuery.getFirstInBackground(new updateInboxCallback(userPhoneNumber, fluffId));
 
         // Update fluff's times sent
         ParseQuery fluffQuery = ParseQuery.getQuery("fluff");
-        ParseObject fluff = fluffQuery.get(fluffId);
-        fluff.increment("timesSent");
-        fluff.saveEventually();
+        ParseObject f = fluffQuery.get(fluff.id);
+        f.increment("timesSent");
+        f.saveInBackground();
 
 
 
@@ -829,7 +811,7 @@ public class BrowserActivity extends ActionBarActivity
 
                 ParseUser recipientUser = (ParseUser) parseObject;
                 recipientUser.add("inbox","{\"fluffId\":\"" + fluffId + "\",\"from\":\"" + sender + "\",\"date\":\"" + date + "\"}");
-                recipientUser.saveEventually();
+                recipientUser.saveInBackground();
 
             }
         }

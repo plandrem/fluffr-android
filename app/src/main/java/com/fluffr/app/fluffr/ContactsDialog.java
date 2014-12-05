@@ -309,7 +309,7 @@ public class ContactsDialog {
 
         } else {
             // recipient account exists
-            parentActivity.sendFluffPushNotification(recipient,fluff.id);
+            parentActivity.sendFluffPushNotification(recipient,fluff);
 
         }
 
