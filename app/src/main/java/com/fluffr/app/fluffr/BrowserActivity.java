@@ -99,6 +99,7 @@ public class BrowserActivity extends ActionBarActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_browser);
 
@@ -170,7 +171,7 @@ public class BrowserActivity extends ActionBarActivity
 
         //Configure Adapter; dataset will be empty.
         Log.d("onCreate","configuring Fluff adapter...");
-        adapter = new CustomAdapter(this, list);
+        adapter = new CustomAdapter(this, new ArrayList<Fluff>());
         listView.setAdapter(adapter);
         listView.setOnScrollListener(new FluffScrollListener(this));
 

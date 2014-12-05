@@ -135,7 +135,7 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
                     parentActivity.list.add(fluff);
                 }
 
-                parentActivity.adapter.notifyDataSetChanged();
+                parentActivity.adapter.addFluffs(fluffs);
                 parentActivity.increaseBrowseIndex(QUERY_LIMIT);
 
                 // now that we've loaded initial data, handle any
@@ -158,6 +158,7 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
                 }
 
             } else if (mode.equals("more_browse")) {
+                parentActivity.list.addAll(fluffs);
                 parentActivity.adapter.addFluffs(fluffs);
                 parentActivity.increaseBrowseIndex(QUERY_LIMIT);
 
