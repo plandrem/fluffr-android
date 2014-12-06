@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="120dp"
+    android:layout_height="40dp"
+    android:background="@drawable/inbox_badge_background"
+    >
+
+    <ImageView
+        android:id="@+id/inbox_badge_image"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_centerVertical="true"
+        android:background="@drawable/fluffr_cat_icon"
+        android:layout_margin="10dp"
+        />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_toRightOf="@id/inbox_badge_image"
+        android:layout_centerVertical="true">
+        <TextView
+            android:id="@+id/inbox_badge_name_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="From: "
+            android:textSize="10sp"
+            android:layout_marginRight="20dp"
+            android:textColor="#FFFFFF"/>
+
+        <TextView
+            android:id="@+id/inbox_badge_date_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sent: "
+            android:textSize="10sp"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="20dp"
+            android:textColor="#FFFFFF"/>
+
+    </LinearLayout>
+
+
+</RelativeLayout>

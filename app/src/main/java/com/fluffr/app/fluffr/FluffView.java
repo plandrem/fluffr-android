@@ -32,6 +32,8 @@ public class FluffView extends RelativeLayout {
     private TextView title;
     private TextView subtitle;
 
+    private InboxBadge badge;
+
     private ContactsDialog contactsDialog;
 
     public static FluffView inflate(ViewGroup parent) {
@@ -72,6 +74,8 @@ public class FluffView extends RelativeLayout {
 
         imageView = (ImageView) findViewById(R.id.item_imageView);
 
+        badge = (InboxBadge) findViewById(R.id.fluff_inbox_badge);
+
     }
 
 
@@ -110,11 +114,9 @@ public class FluffView extends RelativeLayout {
 
         // add tag if we're in the inbox
         if (parent.getCurrentState().equals("Inbox")) {
-            title.setVisibility(VISIBLE);
-            subtitle.setVisibility(VISIBLE);
-
-            title.setText(fluff.sender);
-            subtitle.setText(fluff.sendDate);
+            badge.setVisibility(VISIBLE);
+            badge.setFrom(fluff.sender);
+            badge.setDate(fluff.sendDate);
 
         }
 

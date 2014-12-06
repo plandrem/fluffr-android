@@ -380,7 +380,8 @@ public class BrowserActivity extends ActionBarActivity
             // bail if already showing
             if (isVisible) return;
 
-            dialog = new Dialog(BrowserActivity.this, R.style.Theme_Transparent);
+//            dialog = new Dialog(BrowserActivity.this, R.style.Theme_Transparent);
+            dialog = new Dialog(BrowserActivity.this, R.style.Theme_AppCompat);
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             dialog.setContentView(R.layout.loading_dialog);
             dialog.setCanceledOnTouchOutside(false);
