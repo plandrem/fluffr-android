@@ -1,8 +1,6 @@
 package com.fluffr.app.fluffr;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,12 +14,6 @@ import android.widget.TextView;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.imageaware.ImageAware;
 import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
-import com.parse.GetCallback;
-import com.parse.GetDataCallback;
-import com.parse.ParseException;
-import com.parse.ParseFile;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
 
 /**
  * Created by Patrick on 10/20/14.
@@ -44,7 +36,7 @@ public class FluffView extends RelativeLayout {
 
     public static FluffView inflate(ViewGroup parent) {
         FluffView fluffView = (FluffView) LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_view, parent, false);
+                .inflate(R.layout.fluff_view, parent, false);
         return fluffView;
     }
 
@@ -64,7 +56,7 @@ public class FluffView extends RelativeLayout {
 
         // inflate the actual view layout and attach it to this instance,
         // giving us access to the views contained therein
-        LayoutInflater.from(context).inflate(R.layout.item_view_children, this, true);
+        LayoutInflater.from(context).inflate(R.layout.fluff_view_children, this, true);
 
         // connect references between this object's view properties and the inflated layout
         setupChildren();

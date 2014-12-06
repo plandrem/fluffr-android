@@ -4,12 +4,14 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class NavItemView extends RelativeLayout {
 
     private TextView text;
+    private ImageView image;
 
 
     public static NavItemView inflate(ViewGroup parent) {
@@ -40,6 +42,7 @@ public class NavItemView extends RelativeLayout {
 
     private void setupChildren() {
         text = (TextView) findViewById(R.id.drawer_text);
+        image = (ImageView) findViewById(R.id.nav_item_image);
 
     }
 
@@ -47,6 +50,15 @@ public class NavItemView extends RelativeLayout {
     public void setItem(NavItem navItem) {
 
         text.setText(navItem.text);
+
+        // set images
+        if (navItem.text.equals("Browse")) {
+            image.setImageDrawable(getResources().getDrawable(R.drawable.fluffr_cat_icon));
+        } else if (navItem.text.equals("Favorites")) {
+            image.setImageDrawable(getResources().getDrawable(R.drawable.ic_star_white));
+        } else if (navItem.text.equals("Inbox")) {
+            image.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_read));
+        }
 
     }
 
