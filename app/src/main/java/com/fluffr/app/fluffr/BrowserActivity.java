@@ -230,6 +230,7 @@ public class BrowserActivity extends ActionBarActivity
         boolean drawerOpen = drawerLayout.isDrawerOpen(drawerList);
         // change visibility of action bar stuff depending on drawer state
         return super.onPrepareOptionsMenu(menu);
+
     }
 
 
@@ -246,7 +247,8 @@ public class BrowserActivity extends ActionBarActivity
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_inbox) {
+            goToInbox();
             return true;
         }
 
@@ -471,8 +473,10 @@ public class BrowserActivity extends ActionBarActivity
 
         android.support.v7.app.ActionBar actionBar = getSupportActionBar();
 
+        actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.action_bar_background));
+
         if (currentState.equals("Browse")) {
-            actionBar.setTitle("Browse");
+            actionBar.setTitle("Fluffr");
         } else if (currentState.equals("Favorites")) {
             actionBar.setTitle("Favorites");
         } else if (currentState.equals("Inbox")) {
