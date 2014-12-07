@@ -8,16 +8,60 @@
     <LinearLayout
         android:layout_height="match_parent"
         android:layout_width="match_parent"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
         android:orientation="vertical">
+
+        <RelativeLayout
+            android:id="@+id/header"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/action_bar_background">
+
+            <ImageButton
+                android:id="@+id/header_drawer_toggle"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_margin="8dp"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:background="@null"/>
+
+            <TextView
+                android:id="@+id/header_title"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="FLUFFR"
+                android:textSize="20sp"
+                android:textColor="#FFFFFF"
+                android:layout_centerVertical="true"
+                android:gravity="center"
+                android:layout_centerInParent="true"/>
+
+            <FrameLayout
+                android:id="@+id/header_right_button_frame"
+                android:layout_marginRight="8dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ic_action_read">
+
+                <ImageButton
+                    android:id="@+id/header_right_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/button_glow"
+                    android:scaleType="fitCenter"/>
+
+            </FrameLayout>
+
+
+        </RelativeLayout>
 
         <ListView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:id="@+id/listview"
+            android:layout_margin="10dp"
             android:footerDividersEnabled="false"
             android:headerDividersEnabled="false"
             android:dividerHeight="0dp" />
@@ -25,6 +69,7 @@
     </LinearLayout>
 
     <ListView android:id="@+id/left_drawer"
+        android:layout_marginTop="50dp"
         android:layout_width="240dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"

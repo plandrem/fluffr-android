@@ -1,5 +1,6 @@
 package com.fluffr.app.fluffr;
 
+import android.app.ActionBar;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -13,22 +14,26 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
-import com.parse.GetCallback;
 import com.parse.ParseException;
-import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
@@ -36,10 +41,8 @@ import com.parse.ParseUser;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -116,26 +119,6 @@ public class BrowserActivity extends ActionBarActivity
         drawerList.setAdapter(new NavAdapter(this, pages));
         drawerList.setOnItemClickListener(new DrawerItemClickListener());
 
-        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
-                R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
-
-            public void onDrawerClosed(View view) {
-                super.onDrawerClosed(view);
-                updateActionBar();
-                invalidateOptionsMenu(); // forces redraw of options menu
-            }
-
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-            }
-
-        };
-
-        drawerLayout.setDrawerListener(drawerToggle);
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
-
         // Store user's phone number for referencing account
         setUserNumber();
 
@@ -175,9 +158,6 @@ public class BrowserActivity extends ActionBarActivity
         listView.setAdapter(adapter);
         listView.setOnScrollListener(new FluffScrollListener(this));
 
-//        downloading = true;
-//        spinner.show();
-
         //Load initial data
         Log.d("onCreate","Executing initial LoadFluff...");
         new LoadFluffs(this, "init").execute();
@@ -193,9 +173,6 @@ public class BrowserActivity extends ActionBarActivity
         Log.d("onCreate","finalize UI...");
         updateActionBar();
 
-//        // Check for Startup Instructions
-//        Log.d("onCreate","check for startup instructions...");
-//        checkStartupInstructions();
     }
 
 
@@ -216,13 +193,13 @@ public class BrowserActivity extends ActionBarActivity
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        drawerToggle.syncState();
+//        drawerToggle.syncState();
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        drawerToggle.onConfigurationChanged(newConfig);
+//        drawerToggle.onConfigurationChanged(newConfig);
     }
 
     @Override
@@ -238,6 +215,13 @@ public class BrowserActivity extends ActionBarActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.browser, menu);
+
+//        Animation blink = AnimationUtils.loadAnimation(BrowserActivity.this,R.anim.glow_blink);
+//        ImageButton inboxButton = (ImageButton) menu.findItem(R.id.action_inbox).getActionView();
+////        inboxButton.clearAnimation();
+////        inboxButton.setAnimation(blink);
+//        inboxButton.setImageResource(R.drawable.button_glow);
+
         return true;
     }
 
@@ -247,14 +231,14 @@ public class BrowserActivity extends ActionBarActivity
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_inbox) {
-            goToInbox();
-            return true;
-        }
+//        if (id == R.id.action_inbox) {
+//            goToInbox();
+//            return true;
+//        }
 
-        if (drawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
+//        if (drawerToggle.onOptionsItemSelected(item)) {
+//            return true;
+//        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -435,9 +419,6 @@ public class BrowserActivity extends ActionBarActivity
         Log.d("goToBrowse","replacing with browse list...");
         this.adapter.addFluffs(list);
 
-        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle("Fluffr");
-
     }
 
     private void goToFavorites() {
@@ -449,10 +430,6 @@ public class BrowserActivity extends ActionBarActivity
 
         Log.d("goToFavorites","replacing with favorites...");
         this.adapter.addFluffs(favorites);
-
-        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle("Favorites");
-
     }
 
     private void goToInbox() {
@@ -465,24 +442,79 @@ public class BrowserActivity extends ActionBarActivity
         Log.d("goToInbox","replacing with inbox...");
         this.adapter.addFluffs(inbox);
 
-        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle("Inbox");
-
     }
 
     private void updateActionBar() {
 
-        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+        // get references to views
+        TextView title = (TextView) findViewById(R.id.header_title);
+        final ImageButton rightButton = (ImageButton) findViewById(R.id.header_right_button);
+        final ImageButton navButton = (ImageButton) findViewById(R.id.header_drawer_toggle);
+        final FrameLayout rightButtonFrame = (FrameLayout) findViewById(R.id.header_right_button_frame);
 
-        actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.action_bar_background));
-
+        // set title
         if (currentState.equals("Browse")) {
-            actionBar.setTitle("Fluffr");
+            title.setText("Fluffr");
         } else if (currentState.equals("Favorites")) {
-            actionBar.setTitle("Favorites");
+            title.setText("Favorites");
         } else if (currentState.equals("Inbox")) {
-            actionBar.setTitle("Inbox");
+            title.setText("Inbox");
         }
+
+        // Assign right button
+        rightButton.setImageResource(R.drawable.fluffr_cat_icon);
+        rightButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (currentState.equals("Inbox")) {
+                    goToBrowse();
+                    rightButtonFrame.setBackgroundResource(R.drawable.ic_action_read);
+                } else {
+                    goToInbox();
+                    rightButtonFrame.setBackgroundResource(R.drawable.fluffr_cat_icon);
+                }
+            }
+        });
+
+        Animation glow = AnimationUtils.loadAnimation(BrowserActivity.this,R.anim.glow_blink);
+//        rightButton.setAnimation(glow);
+        rightButton.startAnimation(glow);
+
+        // Nav Drawer Button
+        navButton.setImageResource(R.drawable.fluffr_cat_icon);
+        navButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (drawerLayout.isDrawerOpen(drawerList)) {
+                    drawerLayout.closeDrawer(drawerList);
+                } else {
+
+                    // rotate the image
+                    Animation spin = AnimationUtils.loadAnimation(BrowserActivity.this,R.anim.rotate_button);
+                    spin.setAnimationListener(new Animation.AnimationListener() {
+                        @Override
+                        public void onAnimationStart(Animation animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animation animation) {
+                            navButton.setImageResource(R.drawable.ic_action_important);
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animation animation) {
+
+                        }
+                    });
+                    navButton.startAnimation(spin);
+                    drawerLayout.openDrawer(drawerList);
+                }
+            }
+        });
+
+
+
     }
 
     @Override
@@ -889,36 +921,6 @@ public class BrowserActivity extends ActionBarActivity
         f.saveInBackground();
 
 
-
-    }
-
-    private class updateInboxCallback extends GetCallback {
-        String sender = "";
-        String fluffId = "";
-        String date = new Date().toString();
-
-        private updateInboxCallback(String sender, String fluffId) {
-            super();
-            this.sender = sender;
-            this.fluffId = fluffId;
-        }
-
-        @Override
-        public void done(ParseObject parseObject, ParseException e) {
-
-            if (e != null) {
-                e.printStackTrace();
-
-            } else {
-                // insert an object into the inbox array, eg
-                // {"fluffId":"skh5215f","from":"16518155005","date":"2014-12-03 17:18:00"}
-
-                ParseUser recipientUser = (ParseUser) parseObject;
-                recipientUser.add("inbox","{\"fluffId\":\"" + fluffId + "\",\"from\":\"" + sender + "\",\"date\":\"" + date + "\"}");
-                recipientUser.saveInBackground();
-
-            }
-        }
 
     }
 
