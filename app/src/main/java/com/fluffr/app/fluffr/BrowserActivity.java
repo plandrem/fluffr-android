@@ -462,7 +462,7 @@ public class BrowserActivity extends ActionBarActivity
         }
 
         // Assign right button
-        rightButton.setImageResource(R.drawable.fluffr_cat_icon);
+        rightButton.setImageResource(R.drawable.inbox_icon_glow);
         rightButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
