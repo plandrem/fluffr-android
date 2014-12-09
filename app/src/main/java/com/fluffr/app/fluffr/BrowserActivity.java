@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.Typeface;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -67,6 +68,7 @@ public class BrowserActivity extends ActionBarActivity
     private static String currentState = "Browse";
     private static int currentBrowseIndex = 0;
     private static int currentFavoritesIndex = 0;
+    private static boolean hasUnseenFluffs = false;
 
     // ListView and Data Stuff
     public ListView listView;
@@ -106,6 +108,8 @@ public class BrowserActivity extends ActionBarActivity
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_browser);
+
+        spinner.show();
 
         // assign views
         listView = (ListView) findViewById(R.id.listview);
@@ -423,6 +427,8 @@ public class BrowserActivity extends ActionBarActivity
         Log.d("goToBrowse","replacing with browse list...");
         this.adapter.addFluffs(list);
 
+        updateActionBar();
+
     }
 
     private void goToFavorites() {
@@ -434,6 +440,8 @@ public class BrowserActivity extends ActionBarActivity
 
         Log.d("goToFavorites","replacing with favorites...");
         this.adapter.addFluffs(favorites);
+
+        updateActionBar();
     }
 
     private void goToInbox() {
@@ -446,6 +454,13 @@ public class BrowserActivity extends ActionBarActivity
         Log.d("goToInbox","replacing with inbox...");
         this.adapter.addFluffs(inbox);
 
+        updateActionBar();
+
+        // mark fluffs as seen
+        ParseUser user = ParseUser.getCurrentUser();
+        user.put("hasUnseenFluffs","false");
+        user.saveInBackground();
+        hasUnseenFluffs = false;
     }
 
     private void updateActionBar() {
@@ -454,33 +469,47 @@ public class BrowserActivity extends ActionBarActivity
         TextView title = (TextView) findViewById(R.id.header_title);
         final ImageButton rightButton = (ImageButton) findViewById(R.id.header_right_button);
         final ImageButton navButton = (ImageButton) findViewById(R.id.header_drawer_toggle);
+        final ImageView logo = (ImageView) findViewById(R.id.header_logo);
 
         // set title
+
+        Typeface type = Typeface.createFromAsset(getAssets(), "fonts/TaiLeb.ttf");
+        title.setTypeface(type);
+
         if (currentState.equals("Browse")) {
-            title.setText("Fluffr");
+            logo.setVisibility(View.VISIBLE);
+            title.setText("fluffr");
+            rightButton.setImageResource(R.drawable.ic_action_read);
+
         } else if (currentState.equals("Favorites")) {
-            title.setText("Favorites");
+            logo.setVisibility(View.GONE);
+            title.setText("favorites");
+            rightButton.setImageResource(R.drawable.ic_action_read);
+
         } else if (currentState.equals("Inbox")) {
-            title.setText("Inbox");
+            logo.setVisibility(View.GONE);
+            title.setText("inbox");
+            rightButton.setImageResource(R.drawable.fluffr_cat_icon);
         }
 
         // Assign right button
-        rightButton.setImageResource(R.drawable.ic_action_read);
+
         rightButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (currentState.equals("Inbox")) {
                     goToBrowse();
-                    rightButton.setBackgroundResource(R.drawable.ic_action_read);
                 } else {
                     goToInbox();
-                    rightButton.setBackgroundResource(R.drawable.fluffr_cat_icon);
                 }
             }
         });
 
-        Animation blink = AnimationUtils.loadAnimation(BrowserActivity.this,R.anim.glow_blink);
-        rightButton.startAnimation(blink);
+        // Set animation if user has unseen fluffs in his inbox
+        if (hasUnseenFluffs) {
+            Animation blink = AnimationUtils.loadAnimation(BrowserActivity.this, R.anim.glow_blink);
+            rightButton.startAnimation(blink);
+        }
 
         // Nav Drawer Button
         navButton.setImageResource(R.drawable.fluffr_cat_icon);
@@ -664,6 +693,9 @@ public class BrowserActivity extends ActionBarActivity
             } catch (ParseException e) {
                 e.printStackTrace();
             }
+
+            hasUnseenFluffs = user.getBoolean("hasUnseenFluffs");
+
         } else {
 
             // create new user account
@@ -913,6 +945,7 @@ public class BrowserActivity extends ActionBarActivity
             e.printStackTrace();
         }
         recipientUser.add("inbox",obj);
+        recipientUser.put("hasUnseenFluffs", true);
         recipientUser.saveInBackground();
 
 //        userQuery.getFirstInBackground(new updateInboxCallback(userPhoneNumber, fluffId));

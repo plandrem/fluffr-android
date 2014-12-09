@@ -25,16 +25,32 @@
                 android:layout_centerVertical="true"
                 android:background="@null"/>
 
-            <TextView
-                android:id="@+id/header_title"
+            <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:text="FLUFFR"
-                android:textSize="20sp"
-                android:textColor="#FFFFFF"
-                android:layout_centerVertical="true"
-                android:gravity="center"
-                android:layout_centerInParent="true"/>
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_centerHorizontal="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="10dp">
+
+                <ImageView
+                    android:id="@+id/header_logo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/fluffr_cat_icon"
+                    android:layout_marginRight="5dp"
+                    android:gravity="bottom"/>
+
+                <TextView
+                    android:id="@+id/header_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="FLUFFR"
+                    android:textSize="30sp"
+                    android:textColor="#FFFFFF"/>
+
+            </LinearLayout>
+
 
             <ImageButton
                 android:id="@+id/header_right_button"
