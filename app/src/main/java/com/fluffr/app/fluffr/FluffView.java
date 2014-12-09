@@ -28,6 +28,10 @@ public class FluffView extends RelativeLayout {
     private ImageButton deleteButton;
 
     private ImageView imageView;
+    private ImageView shadowLeft;
+    private ImageView shadowRight;
+    private ImageView shadowTop;
+    private ImageView shadowBottom;
 
     private TextView title;
     private TextView subtitle;
@@ -73,6 +77,10 @@ public class FluffView extends RelativeLayout {
         subtitle = (TextView) findViewById(R.id.item_subtitle);
 
         imageView = (ImageView) findViewById(R.id.item_imageView);
+        shadowBottom = (ImageView) findViewById(R.id.fluff_shadow_bottom);
+        shadowTop = (ImageView) findViewById(R.id.fluff_shadow_top);
+        shadowLeft = (ImageView) findViewById(R.id.fluff_shadow_left);
+        shadowRight = (ImageView) findViewById(R.id.fluff_shadow_right);
 
         badge = (InboxBadge) findViewById(R.id.fluff_inbox_badge);
 
@@ -87,9 +95,6 @@ public class FluffView extends RelativeLayout {
 
         // As part of the attachment, all the UI functionality should
         // be created at this point (eg. button clicks)
-
-//        Log.d("setItem",item.id);
-//        Log.d("setItem",item.title);
 
         fluff.position = position;
 
@@ -118,6 +123,21 @@ public class FluffView extends RelativeLayout {
             badge.setFrom(fluff.sender);
             badge.setDate(fluff.sendDate);
 
+            // apply shadows
+            shadowBottom.setBackgroundResource(R.drawable.shadows_with_inbox_badge_bottom);
+            shadowTop.setBackgroundResource(R.drawable.shadows_with_inbox_badge_top);
+            shadowLeft.setBackgroundResource(R.drawable.shadows_with_inbox_badge_left);
+            shadowRight.setBackgroundResource(R.drawable.shadows_with_inbox_badge_right);
+
+        } else {
+            // not in inbox -- remove badge from layout
+            badge.setVisibility(GONE);
+
+            // apply shadows
+            shadowBottom.setBackgroundResource(R.drawable.shadows_bottom);
+            shadowTop.setBackgroundResource(R.drawable.shadows_top);
+            shadowLeft.setBackgroundResource(R.drawable.shadows_left);
+            shadowRight.setBackgroundResource(R.drawable.shadows_right);
         }
 
         buttonInterface = parent;
