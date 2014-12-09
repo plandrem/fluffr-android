@@ -122,7 +122,6 @@ public class FluffView extends RelativeLayout {
             badge.setVisibility(VISIBLE);
             badge.setFrom(fluff.sender);
             badge.setDate(fluff.sendDate);
-            badge.setThumbnailImage();
 
             // apply shadows
             shadowBottom.setBackgroundResource(R.drawable.shadows_with_inbox_badge_bottom);
