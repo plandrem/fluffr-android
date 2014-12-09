@@ -3,6 +3,7 @@ package com.fluffr.app.fluffr;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -82,7 +83,16 @@ public class ContactView extends RelativeLayout {
         if (contact.photoUri != null) {
             image.setImageURI(contact.photoUri);
         } else {
-            image.setImageBitmap(null);
+            // No image resource found -- use a letter tile instead
+            LetterTileProvider tileProvider = new LetterTileProvider(getContext());
+            final Resources res = getResources();
+            final int tileSize = res.getDimensionPixelSize(R.dimen.letter_tile_size);
+
+            String text = contact.name;
+            final Bitmap letterTile = tileProvider.getLetterTile(text,text, tileSize, tileSize);
+
+            image.setImageBitmap(letterTile);
+
         }
 
 
