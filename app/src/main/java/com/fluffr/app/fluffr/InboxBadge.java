@@ -13,7 +13,10 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created by Patrick on 12/5/14.
@@ -51,8 +54,15 @@ public class InboxBadge extends RelativeLayout {
 
     }
 
-    public void setDate(String date) {
-        dateText.setText("Sent: " + date);
+    public void setDate(Long dateInMilliseconds) {
+
+        //receive date in ms
+
+        SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy, hh:mm a");
+        Date d = new Date(dateInMilliseconds);
+        String dateString = sdf.format(d);
+
+        dateText.setText("Sent: " + dateString);
     }
 
     public void setThumbnailImage() {

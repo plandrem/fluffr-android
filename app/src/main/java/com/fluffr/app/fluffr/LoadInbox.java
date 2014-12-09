@@ -48,7 +48,7 @@ public class LoadInbox extends AsyncTask<Void,Void,ArrayList<Fluff>> {
     protected ArrayList<Fluff> doInBackground(Void... params) {
 
         ParseUser user = ParseUser.getCurrentUser();
-        ArrayList<HashMap<String,String>> inbox = (ArrayList) user.get("inbox");
+        ArrayList<HashMap<String,Object>> inbox = (ArrayList) user.get("inbox");
         ArrayList<String> favorites = (ArrayList) user.get("favorites");
 
         ArrayList<Fluff> fluffs = new ArrayList<Fluff>();
@@ -66,11 +66,11 @@ public class LoadInbox extends AsyncTask<Void,Void,ArrayList<Fluff>> {
         }
 
         // get image data from Parse
-        for (HashMap<String,String> hm : inbox) {
+        for (HashMap<String,Object> hm : inbox) {
 
-            Fluff f = new Fluff(hm.get("fluffId"));
-            f.sender = hm.get("from");
-            f.sendDate = hm.get("date");
+            Fluff f = new Fluff((String) hm.get("fluffId"));
+            f.sender = (String) hm.get("from");
+            f.sendDate = (Long) hm.get("date");
 
             if (favorites.contains(f.id)) {
                 f.favorited = true;
@@ -88,17 +88,19 @@ public class LoadInbox extends AsyncTask<Void,Void,ArrayList<Fluff>> {
     @Override
     protected void onPostExecute(ArrayList<Fluff> fluffs) {
         super.onPostExecute(fluffs);
-        parentActivity.inbox = fluffs;
 
-        if (parentActivity.getCurrentState().equals("Inbox")) {
-            parentActivity.adapter.clear();
-            parentActivity.adapter.addFluffs(fluffs);
-            parentActivity.spinner.dismiss();
+        if (fluffs != null) {
+            parentActivity.inbox = fluffs;
+
+            if (parentActivity.getCurrentState().equals("Inbox")) {
+                parentActivity.adapter.clear();
+                parentActivity.adapter.addFluffs(fluffs);
+                parentActivity.spinner.dismiss();
+            }
+
+            parentActivity.downloadsInProgress -= 1;
+            if (parentActivity.downloadsInProgress == 0) parentActivity.spinner.dismiss();
+
         }
-
-        parentActivity.downloadsInProgress -= 1;
-        if (parentActivity.downloadsInProgress == 0) parentActivity.spinner.dismiss();
-
-
     }
 }

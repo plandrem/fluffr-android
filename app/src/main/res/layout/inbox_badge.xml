@@ -27,19 +27,20 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="From: "
-            android:textSize="10sp"
+            android:textSize="15sp"
+            android:textStyle="bold"
             android:layout_marginRight="20dp"
-            android:textColor="#ff1e1e1e"/>
+            android:textColor="#ff3f3f3f"/>
 
         <TextView
             android:id="@+id/inbox_badge_date_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Sent: "
-            android:textSize="10sp"
+            android:textSize="13sp"
             android:layout_marginTop="5dp"
             android:layout_marginRight="20dp"
-            android:textColor="#ff1e1e1e"/>
+            android:textColor="#ff7c7c7c"/>
 
     </LinearLayout>
 

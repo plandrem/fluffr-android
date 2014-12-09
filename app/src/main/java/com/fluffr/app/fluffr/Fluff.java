@@ -22,7 +22,7 @@ public class Fluff {
     public ParseFile parseFile;
     public boolean favorited = false;
     public String sender;
-    public String sendDate;
+    public Long sendDate;
     public int position;
 
     public Fluff() {

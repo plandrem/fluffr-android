@@ -901,13 +901,14 @@ public class BrowserActivity extends ActionBarActivity
         sendingUser.saveInBackground();
 
         // Update receiving user's inbox
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("MMMMM d, yyyy, hh:mm a");
 
         JSONObject obj = new JSONObject();
         try {
             obj.put("fluffId",fluff.id);
             obj.put("from",userPhoneNumber);
-            obj.put("date", sdf.format(new Date()));
+//            obj.put("date", sdf.format(new Date()));
+            obj.put("date", new Date().getTime());
         } catch (JSONException e) {
             e.printStackTrace();
         }
