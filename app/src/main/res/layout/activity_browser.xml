@@ -36,23 +36,14 @@
                 android:gravity="center"
                 android:layout_centerInParent="true"/>
 
-            <FrameLayout
-                android:id="@+id/header_right_button_frame"
-                android:layout_marginRight="8dp"
-                android:layout_alignParentRight="true"
+            <ImageButton
+                android:id="@+id/header_right_button"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_margin="8dp"
                 android:layout_centerVertical="true"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:background="@drawable/ic_action_read">
-
-                <ImageButton
-                    android:id="@+id/header_right_button"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@null"
-                    android:scaleType="fitCenter"/>
-
-            </FrameLayout>
+                android:layout_alignParentRight="true"
+                android:background="@null"/>
 
 
         </RelativeLayout>

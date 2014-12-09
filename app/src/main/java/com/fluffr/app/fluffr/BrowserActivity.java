@@ -27,6 +27,7 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -370,6 +371,9 @@ public class BrowserActivity extends ActionBarActivity
             dialog.setContentView(R.layout.loading_dialog);
             dialog.setCanceledOnTouchOutside(false);
 
+            ImageView splash = (ImageView) dialog.findViewById(R.id.splash);
+            splash.setImageResource(R.drawable.fluffr_splash);
+
             Log.d("LoadingSpinner","showing dialog: " + dialog.toString());
             dialog.show();
             isVisible = true;
@@ -450,7 +454,6 @@ public class BrowserActivity extends ActionBarActivity
         TextView title = (TextView) findViewById(R.id.header_title);
         final ImageButton rightButton = (ImageButton) findViewById(R.id.header_right_button);
         final ImageButton navButton = (ImageButton) findViewById(R.id.header_drawer_toggle);
-        final FrameLayout rightButtonFrame = (FrameLayout) findViewById(R.id.header_right_button_frame);
 
         // set title
         if (currentState.equals("Browse")) {
@@ -462,23 +465,22 @@ public class BrowserActivity extends ActionBarActivity
         }
 
         // Assign right button
-        rightButton.setImageResource(R.drawable.inbox_icon_glow);
+        rightButton.setImageResource(R.drawable.ic_action_read);
         rightButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (currentState.equals("Inbox")) {
                     goToBrowse();
-                    rightButtonFrame.setBackgroundResource(R.drawable.ic_action_read);
+                    rightButton.setBackgroundResource(R.drawable.ic_action_read);
                 } else {
                     goToInbox();
-                    rightButtonFrame.setBackgroundResource(R.drawable.fluffr_cat_icon);
+                    rightButton.setBackgroundResource(R.drawable.fluffr_cat_icon);
                 }
             }
         });
 
-        Animation glow = AnimationUtils.loadAnimation(BrowserActivity.this,R.anim.glow_blink);
-//        rightButton.setAnimation(glow);
-        rightButton.startAnimation(glow);
+        Animation blink = AnimationUtils.loadAnimation(BrowserActivity.this,R.anim.glow_blink);
+        rightButton.startAnimation(blink);
 
         // Nav Drawer Button
         navButton.setImageResource(R.drawable.fluffr_cat_icon);

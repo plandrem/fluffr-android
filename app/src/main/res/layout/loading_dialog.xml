@@ -7,10 +7,10 @@
     android:background="@android:color/transparent">
 
     <ImageView
+        android:id="@+id/splash"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/fluffr_splash"
-        android:scaleType="center"/>
+        android:scaleType="centerCrop"/>
 
     <ProgressBar
         android:layout_width="wrap_content"
@@ -18,8 +18,8 @@
         android:layout_centerInParent="true"
         android:indeterminateDrawable="@drawable/spinner"
         android:background="@android:color/transparent"
-        android:minHeight="70dp"
-        android:minWidth="70dp"
+        android:minHeight="60dp"
+        android:minWidth="60dp"
         />
 
 </RelativeLayout>
