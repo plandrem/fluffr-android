@@ -187,6 +187,8 @@ public class FluffView extends RelativeLayout {
             }
 
         }
+
+
     };
 
     private void getDrawableWithImageLoader(Fluff fluff) {
