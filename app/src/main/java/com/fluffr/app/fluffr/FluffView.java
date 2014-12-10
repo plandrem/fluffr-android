@@ -112,10 +112,13 @@ public class FluffView extends RelativeLayout {
         deleteButton.setOnClickListener(buttonClickListener);
 
         if (fluff.favorited) {
-            favoritesButton.setImageResource(R.drawable.ic_action_important);
+            favoritesButton.setImageResource(R.drawable.favorite);
         } else {
-            favoritesButton.setImageResource(R.drawable.ic_action_not_important);
+            favoritesButton.setImageResource(R.drawable.unfavorite);
         }
+
+        // make buttons transparent
+        int a = 50;
 
         // add tag if we're in the inbox
         if (parent.getCurrentState().equals("Inbox")) {
@@ -164,9 +167,9 @@ public class FluffView extends RelativeLayout {
                 // toggle button view
                 if (fluff.favorited) {
                     // already favorited - unstar
-                    favoritesButton.setImageResource(R.drawable.ic_action_not_important);
+                    favoritesButton.setImageResource(R.drawable.unfavorite);
                 } else {
-                    favoritesButton.setImageResource(R.drawable.ic_action_important);
+                    favoritesButton.setImageResource(R.drawable.favorite);
                 }
 
                 buttonInterface.FavoritesButtonPressed(fluff);

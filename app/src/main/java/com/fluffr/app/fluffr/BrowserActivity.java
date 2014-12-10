@@ -29,6 +29,7 @@ import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -83,6 +84,7 @@ public class BrowserActivity extends ActionBarActivity
     // Nav Drawer Stuff
     private ArrayList<NavItem> pages = new ArrayList<NavItem>();
     private DrawerLayout drawerLayout;
+    private LinearLayout drawerLinearLayout;
     private ListView drawerList;
     private ActionBarDrawerToggle drawerToggle;
 
@@ -120,7 +122,8 @@ public class BrowserActivity extends ActionBarActivity
         pages.add(new NavItem("Inbox"));
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawerList = (ListView) findViewById(R.id.left_drawer);
+        drawerLinearLayout = (LinearLayout) findViewById(R.id.left_drawer);
+        drawerList = (ListView) findViewById(R.id.left_drawer_list);
         drawerList.setAdapter(new NavAdapter(this, pages));
         drawerList.setOnItemClickListener(new DrawerItemClickListener());
 
@@ -209,7 +212,7 @@ public class BrowserActivity extends ActionBarActivity
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        boolean drawerOpen = drawerLayout.isDrawerOpen(drawerList);
+        boolean drawerOpen = drawerLayout.isDrawerOpen(drawerLinearLayout);
         // change visibility of action bar stuff depending on drawer state
         return super.onPrepareOptionsMenu(menu);
 
@@ -403,7 +406,7 @@ public class BrowserActivity extends ActionBarActivity
     private void selectNavigationItem(int position) {
 
         drawerList.setItemChecked(position, true);
-        drawerLayout.closeDrawer(drawerList);
+        drawerLayout.closeDrawer(drawerLinearLayout);
 
         if (pages.get(position).text.equals("Browse")) {
             goToBrowse();
@@ -477,18 +480,21 @@ public class BrowserActivity extends ActionBarActivity
         title.setTypeface(type);
 
         if (currentState.equals("Browse")) {
-            logo.setVisibility(View.VISIBLE);
+//            logo.setVisibility(View.VISIBLE);
             title.setText("fluffr");
+            logo.setImageResource(R.drawable.header_main);
             rightButton.setImageResource(R.drawable.ic_action_read);
 
         } else if (currentState.equals("Favorites")) {
-            logo.setVisibility(View.GONE);
+//            logo.setVisibility(View.GONE);
             title.setText("favorites");
+            logo.setImageResource(R.drawable.header_favorites);
             rightButton.setImageResource(R.drawable.ic_action_read);
 
         } else if (currentState.equals("Inbox")) {
-            logo.setVisibility(View.GONE);
+//            logo.setVisibility(View.GONE);
             title.setText("inbox");
+            logo.setImageResource(R.drawable.header_inbox);
             rightButton.setImageResource(R.drawable.fluffr_cat_icon);
         }
 
@@ -512,12 +518,13 @@ public class BrowserActivity extends ActionBarActivity
         }
 
         // Nav Drawer Button
-        navButton.setImageResource(R.drawable.fluffr_cat_icon);
+        navButton.setImageResource(R.drawable.menu);
         navButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (drawerLayout.isDrawerOpen(drawerList)) {
-                    drawerLayout.closeDrawer(drawerList);
+                if (drawerLayout.isDrawerOpen(drawerLinearLayout)) {
+                    drawerLayout.closeDrawer(drawerLinearLayout);
+                    navButton.setImageResource(R.drawable.menu);
                 } else {
 
                     // rotate the image
@@ -530,7 +537,7 @@ public class BrowserActivity extends ActionBarActivity
 
                         @Override
                         public void onAnimationEnd(Animation animation) {
-                            navButton.setImageResource(R.drawable.ic_action_important);
+                            navButton.setImageResource(R.drawable.back_arrow);
                         }
 
                         @Override
@@ -539,7 +546,7 @@ public class BrowserActivity extends ActionBarActivity
                         }
                     });
                     navButton.startAnimation(spin);
-                    drawerLayout.openDrawer(drawerList);
+                    drawerLayout.openDrawer(drawerLinearLayout);
                 }
             }
         });
