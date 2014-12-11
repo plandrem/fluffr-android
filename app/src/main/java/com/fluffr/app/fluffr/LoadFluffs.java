@@ -1,5 +1,6 @@
 package com.fluffr.app.fluffr;
 
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -192,7 +193,10 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
 
                 if (startIndex > 0) {
                     // loading from saved state -- set listview to proper position
-                    parentActivity.listView.setSelection(prependedFluffs);
+//                    parentActivity.listView.setSelection(prependedFluffs);
+                    parentActivity.listView.setSelectionFromTop(prependedFluffs, parentActivity.listOffset);
+
+                    //TODO - adjust listview position to match the scroll position when app was closed.
 
                 } else {
                     // load from scratch

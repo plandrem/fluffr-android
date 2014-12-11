@@ -82,6 +82,7 @@ public class BrowserActivity extends ActionBarActivity
     public LoadingSpinner spinner = new LoadingSpinner();
     public int downloadsInProgress = 0;
     public String userPhoneNumber = "";
+    public int listOffset = 0;
 
     // Nav Drawer Stuff
     private ArrayList<NavItem> pages = new ArrayList<NavItem>();
@@ -220,11 +221,20 @@ public class BrowserActivity extends ActionBarActivity
         Fluff f = adapter.getItem(position);
         int index = f.index;
 
+        // get list offset from top
+        Log.d("SaveState","position: " + Integer.toString(position));
+
+        View v = listView.getChildAt(0);
+        Log.d("SaveState","view: " + v.toString());
+        int top = (v == null) ? 0 : v.getTop();
+        editor.putInt("listOffset",top);
+
         Log.d("SaveState", "saving...");
         String logStr = "";
         logStr += String.format("currentState: %s, ", currentState);
         logStr += String.format("currentBrowseIndex: %d, ", currentBrowseIndex);
         logStr += String.format("index: %d, ", index);
+        logStr += String.format("offset: %d, ", listOffset);
         Log.d("SaveState", logStr);
 
         editor.putInt("fluffIndex",index);
@@ -238,6 +248,7 @@ public class BrowserActivity extends ActionBarActivity
         currentState = sharedPreferences.getString("currentState","Browse");
         currentBrowseIndex = sharedPreferences.getInt("currentBrowseIndex",0);
         int index = sharedPreferences.getInt("fluffIndex", 0);
+        listOffset = sharedPreferences.getInt("listOffset",0);
 
 //        currentBrowseIndex = 0;
 //        index = 0;
@@ -246,6 +257,7 @@ public class BrowserActivity extends ActionBarActivity
         logStr += String.format("currentState: %s, ", currentState);
         logStr += String.format("currentBrowseIndex: %d, ", currentBrowseIndex);
         logStr += String.format("index: %d, ", index);
+        logStr += String.format("offset: %d, ", listOffset);
         Log.d("LoadState", logStr);
 
         //Load initial data

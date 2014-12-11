@@ -22,7 +22,7 @@ public class FluffScrollListener implements AbsListView.OnScrollListener {
 
     @Override
     public void onScrollStateChanged(AbsListView view, int scrollState) {
-//        Log.d("FluffScrollListener","onScrollStateChanged");
+
         if (scrollState == SCROLL_STATE_IDLE && parent.downloadsInProgress == 0) {
 
             //TODO - don't fetch data if all data already pulled
