@@ -68,7 +68,7 @@ public class LoadInbox extends AsyncTask<Void,Void,ArrayList<Fluff>> {
         // get image data from Parse
         for (HashMap<String,Object> hm : inbox) {
 
-            Fluff f = new Fluff((String) hm.get("fluffId"));
+            Fluff f = Fluff.fromString((String) hm.get("fluffId"));
             f.sender = (String) hm.get("from");
             f.sendDate = (Long) hm.get("date");
 

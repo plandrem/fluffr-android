@@ -38,7 +38,7 @@ public class FluffView extends RelativeLayout {
 
     private InboxBadge badge;
 
-    private ContactsDialog contactsDialog;
+    public int fluffIndex;
 
     public static FluffView inflate(ViewGroup parent) {
         FluffView fluffView = (FluffView) LayoutInflater.from(parent.getContext())
@@ -97,6 +97,9 @@ public class FluffView extends RelativeLayout {
         // be created at this point (eg. button clicks)
 
         fluff.position = position;
+
+        fluffIndex = fluff.index;
+        Log.d("FluffView setItem","fluff index: " + Integer.toString(fluffIndex));
 
         title.setVisibility(INVISIBLE);
         subtitle.setVisibility(INVISIBLE);

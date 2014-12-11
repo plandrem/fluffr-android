@@ -70,7 +70,7 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
         // get data from Parse
         ParseQuery<ParseObject> query = ParseQuery.getQuery("fluff");
         query.setLimit(QUERY_LIMIT);
-        query.whereGreaterThanOrEqualTo("index",startIndex);
+
         query.addAscendingOrder("index");
         query.whereNotEqualTo("deletedByAdmin",true);
         if (dislikes != null) query.whereNotContainedIn("objectId",dislikes);
@@ -81,11 +81,15 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
         //TODO -- update favorites and inbox as user scrolls
 
         if (mode.equals("init")) {
+            if (startIndex > 0) {
+                query.whereGreaterThanOrEqualTo("index", startIndex - QUERY_LIMIT / 2);
+            }
 
         } else if (mode.equals("favorites")) {
             query.whereContainedIn("objectId", favorites);
 
         } else if (mode.equals("more_browse")) {
+            query.whereGreaterThanOrEqualTo("index",startIndex);
 
         } else {
 
@@ -103,17 +107,7 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
 
                 for (ParseObject object : parseObjects) {
 
-                    Fluff fluff = new Fluff();
-                    fluff.title = (String) object.get("title");
-                    fluff.subtitle = "subtitle";
-                    fluff.id = object.getObjectId();
-                    fluff.parseFile = object.getParseFile("image");
-
-                    if (fluff.parseFile != null) {
-                        ImageLoader.getInstance().loadImageSync(fluff.parseFile.getUrl());
-                    } else {
-                        Log.e("LoadFluffs",String.format("Error: no ParseFile found for item with objectId %s", fluff.id));
-                    }
+                    Fluff fluff = new Fluff(object);
 
                     if (favorites.contains(fluff.id)) {
                         fluff.favorited = true;

@@ -24,12 +24,30 @@ public class Fluff {
     public String sender;
     public Long sendDate;
     public int position;
+    public int index;
 
     public Fluff() {
 
     }
 
-    public Fluff(String fluffId) {
+    public Fluff(ParseObject object) {
+
+        this.title = (String) object.get("title");
+        this.subtitle = "subtitle";
+        this.id = object.getObjectId();
+        this.parseFile = object.getParseFile("image");
+        this.index = object.getInt("index");
+
+        if (this.parseFile != null) {
+            ImageLoader.getInstance().loadImageSync(this.parseFile.getUrl());
+        } else {
+            Log.e("LoadFluffs",String.format("Error: no ParseFile found for item with objectId %s", this.id));
+        }
+
+
+    }
+
+    public static Fluff fromString(String fluffId) {
 
         ParseQuery query = ParseQuery.getQuery("fluff");
         ParseObject object = null;
@@ -39,16 +57,19 @@ public class Fluff {
             e.printStackTrace();
         }
 
-        this.title = (String) object.get("title");
-        this.subtitle = "subtitle";
-        this.id = object.getObjectId();
-        this.parseFile = object.getParseFile("image");
+        return new Fluff(object);
 
-        if (this.parseFile != null) {
-            ImageLoader.getInstance().loadImageSync(this.parseFile.getUrl());
-        } else {
-            Log.e("Fluff", String.format("Error: no ParseFile found for item with objectId %s", this.id));
-        }
+//        this.title = (String) object.get("title");
+//        this.subtitle = "subtitle";
+//        this.id = object.getObjectId();
+//        this.parseFile = object.getParseFile("image");
+//        this.index = object.getInt("index");
+//
+//        if (this.parseFile != null) {
+//            ImageLoader.getInstance().loadImageSync(this.parseFile.getUrl());
+//        } else {
+//            Log.e("Fluff", String.format("Error: no ParseFile found for item with objectId %s", this.id));
+//        }
 
     }
 

@@ -9,6 +9,8 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
+import android.os.Parcelable;
+import android.os.PersistableBundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -111,6 +113,11 @@ public class BrowserActivity extends ActionBarActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_browser);
 
+        if (savedInstanceState != null) {
+            Log.d("onCreate","found SavedInstanceState bundle");
+//            currentState = savedInstanceState.getString("currentState");
+        }
+
         spinner.show();
 
         // assign views
@@ -166,16 +173,8 @@ public class BrowserActivity extends ActionBarActivity
         listView.setAdapter(adapter);
         listView.setOnScrollListener(new FluffScrollListener(this));
 
-        //Load initial data
-        Log.d("onCreate","Executing initial LoadFluff...");
-        new LoadFluffs(this, "init").execute();
-
-        // get favorites list
-        new LoadFluffs(this,"favorites").execute();
-
-        // get inbox list
-        new LoadInbox(this,"inbox").execute();
-
+        // Check for saved data, or start up with initial parameters
+        LoadState();
 
         //Finalize UI
         Log.d("onCreate","finalize UI...");
@@ -199,6 +198,65 @@ public class BrowserActivity extends ActionBarActivity
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        Log.d("onSaveInstanceState","saving state...");
+        super.onSaveInstanceState(outState);
+
+        Parcelable listState = listView.onSaveInstanceState();
+        outState.putParcelable("listState",listState);
+        outState.putString("currentState",currentState);
+        outState.putInt("currentBrowseIndex", currentBrowseIndex);
+
+    }
+
+    private void SaveState(){
+        SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("currentState",currentState);
+        editor.putInt("currentBrowseIndex",currentBrowseIndex);
+
+        // get currently visible Fluff index
+        int position = listView.getFirstVisiblePosition();
+        Fluff f = adapter.getItem(position);
+        int index = f.index;
+
+        editor.putInt("fluffIndex",index);
+
+        editor.commit();
+    }
+
+    private void LoadState(){
+        SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+
+//        currentState = sharedPreferences.getString("currentState","Browse");
+//        currentBrowseIndex = sharedPreferences.getInt("currentBrowseIndex",0);
+        int index = sharedPreferences.getInt("fluffIndex", 0);
+
+        String logStr = "";
+        logStr += String.format("currentState: %s, ", currentState);
+        logStr += String.format("currentBrowseIndex: %d, ", currentBrowseIndex);
+        logStr += String.format("index: %d, ", index);
+        Log.d("LoadState", logStr);
+
+        //Load initial data
+        Log.d("onCreate","Executing initial LoadFluff...");
+        new LoadFluffs(this, "init", false, index).execute();
+
+        // get favorites list
+        new LoadFluffs(this,"favorites").execute();
+
+        // get inbox list
+        new LoadInbox(this,"inbox").execute();
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        SaveState();
+    }
+
+    @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
 //        drawerToggle.syncState();
@@ -217,7 +275,6 @@ public class BrowserActivity extends ActionBarActivity
         return super.onPrepareOptionsMenu(menu);
 
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
