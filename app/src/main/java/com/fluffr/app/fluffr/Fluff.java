@@ -41,7 +41,7 @@ public class Fluff {
         if (this.parseFile != null) {
             ImageLoader.getInstance().loadImageSync(this.parseFile.getUrl());
         } else {
-            Log.e("LoadFluffs",String.format("Error: no ParseFile found for item with objectId %s", this.id));
+            Log.e("Fluff",String.format("Error: no ParseFile found for item with objectId %s", this.id));
         }
 
 

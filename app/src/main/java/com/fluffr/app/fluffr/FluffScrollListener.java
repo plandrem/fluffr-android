@@ -29,8 +29,23 @@ public class FluffScrollListener implements AbsListView.OnScrollListener {
 
             int maxPosition = view.getCount() - 1;
             Fluff lastFluff = parent.adapter.getItem(maxPosition);
+            Fluff firstFluff = parent.adapter.getItem(0);
 
-            if (view.getLastVisiblePosition() >= maxPosition - 1 - threshold) {
+            // approaching top of list
+            if (view.getFirstVisiblePosition() <= threshold) {
+                // load more items
+                String state = parent.getCurrentState().toLowerCase();
+                if (!state.equals("browse")) return;
+
+                int index = firstFluff.index - 1;
+
+                //TODO -- note, the -1 above will not work for "most liked" or indices that
+                // allow degeneracy
+
+                new LoadFluffs(parent, "more_" + state + "_up", true, index).execute();
+
+            } else if (view.getLastVisiblePosition() >= maxPosition - 1 - threshold) {
+                // end of list
                 // load more items
                 String state = parent.getCurrentState().toLowerCase();
                 int index = lastFluff.index + 1;
@@ -41,7 +56,6 @@ public class FluffScrollListener implements AbsListView.OnScrollListener {
                 new LoadFluffs(parent, "more_" + state, true, index).execute();
 
             }
-
         }
     }
 

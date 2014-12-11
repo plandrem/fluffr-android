@@ -384,6 +384,19 @@ public class BrowserActivity extends ActionBarActivity
 
         }
 
+        public void prependFluffs(ArrayList<Fluff> newFluffs) {
+
+            int index = listView.getFirstVisiblePosition() + newFluffs.size();
+            View v = listView.getChildAt(listView.getHeaderViewsCount());
+            int top = (v == null) ? 0 : v.getTop();
+
+            this.fluffs.addAll(0,newFluffs);
+            notifyDataSetChanged();
+
+            listView.setSelectionFromTop(index, top);
+
+        }
+
         public void clear() {
             this.fluffs.clear();
         }

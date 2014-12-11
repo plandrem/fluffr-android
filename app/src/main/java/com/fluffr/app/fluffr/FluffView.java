@@ -99,7 +99,7 @@ public class FluffView extends RelativeLayout {
         fluff.position = position;
 
         fluffIndex = fluff.index;
-        Log.d("FluffView setItem","fluff index: " + Integer.toString(fluffIndex));
+//        Log.d("FluffView setItem","fluff index: " + Integer.toString(fluffIndex));
 
         title.setVisibility(INVISIBLE);
         subtitle.setVisibility(INVISIBLE);

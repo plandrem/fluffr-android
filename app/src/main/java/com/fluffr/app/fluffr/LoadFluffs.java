@@ -14,6 +14,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -92,11 +93,12 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
                 query.whereGreaterThanOrEqualTo("index", startIndex);
 
                 prependQuery = ParseQuery.getQuery("fluff");
-                prependQuery.addAscendingOrder("index");
+                prependQuery.addDescendingOrder("index");
                 prependQuery.whereNotEqualTo("deletedByAdmin",true);
                 if (dislikes != null) prependQuery.whereNotContainedIn("objectId",dislikes);
 
                 prependQuery.whereLessThan("index",startIndex);
+                prependQuery.setLimit(QUERY_LIMIT);
 
             }
 
@@ -106,31 +108,44 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
         } else if (mode.equals("more_browse")) {
             query.whereGreaterThanOrEqualTo("index",startIndex);
 
+        } else if (mode.equals("more_browse_up")) {
+            query = null;
+
+            prependQuery = ParseQuery.getQuery("fluff");
+            prependQuery.addDescendingOrder("index");
+            prependQuery.whereNotEqualTo("deletedByAdmin",true);
+            if (dislikes != null) prependQuery.whereNotContainedIn("objectId",dislikes);
+
+            prependQuery.whereLessThan("index",startIndex);
+            prependQuery.setLimit(QUERY_LIMIT);
+
         } else {
 
         }
 
 
         try {
-            List<ParseObject> parseObjects = query.find();
+            if (query != null) {
+                List<ParseObject> parseObjects = query.find();
 
-            if (parseObjects.size() == 0) {
-                Log.e("LoadFluffs", "Error: no parse objects found.");
-                return null;
+                if (parseObjects.size() == 0) {
+                    Log.e("LoadFluffs", "Error: no parse objects found.");
+                    return null;
 
-            } else {
+                } else {
 
-                for (ParseObject object : parseObjects) {
+                    for (ParseObject object : parseObjects) {
 
-                    Fluff fluff = new Fluff(object);
+                        Fluff fluff = new Fluff(object);
 
-                    if (favorites.contains(fluff.id)) {
-                        fluff.favorited = true;
+                        if (favorites.contains(fluff.id)) {
+                            fluff.favorited = true;
+                        }
+
+//                        Log.d("LoadFluffs", "objectId: " + object.getObjectId());
+
+                        fluffs.add(fluff);
                     }
-
-                    Log.d("LoadFluffs", "objectId: " + object.getObjectId());
-
-                    fluffs.add(fluff);
                 }
             }
 
@@ -153,7 +168,7 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
                             fluff.favorited = true;
                         }
 
-                        Log.d("LoadFluffs", "objectId: " + object.getObjectId());
+//                        Log.d("LoadFluffs", "objectId: " + object.getObjectId());
 
                         prependFluffs.add(fluff);
                     }
@@ -226,7 +241,11 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
             } else if (mode.equals("more_browse")) {
                 parentActivity.list.addAll(fluffs);
                 parentActivity.adapter.addFluffs(fluffs);
-                parentActivity.increaseBrowseIndex(QUERY_LIMIT);
+
+            } else if (mode.equals("more_browse_up")) {
+                Collections.reverse(fluffs);
+                parentActivity.list.addAll(0, fluffs);
+                parentActivity.adapter.prependFluffs(fluffs);
 
             }
 
