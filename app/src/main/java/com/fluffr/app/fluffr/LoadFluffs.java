@@ -31,6 +31,7 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
     private int startIndex;
     private boolean inBackground = false;
 
+    private int prependedFluffs = 0;
     private int QUERY_LIMIT = 20;
 
     public LoadFluffs(BrowserActivity a, String mode) {
@@ -75,17 +76,27 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
         query.whereNotEqualTo("deletedByAdmin",true);
         if (dislikes != null) query.whereNotContainedIn("objectId",dislikes);
 
+        // if we need to load fluffs before the starting index, use a prepend query
+        // otherwise leave null.
+        ParseQuery<ParseObject> prependQuery = null;
 
-        Log.d("LoadFluffs", "Running " + mode + " query");
+
+        Log.d("LoadFluffs", "Running " + mode + " query with start index: " + Integer.toString(startIndex));
 
         //TODO -- update favorites and inbox as user scrolls
 
         if (mode.equals("init")) {
             if (startIndex > 0) {
 
-                //TODO -- need to prepend with another query using < startindex
                 query.whereGreaterThanOrEqualTo("index", startIndex);
-                query.whereLessThan("index",parentActivity.getCurrentBrowseIndex());
+
+                prependQuery = ParseQuery.getQuery("fluff");
+                prependQuery.addAscendingOrder("index");
+                prependQuery.whereNotEqualTo("deletedByAdmin",true);
+                if (dislikes != null) prependQuery.whereNotContainedIn("objectId",dislikes);
+
+                prependQuery.whereLessThan("index",startIndex);
+
             }
 
         } else if (mode.equals("favorites")) {
@@ -122,6 +133,36 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
                 }
             }
 
+            // prepend with indices before startIndex
+            if (prependQuery != null) {
+                ArrayList<Fluff> prependFluffs = new ArrayList<Fluff>(QUERY_LIMIT);
+                List<ParseObject> prependParseObjects = prependQuery.find();
+
+                if (prependParseObjects.size() == 0) {
+                    Log.e("LoadFluffs", "Error: no prependable parse objects found.");
+                    return null;
+
+                } else {
+
+                    for (ParseObject object : prependParseObjects) {
+
+                        Fluff fluff = new Fluff(object);
+
+                        if (favorites.contains(fluff.id)) {
+                            fluff.favorited = true;
+                        }
+
+                        Log.d("LoadFluffs", "objectId: " + object.getObjectId());
+
+                        prependFluffs.add(fluff);
+                    }
+
+                    fluffs.addAll(0, prependFluffs);
+                    prependedFluffs = prependFluffs.size();
+                }
+
+            }
+
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -151,9 +192,7 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
 
                 if (startIndex > 0) {
                     // loading from saved state -- set listview to proper position
-//                    parentActivity.listView.setSelection(QUERY_LIMIT);
-
-                    // set browse index
+                    parentActivity.listView.setSelection(prependedFluffs);
 
                 } else {
                     // load from scratch
