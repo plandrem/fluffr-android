@@ -220,6 +220,13 @@ public class BrowserActivity extends ActionBarActivity
         Fluff f = adapter.getItem(position);
         int index = f.index;
 
+        Log.d("SaveState", "saving...");
+        String logStr = "";
+        logStr += String.format("currentState: %s, ", currentState);
+        logStr += String.format("currentBrowseIndex: %d, ", currentBrowseIndex);
+        logStr += String.format("index: %d, ", index);
+        Log.d("SaveState", logStr);
+
         editor.putInt("fluffIndex",index);
 
         editor.commit();
@@ -228,9 +235,12 @@ public class BrowserActivity extends ActionBarActivity
     private void LoadState(){
         SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
 
-//        currentState = sharedPreferences.getString("currentState","Browse");
-//        currentBrowseIndex = sharedPreferences.getInt("currentBrowseIndex",0);
+        currentState = sharedPreferences.getString("currentState","Browse");
+        currentBrowseIndex = sharedPreferences.getInt("currentBrowseIndex",0);
         int index = sharedPreferences.getInt("fluffIndex", 0);
+
+//        currentBrowseIndex = 0;
+//        index = 0;
 
         String logStr = "";
         logStr += String.format("currentState: %s, ", currentState);

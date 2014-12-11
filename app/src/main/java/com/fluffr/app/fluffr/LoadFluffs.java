@@ -82,7 +82,10 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
 
         if (mode.equals("init")) {
             if (startIndex > 0) {
-                query.whereGreaterThanOrEqualTo("index", startIndex - QUERY_LIMIT / 2);
+
+                //TODO -- need to prepend with another query using < startindex
+                query.whereGreaterThanOrEqualTo("index", startIndex);
+                query.whereLessThan("index",parentActivity.getCurrentBrowseIndex());
             }
 
         } else if (mode.equals("favorites")) {
@@ -145,7 +148,18 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
                 }
 
                 parentActivity.adapter.addFluffs(fluffs);
-                parentActivity.increaseBrowseIndex(QUERY_LIMIT);
+
+                if (startIndex > 0) {
+                    // loading from saved state -- set listview to proper position
+//                    parentActivity.listView.setSelection(QUERY_LIMIT);
+
+                    // set browse index
+
+                } else {
+                    // load from scratch
+
+                }
+
 
                 // now that we've loaded initial data, handle any
                 // further instructions such as navigation to other pages
