@@ -62,7 +62,12 @@ public class FluffScrollListener implements AbsListView.OnScrollListener {
                 //TODO -- note, the +1 above will not work for "most liked" or indices that
                 // allow degeneracy
 
-                new LoadFluffs(parent, "more_" + state, true, index).execute();
+                if (state.equals("inbox")) {
+                    index = parent.inbox.size();
+                    new LoadInbox(parent, "more_inbox", index).execute();
+                } else {
+                    new LoadFluffs(parent, "more_" + state, true, index).execute();
+                }
 
             }
 

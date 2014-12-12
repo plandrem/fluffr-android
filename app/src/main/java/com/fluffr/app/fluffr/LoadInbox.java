@@ -41,36 +41,54 @@ public class LoadInbox extends AsyncTask<Void,Void,ArrayList<Fluff>> {
     protected void onPreExecute() {
         super.onPreExecute();
         parentActivity.downloadsInProgress += 1;
-        parentActivity.spinner.show();
+//        parentActivity.spinner.show();
+        Log.d("LoadInbox","Running inbox query with startindex = " + Integer.toString(startIndex));
     }
 
     @Override
     protected ArrayList<Fluff> doInBackground(Void... params) {
 
         ParseUser user = ParseUser.getCurrentUser();
-        ArrayList<HashMap<String,Object>> inbox = (ArrayList) user.get("inbox");
+        ArrayList<HashMap<String,Object>> hashmaps = (ArrayList) user.get("inbox");
+        if (hashmaps == null) {
+            Log.d("LoadInbox","Inbox empty.");
+            return null;
+        }
+
+
+        ArrayList<InboxItem> inbox = new ArrayList<InboxItem>(hashmaps.size());
+
+        for (HashMap hm : hashmaps) {
+            inbox.add(new InboxItem(hm));
+        }
+        Collections.sort(inbox,new InboxItem.DateComparator());
+
+
         ArrayList<String> favorites = (ArrayList) user.get("favorites");
 
         ArrayList<Fluff> fluffs = new ArrayList<Fluff>();
 
-        if (inbox == null) {
-            Log.d("LoadInbox","Inbox empty.");
-            return null;
-        }
 
         Log.d("LoadInbox","inbox: " + inbox.toString());
 
         if (inbox.size() == 0) {
             Log.d("LoadInbox","Inbox empty.");
             return null;
+        } else {
+            Log.d("LoadInbox","Inbox size: " + Integer.toString(inbox.size()));
         }
 
         // get image data from Parse
-        for (HashMap<String,Object> hm : inbox) {
+        for (int i=startIndex; i<startIndex + QUERY_LIMIT; i++) {
 
-            Fluff f = Fluff.fromString((String) hm.get("fluffId"));
-            f.sender = (String) hm.get("from");
-            f.sendDate = (Long) hm.get("date");
+            if (i >= inbox.size()) break;
+
+            InboxItem item = inbox.get(i);
+
+            Log.d("LoadInbox",String.format("Item - date: %d, sender: %s, fluffId: %s",item.date,item.from,item.fluffId));
+            Fluff f = Fluff.fromString(item.fluffId);
+            f.sender = (String) item.from;
+            f.sendDate = (Long) item.date;
 
             if (favorites.contains(f.id)) {
                 f.favorited = true;
@@ -80,8 +98,6 @@ public class LoadInbox extends AsyncTask<Void,Void,ArrayList<Fluff>> {
 
         }
 
-        Collections.reverse(fluffs);
-
         return fluffs;
     }
 
@@ -90,17 +106,17 @@ public class LoadInbox extends AsyncTask<Void,Void,ArrayList<Fluff>> {
         super.onPostExecute(fluffs);
 
         if (fluffs != null) {
-            parentActivity.inbox = fluffs;
+            parentActivity.inbox.addAll(fluffs);
 
             if (parentActivity.getCurrentState().equals("Inbox")) {
-                parentActivity.adapter.clear();
                 parentActivity.adapter.addFluffs(fluffs);
-                parentActivity.spinner.dismiss();
+                parentActivity.adapter.logFluffs();
             }
 
-            parentActivity.downloadsInProgress -= 1;
-            if (parentActivity.downloadsInProgress == 0) parentActivity.spinner.dismiss();
-
         }
+
+        parentActivity.downloadsInProgress -= 1;
+        if (parentActivity.downloadsInProgress == 0) parentActivity.spinner.dismiss();
+
     }
 }

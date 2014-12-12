@@ -42,6 +42,7 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -405,6 +406,7 @@ public class BrowserActivity extends ActionBarActivity
             }
 
             Log.d("Fluff Adapter",str);
+            Log.d("Fluff Adapter","Total count: " + Integer.toString(this.fluffs.size()));
 
         }
 
@@ -804,7 +806,8 @@ public class BrowserActivity extends ActionBarActivity
                 e.printStackTrace();
             }
 
-            hasUnseenFluffs = user.getBoolean("hasUnseenFluffs");
+            String huf = user.getString("hasUnseenFluffs");
+            hasUnseenFluffs = huf.equals("true");
 
         } else {
 
@@ -1014,6 +1017,8 @@ public class BrowserActivity extends ActionBarActivity
         ParseQuery userQuery = ParseUser.getQuery();
         userQuery.whereEqualTo("username",recipient);
         ParseUser recipientUser = (ParseUser) userQuery.getFirst();
+        Log.d("SendFluffPush",recipient);
+        Log.d("SendFluffPush",recipientUser.toString());
 
         String platform = recipientUser.getString("platform");
         String deviceId = "";
@@ -1054,9 +1059,17 @@ public class BrowserActivity extends ActionBarActivity
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+        Log.d("SendFluffPush",obj.toString());
         recipientUser.add("inbox",obj);
-        recipientUser.put("hasUnseenFluffs", true);
-        recipientUser.saveInBackground();
+        recipientUser.put("hasUnseenFluffs", "true");
+        recipientUser.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                //TODO - send push as part of callback
+                Log.d("SendFluffCallback","done sending.");
+            }
+        });
 
 //        userQuery.getFirstInBackground(new updateInboxCallback(userPhoneNumber, fluffId));
 

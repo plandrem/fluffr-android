@@ -10,6 +10,8 @@ import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
+import java.util.Comparator;
+
 /**
  * Created by Patrick on 10/20/14.
  */
@@ -70,6 +72,15 @@ public class Fluff {
 //        } else {
 //            Log.e("Fluff", String.format("Error: no ParseFile found for item with objectId %s", this.id));
 //        }
+
+    }
+
+    public static class DateComparitor  implements Comparator<Fluff> {
+
+        @Override
+        public int compare(Fluff lhs, Fluff rhs) {
+            return 0;
+        }
 
     }
 
