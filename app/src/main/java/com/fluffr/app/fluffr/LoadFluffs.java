@@ -70,6 +70,8 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
         ArrayList<String> favorites = (ArrayList) user.get("favorites");
         ArrayList<String> dislikes  = (ArrayList) user.get("dislikes");
 
+        Log.d("LoadFluffs","Favorites Count = " + Integer.toString(favorites.size()));
+
         // get data from Parse
         ParseQuery<ParseObject> query = ParseQuery.getQuery("fluff");
         query.setLimit(QUERY_LIMIT);
@@ -102,8 +104,9 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
 
             }
 
-        } else if (mode.equals("favorites")) {
+        } else if (mode.equals("favorites") || mode.equals("more_favorites")) {
             query.whereContainedIn("objectId", favorites);
+            query.whereGreaterThanOrEqualTo("index",startIndex);
 
         } else if (mode.equals("more_browse")) {
             query.whereGreaterThanOrEqualTo("index",startIndex);
@@ -142,7 +145,7 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
                             fluff.favorited = true;
                         }
 
-//                        Log.d("LoadFluffs", "objectId: " + object.getObjectId());
+                        Log.d("LoadFluffs", "objectId: " + object.getObjectId());
 
                         fluffs.add(fluff);
                     }
@@ -226,17 +229,19 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
 
 //                parentActivity.spinner.dismiss();
 
-            } else if (mode.equals("favorites")) {
-                parentActivity.favorites.clear();
+            } else if (mode.equals("favorites") || mode.equals("more_favorites")) {
 
                 for (Fluff fluff : fluffs) {
                     parentActivity.favorites.add(fluff);
                 }
 
                 if (parentActivity.getCurrentState().equals("Favorites")) {
+                    parentActivity.adapter.logFluffs();
                     parentActivity.adapter.clear();
                     parentActivity.adapter.addFluffs(parentActivity.favorites);
                     parentActivity.spinner.dismiss();
+
+                    parentActivity.adapter.logFluffs();
                 }
 
             } else if (mode.equals("more_browse")) {
