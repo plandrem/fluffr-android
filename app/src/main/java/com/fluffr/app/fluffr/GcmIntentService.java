@@ -118,6 +118,7 @@ public class GcmIntentService extends IntentService {
                 Intent startupIntent = new Intent(this, BrowserActivity.class);
                 startupIntent.putExtra("startupMode","newFluff");
                 startupIntent.putExtra("fluffId",fluffId);
+                startupIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
                 PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
                         startupIntent, 0);

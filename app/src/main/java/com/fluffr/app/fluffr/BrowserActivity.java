@@ -184,6 +184,21 @@ public class BrowserActivity extends ActionBarActivity
 
     }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        Log.d("onNewIntent", "received new intent.");
+
+        Bundle extras = intent.getExtras();
+
+        if (extras.containsKey("startupMode")) {
+            String mode = extras.getString("startupMode");
+
+            if (mode.equals("newFluff")) {
+                goToInbox();
+            }
+        }
+    }
 
     @Override
     protected void onResume() {
@@ -554,6 +569,8 @@ public class BrowserActivity extends ActionBarActivity
 
     private void goToInbox() {
         currentState = "Inbox";
+
+        //TODO - refresh inbox
 
         // replace browser's existing data with new list
         Log.d("goToInbox","clearing current list...");
