@@ -634,9 +634,11 @@ public class BrowserActivity extends ActionBarActivity
         });
 
         // Set animation if user has unseen fluffs in his inbox
-        if (hasUnseenFluffs) {
+        if (hasUnseenFluffs && !currentState.equals("Inbox")) {
             Animation blink = AnimationUtils.loadAnimation(BrowserActivity.this, R.anim.glow_blink);
             rightButton.startAnimation(blink);
+        } else {
+            rightButton.clearAnimation();
         }
 
         // Nav Drawer Button
