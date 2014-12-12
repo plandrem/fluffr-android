@@ -70,7 +70,11 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
         ArrayList<String> favorites = (ArrayList) user.get("favorites");
         ArrayList<String> dislikes  = (ArrayList) user.get("dislikes");
 
-        Log.d("LoadFluffs","Favorites Count = " + Integer.toString(favorites.size()));
+        if (favorites != null) {
+            Log.d("LoadFluffs", "Favorites Count = " + Integer.toString(favorites.size()));
+        } else {
+            favorites = new ArrayList<String>();
+        }
 
         // get data from Parse
         ParseQuery<ParseObject> query = ParseQuery.getQuery("fluff");
@@ -250,12 +254,14 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
 
             }
 
-            parentActivity.downloadsInProgress -= 1;
-            if (!inBackground) {
-                if (parentActivity.downloadsInProgress == 0) parentActivity.spinner.dismiss();
-            }
 
         }
+
+        parentActivity.downloadsInProgress -= 1;
+        if (!inBackground) {
+            if (parentActivity.downloadsInProgress == 0) parentActivity.spinner.dismiss();
+        }
+
     }
 
 }

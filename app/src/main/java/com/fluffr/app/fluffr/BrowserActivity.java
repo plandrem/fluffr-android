@@ -244,6 +244,7 @@ public class BrowserActivity extends ActionBarActivity
         Log.d("SaveState","position: " + Integer.toString(listPosition));
 
         editor.putInt("listOffset",listOffset);
+        editor.putInt("listPosition",listPosition);
 
         Log.d("SaveState", "saving...");
         String logStr = "";
@@ -265,6 +266,7 @@ public class BrowserActivity extends ActionBarActivity
         currentBrowseIndex = sharedPreferences.getInt("currentBrowseIndex",0);
         int index = sharedPreferences.getInt("fluffIndex", 0);
         listOffset = sharedPreferences.getInt("listOffset",0);
+        listPosition = sharedPreferences.getInt("listPosition",0);
 
 //        currentBrowseIndex = 0;
 //        index = 0;
@@ -527,6 +529,8 @@ public class BrowserActivity extends ActionBarActivity
 
         drawerList.setItemChecked(position, true);
         drawerLayout.closeDrawer(drawerLinearLayout);
+
+        if (pages.get(position).text.equals(currentState)) return;
 
         if (pages.get(position).text.equals("Browse")) {
             goToBrowse();
