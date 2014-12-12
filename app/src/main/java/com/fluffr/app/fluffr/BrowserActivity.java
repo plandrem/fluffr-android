@@ -84,7 +84,7 @@ public class BrowserActivity extends ActionBarActivity
     public int downloadsInProgress = 0;
     public String userPhoneNumber = "";
     public int listOffset = 0;
-    public int listIndex = 0;
+    public int listPosition = 0;
 
     // Nav Drawer Stuff
     private ArrayList<NavItem> pages = new ArrayList<NavItem>();
@@ -234,18 +234,16 @@ public class BrowserActivity extends ActionBarActivity
         editor.putString("currentState",currentState);
         editor.putInt("currentBrowseIndex",currentBrowseIndex);
 
+        if (getCurrentState().equals("Browse")) savePosition();
+
         // get currently visible Fluff index
-        int position = listView.getFirstVisiblePosition();
-        Fluff f = adapter.getItem(position);
+        Fluff f = list.get(listPosition);
         int index = f.index;
 
         // get list offset from top
-        Log.d("SaveState","position: " + Integer.toString(position));
+        Log.d("SaveState","position: " + Integer.toString(listPosition));
 
-        View v = listView.getChildAt(0);
-        Log.d("SaveState","view: " + v.toString());
-        int top = (v == null) ? 0 : v.getTop();
-        editor.putInt("listOffset",top);
+        editor.putInt("listOffset",listOffset);
 
         Log.d("SaveState", "saving...");
         String logStr = "";
@@ -265,7 +263,7 @@ public class BrowserActivity extends ActionBarActivity
 
         currentState = sharedPreferences.getString("currentState","Browse");
         currentBrowseIndex = sharedPreferences.getInt("currentBrowseIndex",0);
-        listIndex = sharedPreferences.getInt("fluffIndex", 0);
+        int index = sharedPreferences.getInt("fluffIndex", 0);
         listOffset = sharedPreferences.getInt("listOffset",0);
 
 //        currentBrowseIndex = 0;
@@ -274,13 +272,13 @@ public class BrowserActivity extends ActionBarActivity
         String logStr = "";
         logStr += String.format("currentState: %s, ", currentState);
         logStr += String.format("currentBrowseIndex: %d, ", currentBrowseIndex);
-        logStr += String.format("index: %d, ", listIndex);
+        logStr += String.format("index: %d, ", index);
         logStr += String.format("offset: %d, ", listOffset);
         Log.d("LoadState", logStr);
 
         //Load initial data
         Log.d("onCreate","Executing initial LoadFluff...");
-        new LoadFluffs(this, "init", false, listIndex).execute();
+        new LoadFluffs(this, "init", false, index).execute();
 
         // get favorites list
         new LoadFluffs(this,"favorites").execute();
@@ -1158,13 +1156,13 @@ public class BrowserActivity extends ActionBarActivity
         int top = (v == null) ? 0 : v.getTop();
 
         listOffset = top;
-        listIndex = position;
+        listPosition = position;
 
     }
 
     public void restorePosition() {
-        Log.d("restoring","index:" + Integer.toString(listIndex) + ", offset: " + Integer.toString(listOffset));
-        listView.setSelectionFromTop(listIndex, listOffset);
+        Log.d("restoring","index:" + Integer.toString(listPosition) + ", offset: " + Integer.toString(listOffset));
+        listView.setSelectionFromTop(listPosition, listOffset);
     }
 
     public boolean isAdmin() {
