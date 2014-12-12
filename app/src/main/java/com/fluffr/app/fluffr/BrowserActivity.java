@@ -84,6 +84,7 @@ public class BrowserActivity extends ActionBarActivity
     public int downloadsInProgress = 0;
     public String userPhoneNumber = "";
     public int listOffset = 0;
+    public int listIndex = 0;
 
     // Nav Drawer Stuff
     private ArrayList<NavItem> pages = new ArrayList<NavItem>();
@@ -196,6 +197,7 @@ public class BrowserActivity extends ActionBarActivity
 
             if (mode.equals("newFluff")) {
                 goToInbox();
+                scrollToTop();
             }
         }
     }
@@ -263,7 +265,7 @@ public class BrowserActivity extends ActionBarActivity
 
         currentState = sharedPreferences.getString("currentState","Browse");
         currentBrowseIndex = sharedPreferences.getInt("currentBrowseIndex",0);
-        int index = sharedPreferences.getInt("fluffIndex", 0);
+        listIndex = sharedPreferences.getInt("fluffIndex", 0);
         listOffset = sharedPreferences.getInt("listOffset",0);
 
 //        currentBrowseIndex = 0;
@@ -272,13 +274,13 @@ public class BrowserActivity extends ActionBarActivity
         String logStr = "";
         logStr += String.format("currentState: %s, ", currentState);
         logStr += String.format("currentBrowseIndex: %d, ", currentBrowseIndex);
-        logStr += String.format("index: %d, ", index);
+        logStr += String.format("index: %d, ", listIndex);
         logStr += String.format("offset: %d, ", listOffset);
         Log.d("LoadState", logStr);
 
         //Load initial data
         Log.d("onCreate","Executing initial LoadFluff...");
-        new LoadFluffs(this, "init", false, index).execute();
+        new LoadFluffs(this, "init", false, listIndex).execute();
 
         // get favorites list
         new LoadFluffs(this,"favorites").execute();
@@ -550,12 +552,18 @@ public class BrowserActivity extends ActionBarActivity
         Log.d("goToBrowse","replacing with browse list...");
         this.adapter.addFluffs(list);
 
+        // set back to previous place in list
+        restorePosition();
+
         updateActionBar();
 
     }
 
     private void goToFavorites() {
         currentState = "Favorites";
+
+        // record the state of the browser window
+        savePosition();
 
         // replace browser's existing data with new list
         Log.d("goToFavorites","clearing current list...");
@@ -564,11 +572,17 @@ public class BrowserActivity extends ActionBarActivity
         Log.d("goToFavorites","replacing with favorites...");
         this.adapter.addFluffs(favorites);
 
+        // force to top
+        listView.setSelection(0);
+
         updateActionBar();
     }
 
     private void goToInbox() {
         currentState = "Inbox";
+
+        // record the state of the browser window
+        savePosition();
 
         //TODO - refresh inbox
 
@@ -580,6 +594,9 @@ public class BrowserActivity extends ActionBarActivity
         this.adapter.addFluffs(inbox);
 
         updateActionBar();
+
+        // force to top
+        listView.setSelection(0);
 
         // mark fluffs as seen
         ParseUser user = ParseUser.getCurrentUser();
@@ -1121,6 +1138,33 @@ public class BrowserActivity extends ActionBarActivity
 
 //        spinner.dismiss();
 
+    }
+
+    public void scrollToTop() {
+        listView.smoothScrollToPosition(0);
+    }
+
+    public void savePosition() {
+        // get currently visible Fluff index
+        int position = listView.getFirstVisiblePosition();
+        Fluff f = adapter.getItem(position);
+        int index = f.index;
+
+        // get list offset from top
+        Log.d("SaveState","position: " + Integer.toString(position));
+
+        View v = listView.getChildAt(0);
+        Log.d("SaveState","view: " + v.toString());
+        int top = (v == null) ? 0 : v.getTop();
+
+        listOffset = top;
+        listIndex = position;
+
+    }
+
+    public void restorePosition() {
+        Log.d("restoring","index:" + Integer.toString(listIndex) + ", offset: " + Integer.toString(listOffset));
+        listView.setSelectionFromTop(listIndex, listOffset);
     }
 
     public boolean isAdmin() {
