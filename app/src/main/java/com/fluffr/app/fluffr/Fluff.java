@@ -24,7 +24,7 @@ public class Fluff {
     public String sender;
     public Long sendDate;
     public int position;
-    public int index;
+    public Integer index;
 
     public Fluff() {
 

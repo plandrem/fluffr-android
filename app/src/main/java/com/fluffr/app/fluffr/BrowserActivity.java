@@ -397,6 +397,17 @@ public class BrowserActivity extends ActionBarActivity
 
         }
 
+        public void logFluffs() {
+
+            String str = "Current Fluffs in Adapter: ";
+            for (Fluff f : fluffs) {
+                str += f.index.toString() + " ";
+            }
+
+            Log.d("Fluff Adapter",str);
+
+        }
+
         public void clear() {
             this.fluffs.clear();
         }

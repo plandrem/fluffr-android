@@ -27,9 +27,18 @@ public class FluffScrollListener implements AbsListView.OnScrollListener {
 
             //TODO - don't fetch data if all data already pulled
 
+            //debugging
+            String str = "";
+
             int maxPosition = view.getCount() - 1;
             Fluff lastFluff = parent.adapter.getItem(maxPosition);
             Fluff firstFluff = parent.adapter.getItem(0);
+
+            str += String.format("maxposition: %d, ", maxPosition);
+            str += String.format("first fluff index: %d, ", firstFluff.index);
+            str += String.format("last fluff index: %d, ", lastFluff.index);
+            str += String.format("first visible position: %d, ", view.getFirstVisiblePosition());
+            str += String.format("last visible position: %d, ", view.getLastVisiblePosition());
 
             // approaching top of list
             if (view.getFirstVisiblePosition() <= threshold) {
@@ -37,14 +46,14 @@ public class FluffScrollListener implements AbsListView.OnScrollListener {
                 String state = parent.getCurrentState().toLowerCase();
                 if (!state.equals("browse")) return;
 
-                int index = firstFluff.index - 1;
+                int index = firstFluff.index;
 
-                //TODO -- note, the -1 above will not work for "most liked" or indices that
+                //TODO -- note, the above will not work for "most liked" or indices that
                 // allow degeneracy
 
                 new LoadFluffs(parent, "more_" + state + "_up", true, index).execute();
 
-            } else if (view.getLastVisiblePosition() >= maxPosition - 1 - threshold) {
+            } else if (view.getLastVisiblePosition() >= maxPosition - threshold) {
                 // end of list
                 // load more items
                 String state = parent.getCurrentState().toLowerCase();
@@ -56,6 +65,8 @@ public class FluffScrollListener implements AbsListView.OnScrollListener {
                 new LoadFluffs(parent, "more_" + state, true, index).execute();
 
             }
+
+            Log.d("fluffscrollListener",str);
         }
     }
 

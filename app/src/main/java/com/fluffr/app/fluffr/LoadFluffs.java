@@ -173,6 +173,7 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
                         prependFluffs.add(fluff);
                     }
 
+                    Collections.reverse(prependFluffs);
                     fluffs.addAll(0, prependFluffs);
                     prependedFluffs = prependFluffs.size();
                 }
@@ -243,9 +244,9 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
                 parentActivity.adapter.addFluffs(fluffs);
 
             } else if (mode.equals("more_browse_up")) {
-                Collections.reverse(fluffs);
                 parentActivity.list.addAll(0, fluffs);
                 parentActivity.adapter.prependFluffs(fluffs);
+                parentActivity.adapter.logFluffs();
 
             }
 
