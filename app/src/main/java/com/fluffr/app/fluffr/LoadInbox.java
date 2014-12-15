@@ -63,8 +63,8 @@ public class LoadInbox extends AsyncTask<Void,Void,ArrayList<Fluff>> {
         }
         Collections.sort(inbox,new InboxItem.DateComparator());
 
-
-        ArrayList<String> favorites = (ArrayList) user.get("favorites");
+        ArrayList<String> favorites = new ArrayList<String>();
+        favorites = (ArrayList) user.get("favorites");
 
         ArrayList<Fluff> fluffs = new ArrayList<Fluff>();
 

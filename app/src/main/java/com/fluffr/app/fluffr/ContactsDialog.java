@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
@@ -20,7 +21,9 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.parse.ParseException;
@@ -33,7 +36,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
@@ -45,9 +50,7 @@ public class ContactsDialog {
     private BrowserActivity parentActivity;
     private EditText editText;
     private ListView list;
-    private GridView grid;
     private ContactsAdapter adapter;
-    private FavoriteContactsAdapter gridAdapter;
     private ArrayList<PhoneContact> allContacts;
     private ArrayList<PhoneContact> favoriteContacts;
     private Fluff fluff;
@@ -77,13 +80,35 @@ public class ContactsDialog {
 
         // setup grid of favorite contacts
         favoriteContacts = new ArrayList<PhoneContact>(8);
-        for (int i=0; i<8; i++) {
-            favoriteContacts.add(allContacts.get(i));
-        }
+        PhoneContact favoriteContact = null;
+        ImageView favoriteContactImageView = null;
+        TextView favoriteContactTextView = null;
 
-        this.grid = (GridView) dialog.findViewById(R.id.favorite_contacts_grid);
-        gridAdapter = new FavoriteContactsAdapter(context,favoriteContacts);
-        grid.setAdapter(gridAdapter);
+        ArrayList recents = new ArrayList(8);
+        ParseUser user = ParseUser.getCurrentUser();
+
+        if (user.getList("recentRecipients") != null) {
+            recents.addAll(user.getList("recentRecipients"));
+
+
+            for (Integer i = 1; i < 9; i++) {
+                // insert contact into array
+                //TODO - get this from sent list
+                favoriteContact = new PhoneContact(context, (String) recents.get(i));
+
+                favoriteContacts.add(favoriteContact);
+
+                favoriteContactImageView = (ImageView) dialog.findViewById(
+                        context.getResources().getIdentifier("favorite_contact_image_" + i.toString(), "id", context.getPackageName()));
+
+                favoriteContactTextView = (TextView) dialog.findViewById(
+                        context.getResources().getIdentifier("favorite_contact_name_" + i.toString(), "id", context.getPackageName()));
+
+                favoriteContactImageView.setImageBitmap(favoriteContact.photo);
+                favoriteContactTextView.setText(favoriteContact.name);
+
+            }
+        }
 
         // configure regex search for edittext element
         this.editText = (EditText) dialog.findViewById(R.id.contact_filter);
@@ -114,17 +139,8 @@ public class ContactsDialog {
         while (cursor.isAfterLast() == false)
         {
             String contactNumber= cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-            String contactName =  cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
-            long phoneContactID = cursor.getInt(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone._ID));
-            String thumbnailUri = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.PHOTO_THUMBNAIL_URI));
 
-
-            phoneContactInfo = new PhoneContact();
-            phoneContactInfo.id = phoneContactID;
-            phoneContactInfo.name = contactName;
-            phoneContactInfo.number = contactNumber;
-
-            if (thumbnailUri != null) phoneContactInfo.photoUri = Uri.parse(thumbnailUri);
+            phoneContactInfo = new PhoneContact(context,contactNumber);
 
             if (phoneContactInfo != null)
             {
@@ -302,6 +318,34 @@ public class ContactsDialog {
             }
 
             //TODO - add selected contact to recent contacts list
+            // add selected contact to recent contacts list
+            ArrayList recents = new ArrayList(8);
+            ParseUser user = ParseUser.getCurrentUser();
+
+            if (user.getList("recentRecipients") != null) {
+                recents.addAll(user.getList("recentRecipients"));
+
+                if (recents.size() >= 8) {
+                    // pop oldest
+                    recents.remove(7);
+                }
+
+                // push this current contact
+                recents.add(0, selectedContact.number);
+
+                user.remove("recentRecipients");
+                for (Object number : recents) {
+                    user.add("recentRecipients", number);
+                }
+
+                try {
+                    user.save();
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
 
             ContactsDialog.this.dismiss();
 

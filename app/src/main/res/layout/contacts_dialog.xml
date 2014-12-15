@@ -1,51 +1,295 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:layout_margin="0dp"
+    android:background="@android:color/transparent">
 
-    <!--<View-->
-        <!--android:layout_width="0dp"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:layout_weight="0.1"/>-->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Recent Recipients:"
+        android:textSize="17sp"
+        android:textColor="#FFFFFF"
+        android:background="@drawable/action_bar_background"
+        android:padding="3dp"/>
 
     <LinearLayout
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="0.8"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:weightSum="1">
 
-        <!--<View-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="0dp"-->
-            <!--android:layout_weight="0.1">-->
-        <!--</View>-->
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Recent Recipients:"
-            android:textSize="17sp"
-            android:textColor="@android:color/primary_text_dark"/>
-
-        <GridView
-            android:id="@+id/favorite_contacts_grid"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="3"
-            android:background="@android:color/background_dark"
-            android:numColumns="4"
-            android:stretchMode="columnWidth"
-            android:gravity="center">
+            android:layout_weight="0.3"
+            android:weightSum="1"
+            android:orientation="vertical"
+            android:background="#000000">
 
-        </GridView>
+            <!-- Row 1 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.5"
+                android:weightSum="4"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:weightSum="1"
+                    android:orientation="vertical"
+                    android:gravity="center">
+
+                    <ImageButton
+                        android:id="@+id/favorite_contact_image_1"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="0.7"
+                        android:layout_gravity="fill_vertical"
+                        android:scaleType="fitCenter"
+                        android:background="@null"
+                        android:src="@drawable/fluffr_cat_icon"/>
+
+                    <TextView
+                        android:id="@+id/favorite_contact_name_1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_weight="0.3"
+                        android:text="Namey"
+                        android:textSize="10sp"
+                        android:textColor="#FFFFFF"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:weightSum="1"
+                    android:orientation="vertical"
+                    android:gravity="center">
+
+                    <ImageButton
+                        android:id="@+id/favorite_contact_image_2"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="0.7"
+                        android:layout_gravity="fill_vertical"
+                        android:scaleType="fitCenter"
+                        android:background="@null"
+                        android:src="@drawable/fluffr_cat_icon"/>
+
+                    <TextView
+                        android:id="@+id/favorite_contact_name_2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_weight="0.3"
+                        android:text="Namey Namerson"
+                        android:textSize="10sp"
+                        android:textColor="#FFFFFF"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:weightSum="1"
+                    android:orientation="vertical"
+                    android:gravity="center">
+
+                    <ImageButton
+                        android:id="@+id/favorite_contact_image_3"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="0.7"
+                        android:layout_gravity="fill_vertical"
+                        android:scaleType="fitCenter"
+                        android:background="@null"
+                        android:src="@drawable/fluffr_cat_icon"/>
+
+                    <TextView
+                        android:id="@+id/favorite_contact_name_3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_weight="0.3"
+                        android:text="Namey Namerson"
+                        android:textSize="10sp"
+                        android:textColor="#FFFFFF"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:weightSum="1"
+                    android:orientation="vertical"
+                    android:gravity="center">
+
+                    <ImageButton
+                        android:id="@+id/favorite_contact_image_4"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="0.7"
+                        android:layout_gravity="fill_vertical"
+                        android:scaleType="fitCenter"
+                        android:background="@null"
+                        android:src="@drawable/fluffr_cat_icon"/>
+
+                    <TextView
+                        android:id="@+id/favorite_contact_name_4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_weight="0.3"
+                        android:text="Namey Namerson"
+                        android:textSize="10sp"
+                        android:textColor="#FFFFFF"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Row 2 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.5"
+                android:weightSum="4"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:weightSum="1"
+                    android:orientation="vertical"
+                    android:gravity="center">
+
+                    <ImageButton
+                        android:id="@+id/favorite_contact_image_5"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="0.7"
+                        android:layout_gravity="fill_vertical"
+                        android:scaleType="fitCenter"
+                        android:background="@null"
+                        android:src="@drawable/fluffr_cat_icon"/>
+
+                    <TextView
+                        android:id="@+id/favorite_contact_name_5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_weight="0.3"
+                        android:text="Namey Namerson"
+                        android:textSize="10sp"
+                        android:textColor="#FFFFFF"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:weightSum="1"
+                    android:orientation="vertical"
+                    android:gravity="center">
+
+                    <ImageButton
+                        android:id="@+id/favorite_contact_image_6"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="0.7"
+                        android:layout_gravity="fill_vertical"
+                        android:scaleType="fitCenter"
+                        android:background="@null"
+                        android:src="@drawable/fluffr_cat_icon"/>
+
+                    <TextView
+                        android:id="@+id/favorite_contact_name_6"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_weight="0.3"
+                        android:text="Namey Namerson"
+                        android:textSize="10sp"
+                        android:textColor="#FFFFFF"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:weightSum="1"
+                    android:orientation="vertical"
+                    android:gravity="center">
+
+                    <ImageButton
+                        android:id="@+id/favorite_contact_image_7"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="0.7"
+                        android:layout_gravity="fill_vertical"
+                        android:scaleType="fitCenter"
+                        android:background="@null"
+                        android:src="@drawable/fluffr_cat_icon"/>
+
+                    <TextView
+                        android:id="@+id/favorite_contact_name_7"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_weight="0.3"
+                        android:text="Namey Namerson"
+                        android:textSize="10sp"
+                        android:textColor="#FFFFFF"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:weightSum="1"
+                    android:orientation="vertical"
+                    android:gravity="center">
+
+                    <ImageButton
+                        android:id="@+id/favorite_contact_image_8"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="0.7"
+                        android:layout_gravity="fill_vertical"
+                        android:scaleType="fitCenter"
+                        android:background="@null"
+                        android:src="@drawable/fluffr_cat_icon"/>
+
+                    <TextView
+                        android:id="@+id/favorite_contact_name_8"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_weight="0.3"
+                        android:text="Namey Namerson"
+                        android:textSize="10sp"
+                        android:textColor="#FFFFFF"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
 
         <EditText
             android:id="@+id/contact_filter"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_weight="0.1"
             android:hint="Enter Contact"
             android:textColorHint="@color/edit_text_hint"
             android:textColor="#ffeaeaea"
@@ -57,21 +301,12 @@
             android:id="@+id/contacts_list"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="6">
+            android:layout_weight="0.5">
         </ListView>
-
-        <!--<View-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="0dp"-->
-            <!--android:layout_weight="0.1">-->
-        <!--</View>-->
-
 
     </LinearLayout>
 
-    <!--<View-->
-        <!--android:layout_width="0dp"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:layout_weight="0.1"/>-->
+
+
 
 </LinearLayout>

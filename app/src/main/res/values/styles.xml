@@ -15,7 +15,8 @@
         <item name="android:windowFrame">@null</item>
     </style>
 
-    <style name="Theme.Contact_Chooser" parent="android:Theme.Dialog">
+    <style name="Theme.Contact_Chooser" parent="Theme.AppCompat.Light">
+        <item name="android:backgroundDimEnabled">true</item>
     </style>
 
 </resources>
