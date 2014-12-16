@@ -215,18 +215,20 @@ public class ContactsDialog {
 
 
     private ArrayList<PhoneContact> getSpecificContacts(String[] phoneNumbers) {
+
+        // build SQL clause for WHERE statement
         String num = ContactsContract.CommonDataKinds.Phone.NUMBER;
-        String clause = num + " = %s";
+        String clause = num + " = ?";
 
         for (int i = 1; i<phoneNumbers.length; i++) {
-            clause += " OR " + num + " = %s";
+            clause += " OR " + num + " = ?";
         }
 
-        clause = String.format(clause,phoneNumbers);
+        // strip unwanted characters (+) from phone numbers
+
+//        clause = String.format(clause,phoneNumbers);
 
         Log.d("getSpecificContacts","clause: " + clause);
-
-//        String[] criteria = {};
 
         Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
         Cursor cursor = context.getContentResolver().query(uri, new String[] {
@@ -235,8 +237,7 @@ public class ContactsDialog {
                         ContactsContract.CommonDataKinds.Phone._ID,
                         ContactsContract.Contacts.PHOTO_THUMBNAIL_URI},
                 clause,
-//                phoneNumbers,
-                null,
+                phoneNumbers,
                 null);
         cursor.moveToFirst();
 
