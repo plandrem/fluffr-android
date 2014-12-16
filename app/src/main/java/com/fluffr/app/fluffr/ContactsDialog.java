@@ -196,6 +196,7 @@ public class ContactsDialog {
             contact = new PhoneContact();
             contact.id = contactId;
             contact.name = contactName;
+            contact.number = contactNumber;
             if (contactPhotoUri != null) contact.photoUri = Uri.parse(contactPhotoUri);
 
             if (contact != null)
