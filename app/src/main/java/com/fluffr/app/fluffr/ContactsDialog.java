@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
@@ -13,6 +14,7 @@ import android.telephony.SmsManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,7 +51,7 @@ public class ContactsDialog {
     private Dialog dialog;
     private Context context;
     private BrowserActivity parentActivity;
-    private EditText editText;
+    private ContactDialogEditText editText;
     private ListView list;
     private ContactsAdapter adapter;
     private ArrayList<PhoneContact> allContacts;
@@ -68,6 +70,7 @@ public class ContactsDialog {
         dialog = new Dialog(context, R.style.Theme_Contact_Chooser);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
         dialog.setContentView(R.layout.contacts_dialog);
 
         // setup list of contacts
@@ -94,12 +97,6 @@ public class ContactsDialog {
 
 
             for (Integer i = 1; i < 9; i++) {
-                // insert contact into array
-                if (i > recents.size()) break;
-
-                favoriteContact = new PhoneContact(context, (String) recents.get(i-1));
-
-                favoriteContacts.add(favoriteContact);
 
                 favoriteContactImageView = (ImageView) dialog.findViewById(
                         context.getResources().getIdentifier("favorite_contact_image_" + i.toString(), "id", context.getPackageName()));
@@ -107,15 +104,52 @@ public class ContactsDialog {
                 favoriteContactTextView = (TextView) dialog.findViewById(
                         context.getResources().getIdentifier("favorite_contact_name_" + i.toString(), "id", context.getPackageName()));
 
-                favoriteContactImageView.setImageBitmap(favoriteContact.photo);
-                favoriteContactTextView.setText(favoriteContact.name);
+                if (i <= recents.size()) {
+                    // insert contact into array
+
+                    favoriteContact = new PhoneContact(context, (String) recents.get(i - 1));
+
+                    favoriteContacts.add(favoriteContact);
+
+                    favoriteContactImageView.setImageBitmap(favoriteContact.photo);
+                    favoriteContactTextView.setText(favoriteContact.name);
+
+                } else {
+                    // empty tile
+                    favoriteContactImageView.setImageBitmap(null);
+                    favoriteContactTextView.setText("");
+
+                }
 
             }
         }
 
         // configure regex search for edittext element
-        this.editText = (EditText) dialog.findViewById(R.id.contact_filter);
+        this.editText = (ContactDialogEditText) dialog.findViewById(R.id.contact_filter);
+        editText.setParent(this);
         editText.addTextChangedListener(new ContactFilterTextWatcher());
+
+        // handle keyboard opening and closing
+        editText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setKeyboardLayout(true);
+            }
+        });
+
+
+
+//        dialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+//            @Override
+//            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+//                if (keyCode == KeyEvent.KEYCODE_BACK) {
+//                    setKeyboardLayout(false);
+//                    return true;
+//                } else {
+//                    return false;
+//                }
+//            }
+//        });
 
         dialog.show();
 
@@ -440,6 +474,17 @@ public class ContactsDialog {
 
         @Override
         public void afterTextChanged(Editable s) {
+
+        }
+    }
+
+    public void setKeyboardLayout(boolean keyboardIsVisible) {
+        View recents = dialog.findViewById(R.id.contact_dialog_recent_recipients);
+
+        if (keyboardIsVisible) {
+            recents.setVisibility(View.GONE);
+        } else {
+            recents.setVisibility(View.VISIBLE);
 
         }
     }

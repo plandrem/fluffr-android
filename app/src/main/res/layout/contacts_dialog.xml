@@ -11,24 +11,26 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Recent Recipients:"
-        android:textSize="17sp"
+        android:text="Send to a Friend"
+        android:textSize="20sp"
         android:textColor="#FFFFFF"
-        android:background="@drawable/action_bar_background"
-        android:padding="3dp"/>
+        android:background="@color/fluffr_blue_main"
+        android:paddingTop="15dp"
+        android:paddingBottom="10dp"
+        android:paddingLeft="20dp"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:weightSum="1">
+        android:orientation="vertical">
 
         <LinearLayout
+            android:id="@+id/contact_dialog_recent_recipients"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.3"
+            android:layout_height="150dp"
             android:weightSum="1"
             android:orientation="vertical"
+            android:padding="5dp"
             android:background="#000000">
 
             <!-- Row 1 -->
@@ -63,8 +65,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
                         android:layout_weight="0.3"
+                        android:paddingTop="3dp"
                         android:text="Namey"
-                        android:textSize="10sp"
+                        android:textSize="8sp"
                         android:textColor="#FFFFFF"/>
 
                 </LinearLayout>
@@ -93,8 +96,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
                         android:layout_weight="0.3"
+                        android:paddingTop="3dp"
                         android:text="Namey Namerson"
-                        android:textSize="10sp"
+                        android:textSize="8sp"
                         android:textColor="#FFFFFF"/>
 
                 </LinearLayout>
@@ -123,8 +127,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
                         android:layout_weight="0.3"
+                        android:paddingTop="3dp"
                         android:text="Namey Namerson"
-                        android:textSize="10sp"
+                        android:textSize="8sp"
                         android:textColor="#FFFFFF"/>
 
                 </LinearLayout>
@@ -153,8 +158,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
                         android:layout_weight="0.3"
+                        android:paddingTop="3dp"
                         android:text="Namey Namerson"
-                        android:textSize="10sp"
+                        android:textSize="8sp"
                         android:textColor="#FFFFFF"/>
 
                 </LinearLayout>
@@ -193,8 +199,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
                         android:layout_weight="0.3"
+                        android:paddingTop="3dp"
                         android:text="Namey Namerson"
-                        android:textSize="10sp"
+                        android:textSize="8sp"
                         android:textColor="#FFFFFF"/>
 
                 </LinearLayout>
@@ -223,8 +230,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
                         android:layout_weight="0.3"
+                        android:paddingTop="3dp"
                         android:text="Namey Namerson"
-                        android:textSize="10sp"
+                        android:textSize="8sp"
                         android:textColor="#FFFFFF"/>
 
                 </LinearLayout>
@@ -253,8 +261,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
                         android:layout_weight="0.3"
+                        android:paddingTop="3dp"
                         android:text="Namey Namerson"
-                        android:textSize="10sp"
+                        android:textSize="8sp"
                         android:textColor="#FFFFFF"/>
 
                 </LinearLayout>
@@ -283,8 +292,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
                         android:layout_weight="0.3"
+                        android:paddingTop="3dp"
                         android:text="Namey Namerson"
-                        android:textSize="10sp"
+                        android:textSize="8sp"
                         android:textColor="#FFFFFF"/>
 
                 </LinearLayout>
@@ -295,21 +305,28 @@
 
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.1"
+            android:layout_height="3dp"
+            android:background="@color/fluffr_blue_main">
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
             android:background="#000000">
 
-            <EditText
+            <com.fluffr.app.fluffr.ContactDialogEditText
                 android:id="@+id/contact_filter"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:hint="Enter Contact"
+                android:hint="Search Contacts"
                 android:padding="5dp"
                 android:layout_margin="5dp"
                 android:textColorHint="@color/edit_text_hint"
-                android:textColor="#ffeaeaea"
+                android:textColor="#ff191919"
                 android:textSize="17dp"
                 android:textCursorDrawable="@null"
+                android:inputType="textPersonName"
                 android:background="@drawable/edit_text_background" />
 
         </FrameLayout>
@@ -318,8 +335,8 @@
         <ListView
             android:id="@+id/contacts_list"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.6">
+            android:layout_height="wrap_content"
+            android:layout_gravity="fill_vertical">
         </ListView>
 
     </LinearLayout>
