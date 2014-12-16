@@ -6,10 +6,12 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.ContactsContract;
+import android.provider.MediaStore;
 import android.telephony.SmsManager;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -38,6 +40,7 @@ import com.parse.ParseUser;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -67,14 +70,22 @@ public class ContactsDialog {
     }
 
     public void show() {
+        long startTime;
+
+        startTime = System.nanoTime();
         dialog = new Dialog(context, R.style.Theme_Contact_Chooser);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
         dialog.setContentView(R.layout.contacts_dialog);
+        Log.d("Contacts Dialog Timer 1",Long.toString(System.nanoTime() - startTime));
+        startTime = System.nanoTime();
 
         // setup list of contacts
         allContacts = getAllPhoneContacts();
+        Log.d("Contacts Dialog Timer 1.5",Long.toString(System.nanoTime() - startTime));
+        startTime = System.nanoTime();
+
         this.list = (ListView) dialog.findViewById(R.id.contacts_list);
         adapter = new ContactsAdapter(context,new ArrayList<PhoneContact>());
         adapter.addContacts(allContacts);
@@ -82,6 +93,8 @@ public class ContactsDialog {
 
         list.setAdapter(adapter);
         list.setOnItemClickListener(new SelectContactListener());
+        Log.d("Contacts Dialog Timer 2",Long.toString(System.nanoTime() - startTime));
+        startTime = System.nanoTime();
 
         // setup grid of favorite contacts
         favoriteContacts = new ArrayList<PhoneContact>(8);
@@ -89,11 +102,18 @@ public class ContactsDialog {
         ImageView favoriteContactImageView = null;
         TextView favoriteContactTextView = null;
 
-        ArrayList recents = new ArrayList(8);
         ParseUser user = ParseUser.getCurrentUser();
+        Log.d("Contacts Dialog Timer 3",Long.toString(System.nanoTime() - startTime));
+        startTime = System.nanoTime();
 
         if (user.getList("recentRecipients") != null) {
-            recents.addAll(user.getList("recentRecipients"));
+            List parseRecents = user.getList("recentRecipients");
+            String[] recentNumbers = new String[parseRecents.size()];
+            for (int i=0; i<parseRecents.size();i++) {
+                recentNumbers[i] = (String) parseRecents.get(i);
+            }
+
+            ArrayList<PhoneContact> recents = getSpecificContacts(recentNumbers);
 
 
             for (Integer i = 1; i < 9; i++) {
@@ -107,7 +127,8 @@ public class ContactsDialog {
                 if (i <= recents.size()) {
                     // insert contact into array
 
-                    favoriteContact = new PhoneContact(context, (String) recents.get(i - 1));
+//                    favoriteContact = new PhoneContact(context, (String) recents.get(i - 1));
+                    favoriteContact = recents.get(i-1);
 
                     favoriteContacts.add(favoriteContact);
 
@@ -124,6 +145,9 @@ public class ContactsDialog {
             }
         }
 
+        Log.d("Contacts Dialog Timer 4",Long.toString(System.nanoTime() - startTime));
+        startTime = System.nanoTime();
+
         // configure regex search for edittext element
         this.editText = (ContactDialogEditText) dialog.findViewById(R.id.contact_filter);
         editText.setParent(this);
@@ -137,19 +161,7 @@ public class ContactsDialog {
             }
         });
 
-
-
-//        dialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
-//            @Override
-//            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
-//                if (keyCode == KeyEvent.KEYCODE_BACK) {
-//                    setKeyboardLayout(false);
-//                    return true;
-//                } else {
-//                    return false;
-//                }
-//            }
-//        });
+        Log.d("Contacts Dialog Timer 5",Long.toString(System.nanoTime() - startTime));
 
         dialog.show();
 
@@ -164,7 +176,7 @@ public class ContactsDialog {
         Log.d("START", "Getting all Contacts");
 
         ArrayList<PhoneContact> arrContacts = new ArrayList<PhoneContact>();
-        PhoneContact phoneContactInfo=null;
+        PhoneContact contact=null;
 
         Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
         Cursor cursor = context.getContentResolver().query(uri, new String[] {ContactsContract.CommonDataKinds.Phone.NUMBER,
@@ -175,15 +187,22 @@ public class ContactsDialog {
 
         while (cursor.isAfterLast() == false)
         {
+            String contactName = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
             String contactNumber= cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+            long  contactId= cursor.getLong(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone._ID));
+            String contactPhotoUri= cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.PHOTO_THUMBNAIL_URI));
 
-            phoneContactInfo = new PhoneContact(context,contactNumber);
+//            contact = new PhoneContact(context,contactNumber);
+            contact = new PhoneContact();
+            contact.id = contactId;
+            contact.name = contactName;
+            if (contactPhotoUri != null) contact.photoUri = Uri.parse(contactPhotoUri);
 
-            if (phoneContactInfo != null)
+            if (contact != null)
             {
-                arrContacts.add(phoneContactInfo);
+                arrContacts.add(contact);
             }
-            phoneContactInfo = null;
+            contact = null;
             cursor.moveToNext();
         }
         cursor.close();
@@ -194,6 +213,78 @@ public class ContactsDialog {
         return arrContacts;
     }
 
+
+    private ArrayList<PhoneContact> getSpecificContacts(String[] phoneNumbers) {
+        String num = ContactsContract.CommonDataKinds.Phone.NUMBER;
+        String clause = num + " = %s";
+
+        for (int i = 1; i<phoneNumbers.length; i++) {
+            clause += " OR " + num + " = %s";
+        }
+
+        clause = String.format(clause,phoneNumbers);
+
+        Log.d("getSpecificContacts","clause: " + clause);
+
+//        String[] criteria = {};
+
+        Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
+        Cursor cursor = context.getContentResolver().query(uri, new String[] {
+                        ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
+                        ContactsContract.CommonDataKinds.Phone.NUMBER,
+                        ContactsContract.CommonDataKinds.Phone._ID,
+                        ContactsContract.Contacts.PHOTO_THUMBNAIL_URI},
+                clause,
+//                phoneNumbers,
+                null,
+                null);
+        cursor.moveToFirst();
+
+        PhoneContact newContact;
+        ArrayList<PhoneContact> arrContacts = new ArrayList<PhoneContact>(8);
+
+        while (cursor.isAfterLast() == false) {
+
+            String contactName = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+            String contactNumber = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+            long phoneContactID = cursor.getInt(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone._ID));
+            String thumbnailUri = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.PHOTO_THUMBNAIL_URI));
+
+            newContact = new PhoneContact();
+            newContact.id = phoneContactID;
+            newContact.name = contactName;
+            newContact.number = contactNumber;
+
+            if (thumbnailUri != null) {
+                newContact.photoUri = Uri.parse(thumbnailUri);
+                try {
+                    newContact.photo = MediaStore.Images.Media.getBitmap(context.getContentResolver(), Uri.parse(thumbnailUri));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            } else {
+                // No image resource found -- use a letter tile instead
+                LetterTileProvider tileProvider = new LetterTileProvider(context);
+                final Resources res = context.getResources();
+                final int tileSize = res.getDimensionPixelSize(R.dimen.letter_tile_size);
+
+                String text = contactName;
+                newContact.photo = tileProvider.getLetterTile(text,text, tileSize, tileSize);
+
+            }
+
+            arrContacts.add(newContact);
+            newContact = null;
+            cursor.moveToNext();
+        }
+
+        cursor.close();
+        cursor = null;
+
+        return arrContacts;
+
+    }
 
     private class ContactsAdapter extends BaseAdapter {
         private final Context context;
