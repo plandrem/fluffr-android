@@ -63,8 +63,10 @@ public class LoadInbox extends AsyncTask<Void,Void,ArrayList<Fluff>> {
         }
         Collections.sort(inbox,new InboxItem.DateComparator());
 
-        ArrayList<String> favorites = new ArrayList<String>();
+        ArrayList<String> favorites;
         favorites = (ArrayList) user.get("favorites");
+        if (favorites == null) favorites = new ArrayList<String>();
+        Log.d("LoadInbox",String.format("favorites: %s",favorites));
 
         ArrayList<Fluff> fluffs = new ArrayList<Fluff>();
 
@@ -89,6 +91,9 @@ public class LoadInbox extends AsyncTask<Void,Void,ArrayList<Fluff>> {
             Fluff f = Fluff.fromString(item.fluffId);
             f.sender = (String) item.from;
             f.sendDate = (Long) item.date;
+
+            Log.d("LoadInbox",String.format("Fluff - id: %s",f.id));
+            Log.d("LoadInbox",String.format("favorites: %s",favorites.toString()));
 
             if (favorites.contains(f.id)) {
                 f.favorited = true;

@@ -17,6 +17,7 @@
 
     <style name="Theme.Contact_Chooser" parent="Theme.AppCompat.Light">
         <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
     </style>
 
 </resources>

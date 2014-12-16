@@ -5,8 +5,8 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="0dp"
-    android:background="@android:color/transparent">
+    android:layout_margin="30dp"
+    android:background="#fff2f2f2">
 
     <TextView
         android:layout_width="match_parent"
@@ -44,6 +44,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:weightSum="1"
+                    android:padding="5dp"
                     android:orientation="vertical"
                     android:gravity="center">
 
@@ -73,6 +74,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:weightSum="1"
+                    android:padding="5dp"
                     android:orientation="vertical"
                     android:gravity="center">
 
@@ -102,6 +104,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:weightSum="1"
+                    android:padding="5dp"
                     android:orientation="vertical"
                     android:gravity="center">
 
@@ -131,6 +134,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:weightSum="1"
+                    android:padding="5dp"
                     android:orientation="vertical"
                     android:gravity="center">
 
@@ -170,6 +174,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:weightSum="1"
+                    android:padding="5dp"
                     android:orientation="vertical"
                     android:gravity="center">
 
@@ -199,6 +204,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:weightSum="1"
+                    android:padding="5dp"
                     android:orientation="vertical"
                     android:gravity="center">
 
@@ -228,6 +234,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:weightSum="1"
+                    android:padding="5dp"
                     android:orientation="vertical"
                     android:gravity="center">
 
@@ -257,6 +264,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:weightSum="1"
+                    android:padding="5dp"
                     android:orientation="vertical"
                     android:gravity="center">
 
@@ -285,23 +293,33 @@
 
         </LinearLayout>
 
-        <EditText
-            android:id="@+id/contact_filter"
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="0.1"
-            android:hint="Enter Contact"
-            android:textColorHint="@color/edit_text_hint"
-            android:textColor="#ffeaeaea"
-            android:textSize="17dp"
-            android:textCursorDrawable="@null"
-            android:background="@android:color/background_dark" />
+            android:background="#000000">
+
+            <EditText
+                android:id="@+id/contact_filter"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="Enter Contact"
+                android:padding="5dp"
+                android:layout_margin="5dp"
+                android:textColorHint="@color/edit_text_hint"
+                android:textColor="#ffeaeaea"
+                android:textSize="17dp"
+                android:textCursorDrawable="@null"
+                android:background="@drawable/edit_text_background" />
+
+        </FrameLayout>
+
 
         <ListView
             android:id="@+id/contacts_list"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.5">
+            android:layout_weight="0.6">
         </ListView>
 
     </LinearLayout>

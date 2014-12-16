@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
@@ -66,6 +67,7 @@ public class ContactsDialog {
     public void show() {
         dialog = new Dialog(context, R.style.Theme_Contact_Chooser);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         dialog.setContentView(R.layout.contacts_dialog);
 
         // setup list of contacts
@@ -93,8 +95,9 @@ public class ContactsDialog {
 
             for (Integer i = 1; i < 9; i++) {
                 // insert contact into array
-                //TODO - get this from sent list
-                favoriteContact = new PhoneContact(context, (String) recents.get(i));
+                if (i > recents.size()) break;
+
+                favoriteContact = new PhoneContact(context, (String) recents.get(i-1));
 
                 favoriteContacts.add(favoriteContact);
 
@@ -208,6 +211,11 @@ public class ContactsDialog {
         public void addContacts(ArrayList<PhoneContact> newContacts) {
             phoneContacts.addAll(newContacts);
         }
+
+        public String getNumber(int position) {
+            return this.phoneContacts.get(position).number;
+        }
+
     }
 
     private class FavoriteContactsAdapter extends BaseAdapter {
@@ -258,7 +266,7 @@ public class ContactsDialog {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-            PhoneContact selectedContact = allContacts.get(position);
+            PhoneContact selectedContact = adapter.getItem(position);
             Log.d("SelectContactListener", "User clicked: " + selectedContact.name);
 
             //TODO - use actual recipient number
@@ -330,22 +338,31 @@ public class ContactsDialog {
                     recents.remove(7);
                 }
 
-                // push this current contact
-                recents.add(0, selectedContact.number);
+                // make sure there aren't any duplicates in recent recipients
+                for (int i=0; i < recents.size(); i++) {
+                    if (selectedContact.number.equals(recents.get(i))) {
+                        recents.remove(i);
+                    }
+                }
 
                 user.remove("recentRecipients");
-                for (Object number : recents) {
-                    user.add("recentRecipients", number);
-                }
 
-                try {
-                    user.save();
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
+            } else {
+                // first recipient saved
 
             }
 
+            // push this current contact
+            recents.add(0, selectedContact.number);
+            for (Object number : recents) {
+                user.add("recentRecipients", number);
+            }
+
+            try {
+                user.save();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
 
             ContactsDialog.this.dismiss();
 
