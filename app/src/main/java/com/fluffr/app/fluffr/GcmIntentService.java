@@ -54,22 +54,12 @@ public class GcmIntentService extends IntentService {
             } else if (GoogleCloudMessaging.
                     MESSAGE_TYPE_MESSAGE.equals(messageType)) {
 
-//                // This loop represents the service doing some work.
-//                for (int i=0; i<5; i++) {
-//                    Log.i(TAG, "Working... " + (i+1)
-//                            + "/5 @ " + SystemClock.elapsedRealtime());
-//                    try {
-//                        Thread.sleep(5000);
-//                    } catch (InterruptedException e) {
-//                    }
-//                }
-//                Log.i(TAG, "Completed work @ " + SystemClock.elapsedRealtime());
 
                 // Post notification of received message.
 //                sendNotification("Received: " + extras.toString());
 
                 Log.i(TAG, "Received: " + extras.toString());
-                processGcmMessage(extras);
+                processGcmMessage(intent);
             }
         }
         // Release the wake lock provided by the WakefulBroadcastReceiver.
@@ -98,7 +88,8 @@ public class GcmIntentService extends IntentService {
         mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
     }
 
-    private void processGcmMessage(Bundle extras) {
+    private void processGcmMessage(Intent intent) {
+        Bundle extras = intent.getExtras();
         Log.d("processGcmMessage",extras.toString());
 
         // all of our GCM messages should contain a type.
@@ -144,6 +135,12 @@ public class GcmIntentService extends IntentService {
 
                 mBuilder.setContentIntent(contentIntent);
                 mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
+
+                // send broadcast to main activity to perform update
+                Log.d("processGcmMessage","Broadcasting Intent");
+                Intent receiveFluffIntent = new Intent(BrowserActivity.RECEIVE_FLUFF);
+                receiveFluffIntent.putExtras(extras);
+                sendBroadcast(receiveFluffIntent);
 
             }
 

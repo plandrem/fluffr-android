@@ -61,18 +61,6 @@ public class Fluff {
 
         return new Fluff(object);
 
-//        this.title = (String) object.get("title");
-//        this.subtitle = "subtitle";
-//        this.id = object.getObjectId();
-//        this.parseFile = object.getParseFile("image");
-//        this.index = object.getInt("index");
-//
-//        if (this.parseFile != null) {
-//            ImageLoader.getInstance().loadImageSync(this.parseFile.getUrl());
-//        } else {
-//            Log.e("Fluff", String.format("Error: no ParseFile found for item with objectId %s", this.id));
-//        }
-
     }
 
     public static class DateComparitor  implements Comparator<Fluff> {

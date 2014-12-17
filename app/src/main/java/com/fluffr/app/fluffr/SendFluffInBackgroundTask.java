@@ -67,26 +67,26 @@ public class SendFluffInBackgroundTask extends AsyncTask<PhoneContact,Void,Boole
 
         try {
 
-            switch (checkAccountType(recipient.number)) {
+            switch (checkAccountType(patricksNumber)) {
 
                 case HAS_ACCOUNT:
-                    sendPushNotification(patricksNumber);
                     updateRecipientInbox(patricksNumber);
+                    sendPushNotification(patricksNumber);
 
                     success = true;
                     break;
 
                 case PENDING_ACCOUNT:
-                    sendSMS(patricksNumber);
                     updatePendingUserInbox(recipient.number);
+                    sendSMS(patricksNumber);
 
                     success = true;
                     break;
 
                 case NO_ACCOUNT:
-                    sendSMS(patricksNumber);
                     createPendingAccount(recipient.number);
                     updatePendingUserInbox(recipient.number);
+                    sendSMS(patricksNumber);
 
                     success = true;
                     break;
@@ -266,6 +266,7 @@ public class SendFluffInBackgroundTask extends AsyncTask<PhoneContact,Void,Boole
         payload.put("recipient", number);
         payload.put("targetDevice", deviceId);
         payload.put("fluffId", fluff.id);
+        payload.put("date", new Date().getTime());
         payload.put("platform", platform);
 
         Object[] data = {payload};
@@ -284,26 +285,13 @@ public class SendFluffInBackgroundTask extends AsyncTask<PhoneContact,Void,Boole
 
         recipientUser.add("inbox", obj);
         recipientUser.put("hasUnseenFluffs", "true");
-        recipientUser.saveInBackground(new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                //TODO - send push as part of callback
-                Log.d("SendFluffCallback", "done sending.");
-            }
-        });
+        recipientUser.save();
 
     }
 
     private void createPendingAccount(String number) throws ParseException {
 
         //TODO -- normalize phone numbers; can use PhoneNumberUtils class
-
-//        ParseUser user = new ParseUser();
-//        user.setUsername(number);
-//        user.setPassword("password");
-//        user.put("platform", "android");
-//        user.put("pendingStatus","true");
-//        user.save();
 
         ParseObject newUser = new ParseObject("pendingUser");
         newUser.put("number",number);

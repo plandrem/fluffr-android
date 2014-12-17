@@ -2,8 +2,10 @@ package com.fluffr.app.fluffr;
 
 import android.app.ActionBar;
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -34,6 +36,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -103,6 +106,38 @@ public class BrowserActivity extends ActionBarActivity
     public Context context;
     public GoogleCloudMessaging gcm;
     public SharedPreferences prefs;
+
+    public static final String RECEIVE_FLUFF = "com.fluffr.action.receive_fluff";
+    private BroadcastReceiver FluffReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d("FluffReceiver","received broadcast.");
+
+            // add new fluff to inbox
+            Toast.makeText(BrowserActivity.this,"Fluff Received.",Toast.LENGTH_SHORT).show();
+
+            Bundle extras = intent.getExtras();
+
+            Fluff newFluff = Fluff.fromString(extras.getString("fluffId"));
+            newFluff.sender = extras.getString("sender");
+            newFluff.sendDate = extras.getLong("date");
+
+            inbox.add(0, newFluff);
+
+            if (currentState.equals("Inbox")) {
+                ArrayList<Fluff> fluffArrayList = new ArrayList<Fluff>(1);
+                fluffArrayList.add(newFluff);
+                adapter.prependFluffs(fluffArrayList);
+                scrollToTop();
+            } else {
+                hasUnseenFluffs = true;
+                updateActionBar();
+            }
+
+        }
+    };
+
 
     //Meteor Stuff
     public Meteor meteor;
@@ -179,6 +214,12 @@ public class BrowserActivity extends ActionBarActivity
         // Check for saved data, or start up with initial parameters
         LoadState();
 
+        // Register receiver for incoming messages
+        Log.d("onCreate","registering Fluff receiver...");
+        IntentFilter intentFilter = new IntentFilter(RECEIVE_FLUFF);
+        this.registerReceiver(FluffReceiver,intentFilter);
+
+
         //Finalize UI
         Log.d("onCreate","finalize UI...");
         updateActionBar();
@@ -214,6 +255,7 @@ public class BrowserActivity extends ActionBarActivity
     protected void onDestroy() {
         super.onDestroy();
         meteor.disconnect();
+        this.unregisterReceiver(FluffReceiver);
     }
 
     @Override
@@ -532,6 +574,9 @@ public class BrowserActivity extends ActionBarActivity
 
         if (pages.get(position).text.equals(currentState)) return;
 
+        // record the state of the browser window
+        if (getCurrentState().equals("Browse")) savePosition();
+
         if (pages.get(position).text.equals("Browse")) {
             goToBrowse();
 
@@ -564,9 +609,6 @@ public class BrowserActivity extends ActionBarActivity
     private void goToFavorites() {
         currentState = "Favorites";
 
-        // record the state of the browser window
-        savePosition();
-
         // replace browser's existing data with new list
         Log.d("goToFavorites","clearing current list...");
         this.adapter.clear();
@@ -582,9 +624,6 @@ public class BrowserActivity extends ActionBarActivity
 
     private void goToInbox() {
         currentState = "Inbox";
-
-        // record the state of the browser window
-        savePosition();
 
         //TODO - refresh inbox
 
