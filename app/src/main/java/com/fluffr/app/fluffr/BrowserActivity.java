@@ -625,8 +625,6 @@ public class BrowserActivity extends ActionBarActivity
     private void goToInbox() {
         currentState = "Inbox";
 
-        //TODO - refresh inbox
-
         // replace browser's existing data with new list
         Log.d("goToInbox","clearing current list...");
         this.adapter.clear();
