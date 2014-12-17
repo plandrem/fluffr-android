@@ -121,6 +121,8 @@ public class ContactsDialog {
                     favoriteContactImageView.setImageBitmap(favoriteContact.photo);
                     favoriteContactTextView.setText(favoriteContact.name);
 
+                    favoriteContactImageView.setOnClickListener(new SelectRecentContactListener(favoriteContact));
+
                 } else {
                     // empty tile
                     favoriteContactImageView.setImageBitmap(null);
@@ -370,12 +372,31 @@ public class ContactsDialog {
         }
     }
 
+    private class SelectRecentContactListener implements View.OnClickListener {
+
+        private PhoneContact phoneContact;
+
+        private SelectRecentContactListener(PhoneContact pc) {
+            this.phoneContact = pc;
+        }
+
+        @Override
+        public void onClick(View v) {
+            Log.d("SelectContactListener", "User clicked: " + phoneContact.name);
+            sendFluffToContact(phoneContact);
+        }
+    }
+
     private class SelectContactListener implements AdapterView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
             PhoneContact selectedContact = adapter.getItem(position);
             Log.d("SelectContactListener", "User clicked: " + selectedContact.name);
+
+            sendFluffToContact(selectedContact);
+
+            /*
 
             //TODO - use actual recipient number
             String recipient = "16518155005";
@@ -472,9 +493,13 @@ public class ContactsDialog {
                 e.printStackTrace();
             }
 
+
+
             ContactsDialog.this.dismiss();
 
             Toast.makeText(context.getApplicationContext(),"Fluff sent!", Toast.LENGTH_SHORT).show();
+
+            */
 
 
         }
@@ -561,6 +586,15 @@ public class ContactsDialog {
             recents.setVisibility(View.VISIBLE);
 
         }
+    }
+
+    private void sendFluffToContact(PhoneContact phoneContact) {
+
+        PhoneContact[] contacts = {phoneContact};
+        new SendFluffInBackgroundTask(context, parentActivity, fluff).execute(contacts);
+
+        ContactsDialog.this.dismiss();
+
     }
 }
 

@@ -105,7 +105,7 @@ public class BrowserActivity extends ActionBarActivity
     public SharedPreferences prefs;
 
     //Meteor Stuff
-    private Meteor meteor;
+    public Meteor meteor;
 
 
     // STANDARD CLASS METHODS
@@ -847,6 +847,9 @@ public class BrowserActivity extends ActionBarActivity
             String huf = user.getString("hasUnseenFluffs");
             hasUnseenFluffs = huf.equals("true");
 
+            user.put("pendingStatus","false");
+            user.saveInBackground();
+
         } else {
 
             // create new user account
@@ -856,13 +859,12 @@ public class BrowserActivity extends ActionBarActivity
             user.setUsername(userPhoneNumber);
             user.setPassword("password");
             user.put("platform","android");
+            user.put("pendingStatus","false");
             try {
                 user.signUp();
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-
-            //            spinner.dismiss();
 
             //TODO - display tutorial modal screen
         }
