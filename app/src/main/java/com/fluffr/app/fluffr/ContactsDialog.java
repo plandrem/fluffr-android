@@ -58,7 +58,6 @@ public class ContactsDialog {
     private ListView list;
     private ContactsAdapter adapter;
     private ArrayList<PhoneContact> allContacts;
-    private ArrayList<PhoneContact> favoriteContacts;
     private Fluff fluff;
 
     //TODO -- prevent dialog from changing dimension when filtering contacts
@@ -70,21 +69,15 @@ public class ContactsDialog {
     }
 
     public void show() {
-        long startTime;
 
-        startTime = System.nanoTime();
         dialog = new Dialog(context, R.style.Theme_Contact_Chooser);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
         dialog.setContentView(R.layout.contacts_dialog);
-        Log.d("Contacts Dialog Timer 1",Long.toString(System.nanoTime() - startTime));
-        startTime = System.nanoTime();
 
         // setup list of contacts
         allContacts = getAllPhoneContacts();
-        Log.d("Contacts Dialog Timer 1.5",Long.toString(System.nanoTime() - startTime));
-        startTime = System.nanoTime();
 
         this.list = (ListView) dialog.findViewById(R.id.contacts_list);
         adapter = new ContactsAdapter(context,new ArrayList<PhoneContact>());
@@ -93,19 +86,13 @@ public class ContactsDialog {
 
         list.setAdapter(adapter);
         list.setOnItemClickListener(new SelectContactListener());
-        Log.d("Contacts Dialog Timer 2",Long.toString(System.nanoTime() - startTime));
-        startTime = System.nanoTime();
 
         // setup grid of favorite contacts
-        favoriteContacts = new ArrayList<PhoneContact>(8);
         PhoneContact favoriteContact = null;
         ImageView favoriteContactImageView = null;
         TextView favoriteContactTextView = null;
 
         ParseUser user = ParseUser.getCurrentUser();
-        Log.d("Contacts Dialog Timer 3",Long.toString(System.nanoTime() - startTime));
-        startTime = System.nanoTime();
-
         if (user.getList("recentRecipients") != null) {
             List parseRecents = user.getList("recentRecipients");
             String[] recentNumbers = new String[parseRecents.size()];
@@ -125,13 +112,12 @@ public class ContactsDialog {
                         context.getResources().getIdentifier("favorite_contact_name_" + i.toString(), "id", context.getPackageName()));
 
                 if (i <= recents.size()) {
-                    // insert contact into array
-
-//                    favoriteContact = new PhoneContact(context, (String) recents.get(i - 1));
-                    favoriteContact = recents.get(i-1);
-
-                    favoriteContacts.add(favoriteContact);
-
+                    // need to sort returned contacts
+                    for (PhoneContact pc : recents) {
+                        if (pc.number.equals((String) parseRecents.get(i-1))) {
+                            favoriteContact = pc;
+                        }
+                    }
                     favoriteContactImageView.setImageBitmap(favoriteContact.photo);
                     favoriteContactTextView.setText(favoriteContact.name);
 
@@ -145,9 +131,6 @@ public class ContactsDialog {
             }
         }
 
-        Log.d("Contacts Dialog Timer 4",Long.toString(System.nanoTime() - startTime));
-        startTime = System.nanoTime();
-
         // configure regex search for edittext element
         this.editText = (ContactDialogEditText) dialog.findViewById(R.id.contact_filter);
         editText.setParent(this);
@@ -160,8 +143,6 @@ public class ContactsDialog {
                 setKeyboardLayout(true);
             }
         });
-
-        Log.d("Contacts Dialog Timer 5",Long.toString(System.nanoTime() - startTime));
 
         dialog.show();
 
