@@ -17,6 +17,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.telephony.PhoneNumberUtils;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Gravity;
@@ -55,6 +56,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import im.delight.android.ddp.Meteor;
@@ -853,7 +855,8 @@ public class BrowserActivity extends ActionBarActivity
 
     private void setUserNumber() {
         TelephonyManager tMgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-        userPhoneNumber = tMgr.getLine1Number();
+//        userPhoneNumber = PhoneNumberFormatter.getNor
+//      userPhoneNumber = tMgr.getLine1Number();
     }
 
     private void setParseUser() {
