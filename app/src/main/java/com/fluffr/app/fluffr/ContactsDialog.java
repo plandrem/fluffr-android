@@ -60,8 +60,6 @@ public class ContactsDialog {
     private ArrayList<PhoneContact> allContacts;
     private Fluff fluff;
 
-    //TODO -- prevent dialog from changing dimension when filtering contacts
-
     public ContactsDialog(BrowserActivity b, Fluff f) {
         this.context = (Context) b;
         this.fluff = f;
@@ -328,50 +326,6 @@ public class ContactsDialog {
 
     }
 
-    private class FavoriteContactsAdapter extends BaseAdapter {
-        private final Context context;
-        private final ArrayList<PhoneContact> phoneContacts;
-        private LayoutInflater inflater;
-
-        // constructor for class
-        FavoriteContactsAdapter(Context context, ArrayList<PhoneContact> list) {
-            this.context = context;
-            this.phoneContacts = list;
-            this.inflater = LayoutInflater.from(context);
-        }
-
-        @Override
-        public int getCount() {
-            return phoneContacts.size();
-        }
-
-        @Override
-        public PhoneContact getItem(int position) {
-            return phoneContacts.get(position);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-
-        @Override
-        public View getView(final int position, View convertView, ViewGroup parent) {
-
-            FavoriteContactView contactView = (FavoriteContactView) convertView;
-
-            if (contactView == null) {
-                // add custom row layout into parent viewgroup (the row)
-                contactView = FavoriteContactView.inflate(parent);
-            }
-
-            contactView.setItem(getItem(position));
-
-            return contactView;
-
-        }
-    }
-
     private class SelectRecentContactListener implements View.OnClickListener {
 
         private PhoneContact phoneContact;
@@ -396,141 +350,7 @@ public class ContactsDialog {
 
             sendFluffToContact(selectedContact);
 
-            /*
-
-            //TODO - use actual recipient number
-            String recipient = "16518155005";
-//            String recipient = selectedContact.number;
-
-            //TODO - convert message sending to an Async Task
-
-            boolean pushSuccessful = false;
-            try {
-                pushSuccessful = sendReceivedFluffPushNotification(recipient);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-
-            if (pushSuccessful == false) {
-
-                SmsManager smsManager = SmsManager.getDefault();
-                String ownerName = "";
-                String message = "";
-                String number = "16518155005";
-
-                // get name of user for personalized message
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-                    Cursor c = context.getContentResolver().query(ContactsContract.Profile.CONTENT_URI, null, null, null, null);
-                    int count = c.getCount();
-                    String[] columnNames = {ContactsContract.Profile.DISPLAY_NAME};
-                    boolean b = c.moveToFirst();
-                    int p = c.getPosition();
-                    if (count == 1 && p == 0) {
-                        for (int j = 0; j < columnNames.length; j++) {
-                            String columnName = columnNames[j];
-                            String columnValue = c.getString(c.getColumnIndex(columnName));
-                            Log.d("SelectContactListener", columnName + " - " + columnValue);
-
-                            if (columnName != null) {
-                                if (columnName.equals(ContactsContract.Profile.DISPLAY_NAME)) {
-                                    ownerName = columnValue.split(" ")[0];
-                                }
-                            }
-
-                        }
-                    }
-                    c.close();
-
-                    // Send SMS message
-                    message = context.getResources().getString(R.string.non_user_sms);
-                    smsManager.sendTextMessage(number, null, ownerName + " " + message, null, null);
-
-
-                } else {
-                    // Pre-Ice-Cream-Sandwich
-                    message = context.getResources().getString(R.string.old_non_user_sms);
-                    smsManager.sendTextMessage(number, null, message, null, null);
-
-                }
-            }
-
-            //TODO - add selected contact to recent contacts list
-            // add selected contact to recent contacts list
-            ArrayList recents = new ArrayList(8);
-            ParseUser user = ParseUser.getCurrentUser();
-
-            if (user.getList("recentRecipients") != null) {
-                recents.addAll(user.getList("recentRecipients"));
-
-                if (recents.size() >= 8) {
-                    // pop oldest
-                    recents.remove(7);
-                }
-
-                // make sure there aren't any duplicates in recent recipients
-                for (int i=0; i < recents.size(); i++) {
-                    if (selectedContact.number.equals(recents.get(i))) {
-                        recents.remove(i);
-                    }
-                }
-
-                user.remove("recentRecipients");
-
-            } else {
-                // first recipient saved
-
-            }
-
-            // push this current contact
-            recents.add(0, selectedContact.number);
-            for (Object number : recents) {
-                user.add("recentRecipients", number);
-            }
-
-            try {
-                user.save();
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-
-
-
-            ContactsDialog.this.dismiss();
-
-            Toast.makeText(context.getApplicationContext(),"Fluff sent!", Toast.LENGTH_SHORT).show();
-
-            */
-
-
         }
-    }
-
-    private boolean sendReceivedFluffPushNotification(String recipient) throws ParseException {
-        // check if recipient already has an account. If yes, push as normal. If no, add the fluff to a pending account
-        // and return false to send an SMS message.
-
-        boolean returnVal = true;
-
-        ParseQuery userQuery = ParseUser.getQuery();
-        userQuery.whereEqualTo("username",recipient);
-        if (userQuery.count() == 0) {
-            // account does not exist; check pending accounts
-
-            // if no pending accounts, create a pending account.
-
-            // need to send an SMS
-            returnVal = false;
-
-        } else {
-            // recipient account exists
-            parentActivity.sendFluffPushNotification(recipient, fluff);
-
-        }
-
-
-
-        return returnVal;
-
     }
 
     private class ContactFilterTextWatcher implements TextWatcher {

@@ -847,9 +847,6 @@ public class BrowserActivity extends ActionBarActivity
             String huf = user.getString("hasUnseenFluffs");
             hasUnseenFluffs = huf.equals("true");
 
-            user.put("pendingStatus","false");
-            user.saveInBackground();
-
         } else {
 
             // create new user account
@@ -859,7 +856,6 @@ public class BrowserActivity extends ActionBarActivity
             user.setUsername(userPhoneNumber);
             user.setPassword("password");
             user.put("platform","android");
-            user.put("pendingStatus","false");
             try {
                 user.signUp();
             } catch (ParseException e) {
@@ -1045,82 +1041,6 @@ public class BrowserActivity extends ActionBarActivity
         Log.e("Meteor Interface","error:" + s);
         Log.e("Meteor Interface","reason:" + s2);
         Log.e("Meteor Interface","details:" + s3);
-    }
-
-    public void sendFluffPushNotification(String recipient, final Fluff fluff) throws ParseException {
-        // Responds when the user selects a contact from the ContactsDialog. Pushes a notification
-        // to the recipient's phone with a data payload containing the sender and new Fluff id.
-        // Each users' DB entry is updated to note that the Fluff was sent, and the Fluff itself
-        // records that it has been sent another time.
-
-        // get details for recipient
-        ParseQuery userQuery = ParseUser.getQuery();
-        userQuery.whereEqualTo("username",recipient);
-        ParseUser recipientUser = (ParseUser) userQuery.getFirst();
-        Log.d("SendFluffPush",recipient);
-        Log.d("SendFluffPush",recipientUser.toString());
-
-        String platform = recipientUser.getString("platform");
-        String deviceId = "";
-
-        // Get device id for recipient
-        if (platform.equals("android")) {
-            deviceId = recipientUser.getString("androidGcmRegistrationId");
-
-        } else if (platform.equals("iOS")) {
-            // handle iOS push notifications
-        }
-
-        // Send data to Meteor server, which will push to the recipient
-        Map<String,Object> payload = new HashMap<String, Object>();
-        payload.put("sender",userPhoneNumber);
-        payload.put("recipient",recipient);
-        payload.put("targetDevice",deviceId);
-        payload.put("fluffId",fluff.id);
-        payload.put("platform",platform);
-
-        Object[] data = {payload};
-        meteor.call("sendFluff",data,this);
-
-        // Update sending user's "sent" array
-        ParseUser sendingUser = ParseUser.getCurrentUser();
-        sendingUser.addUnique("sent",fluff.id);
-        sendingUser.saveInBackground();
-
-        // Update receiving user's inbox
-        SimpleDateFormat sdf = new SimpleDateFormat("MMMMM d, yyyy, hh:mm a");
-
-        JSONObject obj = new JSONObject();
-        try {
-            obj.put("fluffId",fluff.id);
-            obj.put("from",userPhoneNumber);
-//            obj.put("date", sdf.format(new Date()));
-            obj.put("date", new Date().getTime());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        Log.d("SendFluffPush",obj.toString());
-        recipientUser.add("inbox",obj);
-        recipientUser.put("hasUnseenFluffs", "true");
-        recipientUser.saveInBackground(new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                //TODO - send push as part of callback
-                Log.d("SendFluffCallback","done sending.");
-            }
-        });
-
-//        userQuery.getFirstInBackground(new updateInboxCallback(userPhoneNumber, fluffId));
-
-        // Update fluff's times sent
-        ParseQuery fluffQuery = ParseQuery.getQuery("fluff");
-        ParseObject f = fluffQuery.get(fluff.id);
-        f.increment("timesSent");
-        f.saveInBackground();
-
-
-
     }
 
     public void checkStartupInstructions() {
