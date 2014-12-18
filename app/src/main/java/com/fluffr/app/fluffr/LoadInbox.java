@@ -120,6 +120,8 @@ public class LoadInbox extends AsyncTask<Void,Void,ArrayList<Fluff>> {
 
         }
 
+        Log.e("LoadInbox","completed.");
+
         parentActivity.downloadsInProgress -= 1;
         if (parentActivity.downloadsInProgress == 0) parentActivity.spinner.dismiss();
 

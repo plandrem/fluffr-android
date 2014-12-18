@@ -553,11 +553,13 @@ public class BrowserActivity extends ActionBarActivity
         }
 
         public void dismiss() {
+            if (BrowserActivity.this.newUser) BrowserActivity.this.showTutorial();
+            
             Log.d("LoadingSpinner","dismissing dialog: " + dialog.toString());
             dialog.dismiss();
             isVisible = false;
 
-            if (BrowserActivity.this.newUser) BrowserActivity.this.showTutorial();
+
         }
     }
 
@@ -898,6 +900,7 @@ public class BrowserActivity extends ActionBarActivity
             user.setUsername(userPhoneNumber);
             user.setPassword("password");
             user.put("platform","android");
+            user.put("hasUnseenFluffs","false");
             try {
                 user.signUp();
             } catch (ParseException e) {

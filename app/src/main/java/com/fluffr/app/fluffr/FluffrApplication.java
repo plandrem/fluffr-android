@@ -3,6 +3,10 @@ package com.fluffr.app.fluffr;
 import android.app.Application;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkInfo;
+import android.net.NetworkRequest;
 import android.util.Log;
 
 import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
@@ -16,6 +20,8 @@ import com.parse.ParsePush;
 import com.parse.SaveCallback;
 
 import java.io.ByteArrayOutputStream;
+import java.net.NetworkInterface;
+import java.sql.Connection;
 import java.text.ParseException;
 
 /**
@@ -26,6 +32,8 @@ public class FluffrApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        //Check network availability
 
         String app_id = getResources().getString(R.string.parse_app_id);
         String client_key = getResources().getString(R.string.parse_client_key);

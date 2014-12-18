@@ -149,7 +149,7 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
                             fluff.favorited = true;
                         }
 
-                        Log.d("LoadFluffs", "objectId: " + object.getObjectId());
+//                        Log.d("LoadFluffs", "objectId: " + object.getObjectId());
 
                         fluffs.add(fluff);
                     }
@@ -254,6 +254,8 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
 
 
         }
+
+        Log.e("LoadFluffs","mode: " + mode + " completed.");
 
         parentActivity.downloadsInProgress -= 1;
         if (!inBackground) {
