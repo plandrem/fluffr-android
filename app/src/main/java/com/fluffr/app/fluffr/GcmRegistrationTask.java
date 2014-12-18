@@ -6,6 +6,8 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.parse.ParseException;
+import com.parse.ParseUser;
 
 import java.io.IOException;
 
@@ -34,7 +36,7 @@ public class GcmRegistrationTask extends AsyncTask<Void,Void,String> {
             // so it can use GCM/HTTP or CCS to send messages to your app.
             // The request to your server should be authenticated if your app
             // is using accounts.
-            sendRegistrationIdToBackend();
+            sendRegistrationIdToBackend(parent.regid);
 
             // For this demo: we don't need to send it because the device
             // will send upstream messages to a server that echo back the
@@ -56,8 +58,15 @@ public class GcmRegistrationTask extends AsyncTask<Void,Void,String> {
         Log.d("GcmRegistrationTask",msg);
     }
 
-    private void sendRegistrationIdToBackend() {
-        // Your implementation here.
+    private void sendRegistrationIdToBackend(String regid) {
+
+        ParseUser user = ParseUser.getCurrentUser();
+        user.put("androidGcmRegistrationId",regid);
+        try {
+            user.save();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 
 

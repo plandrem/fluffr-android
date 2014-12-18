@@ -178,6 +178,8 @@ public class BrowserActivity extends ActionBarActivity
         setUserNumber();
 
         //Handle Parse User Account
+        // must happen before checking GCM registration for push notifications
+        // regid is stored in parse user account
         setParseUser();
 
         Log.d("onCreate","getting context...");
