@@ -1,6 +1,7 @@
 package com.fluffr.app.fluffr;
 
 import android.app.Application;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
@@ -23,9 +24,13 @@ import java.text.ParseException;
  */
 public class FluffrApplication extends Application {
 
+    private static Context context;
+
     @Override
     public void onCreate() {
         super.onCreate();
+
+        context = getApplicationContext();
 
         String app_id = getResources().getString(R.string.parse_app_id);
         String client_key = getResources().getString(R.string.parse_client_key);
@@ -84,6 +89,10 @@ public class FluffrApplication extends Application {
         newFluff.saveInBackground();
 
 
+    }
+
+    public static Context getContext() {
+        return context;
     }
 
 

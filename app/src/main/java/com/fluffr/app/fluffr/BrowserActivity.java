@@ -855,7 +855,9 @@ public class BrowserActivity extends ActionBarActivity
 
     private void setUserNumber() {
         TelephonyManager tMgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-//        userPhoneNumber = PhoneNumberFormatter.getNor
+        userPhoneNumber = PhoneNumberFormatter.getFormattedNumber(tMgr.getLine1Number());
+
+        //TODO - barf if userPhoneNumber is null
 //      userPhoneNumber = tMgr.getLine1Number();
     }
 
@@ -896,6 +898,7 @@ public class BrowserActivity extends ActionBarActivity
             user.setUsername(userPhoneNumber);
             user.setPassword("password");
             user.put("platform","android");
+            user.put("hasUnseenFluffs","false");
             try {
                 user.signUp();
             } catch (ParseException e) {
