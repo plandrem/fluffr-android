@@ -179,6 +179,19 @@ public class BrowserActivity extends ActionBarActivity
         //Handle Parse User Account
         setParseUser();
 
+        // Handle tutorial screen
+        if (!newUser) {
+            findViewById(R.id.tutorial).setVisibility(View.GONE);
+        } else {
+            ImageButton b = (ImageButton) findViewById(R.id.tutorial_button);
+            b.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    findViewById(R.id.tutorial).setVisibility(View.GONE);
+                }
+            });
+        }
+
         Log.d("onCreate","getting context...");
         context = getApplicationContext();
 
@@ -553,8 +566,6 @@ public class BrowserActivity extends ActionBarActivity
         }
 
         public void dismiss() {
-            if (BrowserActivity.this.newUser) BrowserActivity.this.showTutorial();
-            
             Log.d("LoadingSpinner","dismissing dialog: " + dialog.toString());
             dialog.dismiss();
             isVisible = false;
