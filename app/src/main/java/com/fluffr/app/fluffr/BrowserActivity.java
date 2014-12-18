@@ -76,6 +76,7 @@ public class BrowserActivity extends ActionBarActivity
     private static int currentBrowseIndex = 0;
     private static int currentFavoritesIndex = 0;
     private static boolean hasUnseenFluffs = false;
+    public static boolean newUser = false;
 
     // ListView and Data Stuff
     public ListView listView;
@@ -555,6 +556,8 @@ public class BrowserActivity extends ActionBarActivity
             Log.d("LoadingSpinner","dismissing dialog: " + dialog.toString());
             dialog.dismiss();
             isVisible = false;
+
+            if (BrowserActivity.this.newUser) BrowserActivity.this.showTutorial();
         }
     }
 
@@ -889,6 +892,8 @@ public class BrowserActivity extends ActionBarActivity
             // create new user account
             Log.d("setParseUser", "New account for user: " + userPhoneNumber);
 
+            this.newUser = true;
+
             user = new ParseUser();
             user.setUsername(userPhoneNumber);
             user.setPassword("password");
@@ -899,7 +904,6 @@ public class BrowserActivity extends ActionBarActivity
                 e.printStackTrace();
             }
 
-            //TODO - display tutorial modal screen
         }
 
 
@@ -1097,8 +1101,6 @@ public class BrowserActivity extends ActionBarActivity
             }
         }
 
-//        spinner.dismiss();
-
     }
 
     public void scrollToTop() {
@@ -1126,6 +1128,11 @@ public class BrowserActivity extends ActionBarActivity
     public void restorePosition() {
         Log.d("restoring","index:" + Integer.toString(listPosition) + ", offset: " + Integer.toString(listOffset));
         listView.setSelectionFromTop(listPosition, listOffset);
+    }
+
+    public void showTutorial() {
+        TutorialDialog tutorial = new TutorialDialog(this);
+        tutorial.show();
     }
 
     public boolean isAdmin() {

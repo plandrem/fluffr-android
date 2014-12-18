@@ -226,8 +226,6 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
                 // further instructions such as navigation to other pages
                 parentActivity.checkStartupInstructions();
 
-//                parentActivity.spinner.dismiss();
-
             } else if (mode.equals("favorites") || mode.equals("more_favorites")) {
 
                 for (Fluff fluff : fluffs) {

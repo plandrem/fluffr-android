@@ -15,6 +15,7 @@
         android:scaleType="centerInside"/>
 
     <ImageButton
+        android:id="@+id/tutorial_button"
         android:layout_width="150dp"
         android:layout_height="75dp"
         android:src="@drawable/fluffr_tutorial_button"
