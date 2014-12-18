@@ -920,19 +920,6 @@ public class BrowserActivity extends ActionBarActivity
         return currentState;
     }
 
-    public static void increaseBrowseIndex(int count) {
-        currentBrowseIndex += count;
-        Log.d("increaseBrowseIndex", "New Browse Index: " + Integer.toString(currentBrowseIndex));
-    }
-
-    public static void increaseFavoritesIndex(int count) {
-        currentFavoritesIndex += count;
-    }
-
-    public static int getCurrentBrowseIndex() {
-        return currentBrowseIndex;
-    }
-
     /**
      * Check the device to make sure it has the Google Play Services APK. If
      * it doesn't, display a dialog that allows users to download the APK from
@@ -1102,8 +1089,6 @@ public class BrowserActivity extends ActionBarActivity
                 }
             }
         }
-
-//        spinner.dismiss();
 
     }
 

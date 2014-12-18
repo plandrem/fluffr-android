@@ -149,7 +149,7 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
                             fluff.favorited = true;
                         }
 
-                        Log.d("LoadFluffs", "objectId: " + object.getObjectId());
+//                        Log.d("LoadFluffs", "objectId: " + object.getObjectId());
 
                         fluffs.add(fluff);
                     }

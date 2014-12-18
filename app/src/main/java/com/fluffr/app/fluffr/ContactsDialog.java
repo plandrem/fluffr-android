@@ -112,7 +112,7 @@ public class ContactsDialog {
                 if (i <= recents.size()) {
                     // need to sort returned contacts
                     for (PhoneContact pc : recents) {
-                        if (pc.number.equals((String) parseRecents.get(i-1))) {
+                        if (pc.getNumber().equals((String) parseRecents.get(i-1))) {
                             favoriteContact = pc;
                         }
                     }
@@ -177,7 +177,7 @@ public class ContactsDialog {
             contact = new PhoneContact();
             contact.id = contactId;
             contact.name = contactName;
-            contact.number = contactNumber;
+            contact.setPhoneNumber(contactNumber);
             if (contactPhotoUri != null) contact.photoUri = Uri.parse(contactPhotoUri);
 
             if (contact != null)
@@ -236,7 +236,7 @@ public class ContactsDialog {
             newContact = new PhoneContact();
             newContact.id = phoneContactID;
             newContact.name = contactName;
-            newContact.number = contactNumber;
+            newContact.setPhoneNumber(contactNumber);
 
             if (thumbnailUri != null) {
                 newContact.photoUri = Uri.parse(thumbnailUri);
@@ -321,7 +321,7 @@ public class ContactsDialog {
         }
 
         public String getNumber(int position) {
-            return this.phoneContacts.get(position).number;
+            return this.phoneContacts.get(position).getNumber();
         }
 
     }
