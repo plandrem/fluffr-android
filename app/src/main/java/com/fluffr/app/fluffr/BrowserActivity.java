@@ -179,19 +179,6 @@ public class BrowserActivity extends ActionBarActivity
         //Handle Parse User Account
         setParseUser();
 
-        // Handle tutorial screen
-        if (!newUser) {
-            findViewById(R.id.tutorial).setVisibility(View.GONE);
-        } else {
-            ImageButton b = (ImageButton) findViewById(R.id.tutorial_button);
-            b.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    findViewById(R.id.tutorial).setVisibility(View.GONE);
-                }
-            });
-        }
-
         Log.d("onCreate","getting context...");
         context = getApplicationContext();
 
@@ -316,16 +303,14 @@ public class BrowserActivity extends ActionBarActivity
     }
 
     private void LoadState(){
-        SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+        final SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
 
         currentState = sharedPreferences.getString("currentState","Browse");
         currentBrowseIndex = sharedPreferences.getInt("currentBrowseIndex",0);
         int index = sharedPreferences.getInt("fluffIndex", 0);
         listOffset = sharedPreferences.getInt("listOffset",0);
         listPosition = sharedPreferences.getInt("listPosition",0);
-
-//        currentBrowseIndex = 0;
-//        index = 0;
+        Boolean hasSeenTutorial = sharedPreferences.getBoolean("hasSeenTutorial",false);
 
         String logStr = "";
         logStr += String.format("currentState: %s, ", currentState);
@@ -333,6 +318,23 @@ public class BrowserActivity extends ActionBarActivity
         logStr += String.format("index: %d, ", index);
         logStr += String.format("offset: %d, ", listOffset);
         Log.d("LoadState", logStr);
+
+        // Handle tutorial screen
+        ImageButton b = (ImageButton) findViewById(R.id.tutorial_button);
+        b.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                findViewById(R.id.tutorial).setVisibility(View.GONE);
+
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean("hasSeenTutorial",true);
+                editor.commit();
+            }
+        });
+
+        if (hasSeenTutorial) {
+            findViewById(R.id.tutorial).setVisibility(View.GONE);
+        }
 
         //Load initial data
         Log.d("onCreate","Executing initial LoadFluff...");
@@ -1142,11 +1144,6 @@ public class BrowserActivity extends ActionBarActivity
     public void restorePosition() {
         Log.d("restoring","index:" + Integer.toString(listPosition) + ", offset: " + Integer.toString(listOffset));
         listView.setSelectionFromTop(listPosition, listOffset);
-    }
-
-    public void showTutorial() {
-        TutorialDialog tutorial = new TutorialDialog(this);
-        tutorial.show();
     }
 
     public boolean isAdmin() {

@@ -34,7 +34,7 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
     private boolean inBackground = false;
 
     private int prependedFluffs = 0;
-    private int QUERY_LIMIT = 20;
+    private int QUERY_LIMIT = 35;
 
     public LoadFluffs(BrowserActivity a, String mode) {
         this(a,mode,false,0);
