@@ -19,12 +19,12 @@ public class PhoneNumberFormatter{
 
         // converts string phone number into E164 formatted international number
 
-        Log.d(TAG,"Input Number: " + number);
+//        Log.d(TAG,"Input Number: " + number);
 
         PhoneNumberUtil phoneNumberUtil = PhoneNumberUtil.getInstance();
 
         Locale currentLocale = FluffrApplication.getContext().getResources().getConfiguration().locale;
-        Log.d(TAG,"Current Locale: " + currentLocale.getCountry());
+//        Log.d(TAG,"Current Locale: " + currentLocale.getCountry());
 
 
         String formattedNumber;
@@ -38,7 +38,7 @@ public class PhoneNumberFormatter{
 
         if (phoneNumber != null) {
             formattedNumber = phoneNumberUtil.format(phoneNumber, PhoneNumberUtil.PhoneNumberFormat.E164);
-            Log.d(TAG,"Output Number: " + formattedNumber);
+//            Log.d(TAG,"Output Number: " + formattedNumber);
             return formattedNumber;
         } else {
             Log.e(TAG,"Formatting Error!");

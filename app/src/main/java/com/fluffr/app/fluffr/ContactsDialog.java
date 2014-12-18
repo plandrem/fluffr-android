@@ -93,6 +93,7 @@ public class ContactsDialog {
         ParseUser user = ParseUser.getCurrentUser();
         if (user.getList("recentRecipients") != null) {
             List parseRecents = user.getList("recentRecipients");
+            Log.d("ContactsDialog","parseRecents: " + parseRecents.toString());
             String[] recentNumbers = new String[parseRecents.size()];
             for (int i=0; i<parseRecents.size();i++) {
                 recentNumbers[i] = (String) parseRecents.get(i);
@@ -129,6 +130,23 @@ public class ContactsDialog {
                 }
 
             }
+        } else {
+
+            Log.d("ContactsDialog","no recent contacts found.");
+
+            dialog.findViewById(R.id.contact_dialog_recent_recipients).setVisibility(View.GONE);
+//            // clear all tiles
+//            for (Integer i=1; i<9; i++) {
+//                favoriteContactImageView = (ImageView) dialog.findViewById(
+//                        context.getResources().getIdentifier("favorite_contact_image_" + i.toString(), "id", context.getPackageName()));
+//
+//                favoriteContactTextView = (TextView) dialog.findViewById(
+//                        context.getResources().getIdentifier("favorite_contact_name_" + i.toString(), "id", context.getPackageName()));
+//
+//                favoriteContactImageView.setImageBitmap(null);
+//                favoriteContactTextView.setText("");
+//
+//            }
         }
 
         // configure regex search for edittext element
