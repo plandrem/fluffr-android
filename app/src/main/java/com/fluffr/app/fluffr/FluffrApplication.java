@@ -1,5 +1,6 @@
 package com.fluffr.app.fluffr;
 
+import android.app.AlertDialog;
 import android.app.Application;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -21,6 +22,7 @@ import com.parse.ParsePush;
 import com.parse.SaveCallback;
 
 import java.io.ByteArrayOutputStream;
+import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.sql.Connection;
 import java.text.ParseException;
@@ -36,15 +38,7 @@ public class FluffrApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        //Check network availability
         context = getApplicationContext();
-
-        String app_id = getResources().getString(R.string.parse_app_id);
-        String client_key = getResources().getString(R.string.parse_client_key);
-
-        Parse.initialize(this, app_id, client_key);
-
-        Log.d("FluffrApplication","Parse Initialized.");
 
         // Instantiate Universal Image Loader (https://github.com/nostra13/Android-Universal-Image-Loader)
         DisplayImageOptions options = new DisplayImageOptions.Builder()
@@ -101,6 +95,5 @@ public class FluffrApplication extends Application {
     public static Context getContext() {
         return context;
     }
-
 
 }

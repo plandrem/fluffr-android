@@ -11,6 +11,8 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Parcelable;
 import android.os.PersistableBundle;
 import android.support.v4.widget.DrawerLayout;
@@ -42,6 +44,7 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -51,6 +54,7 @@ import com.parse.SaveCallback;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.InetAddress;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -154,81 +158,107 @@ public class BrowserActivity extends ActionBarActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_browser);
 
-        if (savedInstanceState != null) {
-            Log.d("onCreate","found SavedInstanceState bundle");
-//            currentState = savedInstanceState.getString("currentState");
-        }
+        // Check connectivity
 
-        spinner.show();
+        if (!isInternetAvailable()) {
+            // No connection - bail.
 
-        // assign views
-        listView = (ListView) findViewById(R.id.listview);
+            findViewById(R.id.no_internet).setVisibility(View.VISIBLE);
 
-        // setup Navigation Drawer
-        pages.add(new NavItem("Browse"));
-        pages.add(new NavItem("Favorites"));
-        pages.add(new NavItem("Inbox"));
+            ImageButton button = (ImageButton) findViewById(R.id.no_internet_button);
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    BrowserActivity.this.finish();
+                }
+            });
 
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawerLinearLayout = (LinearLayout) findViewById(R.id.left_drawer);
-        drawerList = (ListView) findViewById(R.id.left_drawer_list);
-        drawerList.setAdapter(new NavAdapter(this, pages));
-        drawerList.setOnItemClickListener(new DrawerItemClickListener());
 
-        // Store user's phone number for referencing account
-        setUserNumber();
-
-        //Handle Parse User Account
-        // must happen before checking GCM registration for push notifications
-        // regid is stored in parse user account
-        setParseUser();
-
-        Log.d("onCreate","getting context...");
-        context = getApplicationContext();
-
-        Log.d("onCreate","checking Play service...");
-        // Check device for Play Services APK.
-        if (checkPlayServices()) {
-            // If this check succeeds, proceed with normal processing.
-            // Otherwise, prompt user to get valid Play Services APK.
-
-            gcm = GoogleCloudMessaging.getInstance(this);
-            regid = getRegistrationId(context);
-
-            Log.d("gcm","regid: " + regid);
-
-            if (regid.isEmpty()) {
-                registerInBackground();
-            }
         } else {
-            Log.i("onCreate", "No valid Google Play Services APK found.");
+            // Normal Startup
+            String app_id = getResources().getString(R.string.parse_app_id);
+            String client_key = getResources().getString(R.string.parse_client_key);
+
+            Parse.initialize(this, app_id, client_key);
+
+            Log.d("onCreate","Parse Initialized.");
+
+            if (savedInstanceState != null) {
+                Log.d("onCreate", "found SavedInstanceState bundle");
+                //            currentState = savedInstanceState.getString("currentState");
+            }
+
+            spinner.show();
+
+            // assign views
+            listView = (ListView) findViewById(R.id.listview);
+
+            // setup Navigation Drawer
+            pages.add(new NavItem("Browse"));
+            pages.add(new NavItem("Favorites"));
+            pages.add(new NavItem("Inbox"));
+
+            drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+            drawerLinearLayout = (LinearLayout) findViewById(R.id.left_drawer);
+            drawerList = (ListView) findViewById(R.id.left_drawer_list);
+            drawerList.setAdapter(new NavAdapter(this, pages));
+            drawerList.setOnItemClickListener(new DrawerItemClickListener());
+
+            // Store user's phone number for referencing account
+            setUserNumber();
+
+            //Handle Parse User Account
+            // must happen before checking GCM registration for push notifications
+            // regid is stored in parse user account
+            setParseUser();
+
+            Log.d("onCreate", "getting context...");
+            context = getApplicationContext();
+
+            Log.d("onCreate", "checking Play service...");
+            // Check device for Play Services APK.
+            if (checkPlayServices()) {
+                // If this check succeeds, proceed with normal processing.
+                // Otherwise, prompt user to get valid Play Services APK.
+
+                gcm = GoogleCloudMessaging.getInstance(this);
+                regid = getRegistrationId(context);
+
+                Log.d("gcm", "regid: " + regid);
+
+                if (regid.isEmpty()) {
+                    registerInBackground();
+                }
+            } else {
+                Log.i("onCreate", "No valid Google Play Services APK found.");
+
+            }
+
+            //Connect to Meteor Server
+            Log.d("onCreate", "connecting to Meteor...");
+            meteor = new Meteor("ws://www.fluffr.co/websocket");
+            meteor.setCallback(this);
+
+            //Configure Adapter; dataset will be empty.
+            Log.d("onCreate", "configuring Fluff adapter...");
+            adapter = new CustomAdapter(this, new ArrayList<Fluff>());
+            listView.setAdapter(adapter);
+            listView.setOnScrollListener(new FluffScrollListener(this));
+
+            // Check for saved data, or start up with initial parameters
+            LoadState();
+
+            // Register receiver for incoming messages
+            Log.d("onCreate", "registering Fluff receiver...");
+            IntentFilter intentFilter = new IntentFilter(RECEIVE_FLUFF);
+            this.registerReceiver(FluffReceiver, intentFilter);
+
+
+            //Finalize UI
+            Log.d("onCreate", "finalize UI...");
+            updateActionBar();
 
         }
-
-        //Connect to Meteor Server
-        Log.d("onCreate","connecting to Meteor...");
-        meteor = new Meteor("ws://www.fluffr.co/websocket");
-        meteor.setCallback(this);
-
-        //Configure Adapter; dataset will be empty.
-        Log.d("onCreate","configuring Fluff adapter...");
-        adapter = new CustomAdapter(this, new ArrayList<Fluff>());
-        listView.setAdapter(adapter);
-        listView.setOnScrollListener(new FluffScrollListener(this));
-
-        // Check for saved data, or start up with initial parameters
-        LoadState();
-
-        // Register receiver for incoming messages
-        Log.d("onCreate","registering Fluff receiver...");
-        IntentFilter intentFilter = new IntentFilter(RECEIVE_FLUFF);
-        this.registerReceiver(FluffReceiver,intentFilter);
-
-
-        //Finalize UI
-        Log.d("onCreate","finalize UI...");
-        updateActionBar();
-
     }
 
     @Override
@@ -250,7 +280,7 @@ public class BrowserActivity extends ActionBarActivity
 
     @Override
     protected void onResume() {
-        Log.d("onResume","onResume");
+        Log.d("onResume", "onResume");
         super.onResume();
         checkPlayServices();
         checkStartupInstructions();
@@ -259,13 +289,16 @@ public class BrowserActivity extends ActionBarActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        meteor.disconnect();
-        this.unregisterReceiver(FluffReceiver);
+
+        if (isInternetAvailable()) {
+            meteor.disconnect();
+            this.unregisterReceiver(FluffReceiver);
+        }
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        Log.d("onSaveInstanceState","saving state...");
+        Log.d("onSaveInstanceState", "saving state...");
         super.onSaveInstanceState(outState);
 
         Parcelable listState = listView.onSaveInstanceState();
@@ -355,7 +388,8 @@ public class BrowserActivity extends ActionBarActivity
     @Override
     protected void onStop() {
         super.onStop();
-        SaveState();
+
+        if (isInternetAvailable()) SaveState();
     }
 
     @Override
@@ -648,10 +682,10 @@ public class BrowserActivity extends ActionBarActivity
         currentState = "Inbox";
 
         // replace browser's existing data with new list
-        Log.d("goToInbox","clearing current list...");
+        Log.d("goToInbox", "clearing current list...");
         this.adapter.clear();
 
-        Log.d("goToInbox","replacing with inbox...");
+        Log.d("goToInbox", "replacing with inbox...");
         this.adapter.addFluffs(inbox);
 
         updateActionBar();
@@ -1143,4 +1177,16 @@ public class BrowserActivity extends ActionBarActivity
     public boolean isAdmin() {
         return userPhoneNumber.equals("16518155005");
     }
+
+    public boolean isInternetAvailable() {
+
+        ConnectivityManager connec = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo wifi = connec.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        NetworkInfo mobile = connec.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+        // Check if wifi or mobile network is available or not. If any of them is
+        // available or connected then it will return true, otherwise false;
+        return wifi.isConnected() || mobile.isConnected();
+
+    }
+
 }

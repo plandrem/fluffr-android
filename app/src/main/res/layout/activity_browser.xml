@@ -112,6 +112,37 @@
         </LinearLayout>
 
 
+        <!--No Internet Screen-->
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/no_internet"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:background="@drawable/fluffr_no_internet_background"
+            android:weightSum="1"
+            android:gravity="center"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/no_internet_image"
+                android:layout_width="match_parent"
+                android:layout_height="400dp"
+                android:src="@drawable/fluffr_no_internet_image"
+                android:scaleType="centerInside"/>
+
+            <ImageButton
+                android:id="@+id/no_internet_button"
+                android:layout_width="150dp"
+                android:layout_height="75dp"
+                android:src="@drawable/fluffr_no_internet_button"
+                android:background="@null"
+                android:scaleType="centerInside"
+                android:layout_marginBottom="50dp"
+                android:layout_marginRight="30dp"
+                android:layout_gravity="right"/>
+
+        </LinearLayout>
+
     </RelativeLayout>
 
     <LinearLayout
