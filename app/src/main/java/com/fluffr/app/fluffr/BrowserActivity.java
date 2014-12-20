@@ -774,6 +774,9 @@ public class BrowserActivity extends ActionBarActivity
         rightButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // record the state of the browser window
+                if (getCurrentState().equals("Browse")) savePosition();
+
                 if (currentState.equals("Inbox")) {
                     goToBrowse();
                 } else {
