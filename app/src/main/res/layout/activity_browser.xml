@@ -79,7 +79,17 @@
             android:footerDividersEnabled="false"
             android:headerDividersEnabled="false"
             android:divider="@null"
-            android:dividerHeight="0dp" />
+            android:dividerHeight="0dp"
+            android:visibility="visible"/>
+
+        <ImageView
+            android:id="@+id/empty_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/empty_list_inbox"
+            android:alpha="0.5"
+            android:padding="30dp"
+            android:visibility="gone"/>
 
         <!--Tutorial Screen-->
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"

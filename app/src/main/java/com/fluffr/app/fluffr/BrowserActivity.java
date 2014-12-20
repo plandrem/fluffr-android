@@ -101,6 +101,7 @@ public class BrowserActivity extends ActionBarActivity
     public LoadFluffs getFluffsTask;
     public LoadFluffs getFavoritesTask;
     public LoadInbox getInboxTask;
+    public ImageView emptyView;
 
     // Nav Drawer Stuff
     private ArrayList<NavItem> pages = new ArrayList<NavItem>();
@@ -199,6 +200,7 @@ public class BrowserActivity extends ActionBarActivity
 
             // assign views
             listView = (ListView) findViewById(R.id.listview);
+            emptyView = (ImageView) findViewById(R.id.empty_list);
 
             // show spinner when user reaches edge of listview; currently messes up indexing system.
 //            View listviewSpinner = LayoutInflater.from(this).inflate(R.layout.listview_spinner,null,false);
@@ -699,6 +701,8 @@ public class BrowserActivity extends ActionBarActivity
         Log.d("goToBrowse","replacing with browse list...");
         this.adapter.addFluffs(list);
 
+        emptyView.setVisibility(View.GONE);
+
         // set back to previous place in list
         restorePosition();
 
@@ -716,6 +720,14 @@ public class BrowserActivity extends ActionBarActivity
         Log.d("goToFavorites","replacing with favorites...");
         this.adapter.addFluffs(favorites);
 
+        if (adapter.getCount() == 0) {
+            emptyView.setImageResource(R.drawable.empty_list_favorites);
+            emptyView.setVisibility(View.VISIBLE);
+        } else {
+            emptyView.setVisibility(View.GONE);
+        }
+
+
         // force to top
         listView.setSelection(0);
 
@@ -731,6 +743,13 @@ public class BrowserActivity extends ActionBarActivity
 
         Log.d("goToInbox", "replacing with inbox...");
         this.adapter.addFluffs(inbox);
+
+        if (adapter.getCount() == 0) {
+            emptyView.setImageResource(R.drawable.empty_list_inbox);
+            emptyView.setVisibility(View.VISIBLE);
+        } else {
+            emptyView.setVisibility(View.GONE);
+        }
 
         updateActionBar();
 

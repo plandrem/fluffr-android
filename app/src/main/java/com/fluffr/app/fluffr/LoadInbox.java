@@ -23,7 +23,6 @@ public class LoadInbox extends AsyncTask<Void,Void,ArrayList<Fluff>> {
     private String mode;
     private int startIndex;
 
-    //TODO -- implement query limit for inbox
     private int QUERY_LIMIT = 20;
 
     public LoadInbox(BrowserActivity a, String mode) {

@@ -291,8 +291,6 @@ public class SendFluffInBackgroundTask extends AsyncTask<PhoneContact,Void,Boole
 
     private void createPendingAccount(String number) throws ParseException {
 
-        //TODO -- normalize phone numbers; can use PhoneNumberUtils class
-
         ParseObject newUser = new ParseObject("pendingUser");
         newUser.put("number",number);
         newUser.save();
