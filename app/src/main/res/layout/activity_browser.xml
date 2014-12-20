@@ -13,7 +13,7 @@
             android:id="@+id/header"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:background="@drawable/action_bar_background">
+            android:background="@drawable/fluffr_header_background_gradient">
 
             <ImageButton
                 android:id="@+id/header_drawer_toggle"
@@ -89,7 +89,8 @@
             android:orientation="vertical"
             android:background="@drawable/fluffr_tutorial_background"
             android:weightSum="1"
-            android:gravity="center">
+            android:gravity="center"
+            android:visibility="gone">
 
             <ImageView
                 android:id="@+id/tutorial_image"

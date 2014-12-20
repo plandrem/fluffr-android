@@ -14,7 +14,7 @@
         android:text="Send to a Friend"
         android:textSize="20sp"
         android:textColor="#FFFFFF"
-        android:background="@color/fluffr_blue_main"
+        android:background="@drawable/fluffr_header_background_flat"
         android:paddingTop="15dp"
         android:paddingBottom="10dp"
         android:paddingLeft="20dp"/>
@@ -24,6 +24,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <!-- Recent Contacts Grid -->
         <LinearLayout
             android:id="@+id/contact_dialog_recent_recipients"
             android:layout_width="match_parent"
@@ -302,6 +303,7 @@
             </LinearLayout>
 
         </LinearLayout>
+        <!-- End Recent Contacts Grid -->
 
         <FrameLayout
             android:layout_width="match_parent"
