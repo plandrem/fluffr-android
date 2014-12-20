@@ -17,7 +17,7 @@ import java.util.ArrayList;
  * Created by Patrick on 11/2/14.
  */
 public class PhoneContact {
-    public String number;
+    private String number;
     public String name;
     public long id;
     public Bitmap photo;
@@ -32,7 +32,7 @@ public class PhoneContact {
 
         //TODO -- remove this for production!!!
 //        if (phoneNumber.equals("16518155005")) phoneNumber = "19788216761";
-        if (phoneNumber.equals("16518155005")) phoneNumber = "16513669306";
+        if (phoneNumber.equals("+16518155005")) phoneNumber = "16513669306";
 
         String clause = ContactsContract.CommonDataKinds.Phone.NUMBER + " = ?";
         String[] criteria = {phoneNumber};
@@ -55,7 +55,7 @@ public class PhoneContact {
 
             this.id = phoneContactID;
             this.name = contactName;
-            this.number = phoneNumber;
+            this.number = PhoneNumberFormatter.getFormattedNumber(phoneNumber);
 
             if (thumbnailUri != null) {
                 this.photoUri = Uri.parse(thumbnailUri);
@@ -82,12 +82,11 @@ public class PhoneContact {
 
     }
 
-    public void setPhotoFromString(String photoString) {
-        if (photoString == null) return;
-
-        Log.d("PhoneContact","converting photo string...");
-        byte[] bytes = photoString.getBytes();
-        photo = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+    public void setPhoneNumber(String number) {
+        this.number = PhoneNumberFormatter.getFormattedNumber(number);
     }
 
+    public String getNumber() {
+        return number;
+    }
 }

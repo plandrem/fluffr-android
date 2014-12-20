@@ -78,7 +78,7 @@ public class ContactView extends RelativeLayout {
     public void setItem(PhoneContact contact) {
 
         name.setText(contact.name);
-        number.setText(contact.number);
+        number.setText(contact.getNumber());
 
         if (contact.photoUri != null) {
             image.setImageURI(contact.photoUri);

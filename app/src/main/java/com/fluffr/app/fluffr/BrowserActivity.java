@@ -17,6 +17,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.telephony.PhoneNumberUtils;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Gravity;
@@ -55,6 +56,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import im.delight.android.ddp.Meteor;
@@ -122,7 +124,7 @@ public class BrowserActivity extends ActionBarActivity
 
             Fluff newFluff = Fluff.fromString(extras.getString("fluffId"));
             newFluff.sender = extras.getString("sender");
-            newFluff.sendDate = extras.getLong("date");
+            newFluff.sendDate = Long.valueOf(extras.getString("date"));
 
             inbox.add(0, newFluff);
 
@@ -177,6 +179,8 @@ public class BrowserActivity extends ActionBarActivity
         setUserNumber();
 
         //Handle Parse User Account
+        // must happen before checking GCM registration for push notifications
+        // regid is stored in parse user account
         setParseUser();
 
         Log.d("onCreate","getting context...");
@@ -871,7 +875,10 @@ public class BrowserActivity extends ActionBarActivity
 
     private void setUserNumber() {
         TelephonyManager tMgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-        userPhoneNumber = tMgr.getLine1Number();
+        userPhoneNumber = PhoneNumberFormatter.getFormattedNumber(tMgr.getLine1Number());
+
+        //TODO - barf if userPhoneNumber is null
+//      userPhoneNumber = tMgr.getLine1Number();
     }
 
     private void setParseUser() {
@@ -932,19 +939,6 @@ public class BrowserActivity extends ActionBarActivity
 
     public static String getCurrentState() {
         return currentState;
-    }
-
-    public static void increaseBrowseIndex(int count) {
-        currentBrowseIndex += count;
-        Log.d("increaseBrowseIndex", "New Browse Index: " + Integer.toString(currentBrowseIndex));
-    }
-
-    public static void increaseFavoritesIndex(int count) {
-        currentFavoritesIndex += count;
-    }
-
-    public static int getCurrentBrowseIndex() {
-        return currentBrowseIndex;
     }
 
     /**
