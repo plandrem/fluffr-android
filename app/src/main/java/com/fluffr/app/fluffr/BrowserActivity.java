@@ -200,6 +200,11 @@ public class BrowserActivity extends ActionBarActivity
             // assign views
             listView = (ListView) findViewById(R.id.listview);
 
+            // show spinner when user reaches edge of listview; currently messes up indexing system.
+//            View listviewSpinner = LayoutInflater.from(this).inflate(R.layout.listview_spinner,null,false);
+//            listView.addFooterView(listviewSpinner,null,false);
+//            listView.addHeaderView(listviewSpinner,null,false);
+
             // setup Navigation Drawer
             pages.add(new NavItem("Browse"));
             pages.add(new NavItem("Favorites"));
@@ -954,7 +959,6 @@ public class BrowserActivity extends ActionBarActivity
         userPhoneNumber = PhoneNumberFormatter.getFormattedNumber(tMgr.getLine1Number());
 
         //TODO - barf if userPhoneNumber is null
-//      userPhoneNumber = tMgr.getLine1Number();
     }
 
     private void setParseUser() {

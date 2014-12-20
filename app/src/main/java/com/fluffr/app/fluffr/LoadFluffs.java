@@ -91,8 +91,6 @@ public class LoadFluffs extends AsyncTask<Void, Void, ArrayList<Fluff>> {
 
         Log.d("LoadFluffs", "Running " + mode + " query with start index: " + Integer.toString(startIndex));
 
-        //TODO -- update favorites and inbox as user scrolls
-
         if (mode.equals("init")) {
             if (startIndex > 0) {
 
