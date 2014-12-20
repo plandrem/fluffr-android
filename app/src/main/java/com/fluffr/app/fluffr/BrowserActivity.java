@@ -384,6 +384,8 @@ public class BrowserActivity extends ActionBarActivity
 
         if (hasSeenTutorial) {
             findViewById(R.id.tutorial).setVisibility(View.GONE);
+        } else {
+            findViewById(R.id.tutorial).setVisibility(View.VISIBLE);
         }
 
         //Load initial data
@@ -990,13 +992,31 @@ public class BrowserActivity extends ActionBarActivity
 
             this.newUser = true;
 
-            user = new ParseUser();
-            user.setUsername(userPhoneNumber);
-            user.setPassword("password");
-            user.put("platform","android");
-            user.put("hasUnseenFluffs","false");
             try {
+                user = new ParseUser();
+                user.setUsername(userPhoneNumber);
+                user.setPassword("password");
+                user.put("platform","android");
+
+                // check if there's a pending user account; if so, we need
+                // to copy over the inbox and tell them they should check their inbox
+
+                ParseQuery pendingQuery = ParseQuery.getQuery("pendingUser");
+                query.whereEqualTo("number",userPhoneNumber);
+
+                if (pendingQuery.count() > 0) {
+                    // pending account exists
+                    ParseObject pendingUser = pendingQuery.getFirst();
+                    user.addAll("inbox",pendingUser.getList("inbox"));
+                    user.put("hasUnseenFluffs","true");
+
+                } else {
+                    // not a pending account
+                    user.put("hasUnseenFluffs","false");
+                }
+
                 user.signUp();
+
             } catch (ParseException e) {
                 e.printStackTrace();
             }
