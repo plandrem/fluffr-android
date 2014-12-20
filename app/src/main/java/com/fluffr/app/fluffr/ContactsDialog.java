@@ -92,11 +92,13 @@ public class ContactsDialog {
 
         ParseUser user = ParseUser.getCurrentUser();
         if (user.getList("recentRecipients") != null) {
-            List parseRecents = user.getList("recentRecipients");
+            List<Integer> parseRecents = user.getList("recentRecipients");
             Log.d("ContactsDialog","parseRecents: " + parseRecents.toString());
+
+            //Convert longs to strings
             String[] recentNumbers = new String[parseRecents.size()];
             for (int i=0; i<parseRecents.size();i++) {
-                recentNumbers[i] = (String) parseRecents.get(i);
+                recentNumbers[i] = parseRecents.get(i).toString();
             }
 
             ArrayList<PhoneContact> recents = getSpecificContacts(recentNumbers);
@@ -113,7 +115,7 @@ public class ContactsDialog {
                 if (i <= recents.size()) {
                     // need to sort returned contacts
                     for (PhoneContact pc : recents) {
-                        if (pc.getNumber().equals((String) parseRecents.get(i-1))) {
+                        if (pc.id == parseRecents.get(i-1)) {
                             favoriteContact = pc;
                         }
                     }
@@ -217,18 +219,20 @@ public class ContactsDialog {
     private ArrayList<PhoneContact> getSpecificContacts(String[] phoneNumbers) {
 
         // build SQL clause for WHERE statement
-        String num = ContactsContract.CommonDataKinds.Phone.NUMBER;
+        String num = ContactsContract.CommonDataKinds.Phone._ID;
         String clause = num + " = ?";
 
         for (int i = 1; i<phoneNumbers.length; i++) {
             clause += " OR " + num + " = ?";
         }
 
-        // strip unwanted characters (+) from phone numbers
-
-//        clause = String.format(clause,phoneNumbers);
-
         Log.d("getSpecificContacts","clause: " + clause);
+
+//        // strip unwanted characters (+) from phone numbers
+//        for (int i=0; i<phoneNumbers.length; i++) {
+//            phoneNumbers[i] = phoneNumbers[i].replaceAll("[^0-9]","");
+//            Log.d("ContactsDialog","getting specific phone numbers: " + phoneNumbers[i]);
+//        }
 
         Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
         Cursor cursor = context.getContentResolver().query(uri, new String[] {
@@ -240,6 +244,8 @@ public class ContactsDialog {
                 phoneNumbers,
                 null);
         cursor.moveToFirst();
+
+        Log.d("ContactsDialog","Contacts found: " + Integer.toString(cursor.getCount()));
 
         PhoneContact newContact;
         ArrayList<PhoneContact> arrContacts = new ArrayList<PhoneContact>(8);

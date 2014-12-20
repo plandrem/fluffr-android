@@ -116,7 +116,7 @@ public class SendFluffInBackgroundTask extends AsyncTask<PhoneContact,Void,Boole
 
                 // make sure there aren't any duplicates in recent recipients
                 for (int i=0; i < recents.size(); i++) {
-                    if (recipient.getNumber().equals(recents.get(i))) {
+                    if (recipient.id == (Integer) recents.get(i)) {
                         recents.remove(i);
                     }
                 }
@@ -129,9 +129,9 @@ public class SendFluffInBackgroundTask extends AsyncTask<PhoneContact,Void,Boole
             }
 
             // push this current contact
-            recents.add(0, recipient.getNumber());
-            for (Object number : recents) {
-                sendingUser.add("recentRecipients", number);
+            recents.add(0, recipient.id);
+            for (Object id : recents) {
+                sendingUser.add("recentRecipients", id);
             }
 
             sendingUser.save();
