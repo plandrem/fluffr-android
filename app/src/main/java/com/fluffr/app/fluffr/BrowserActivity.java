@@ -4,6 +4,7 @@ import android.app.ActionBar;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -23,6 +24,7 @@ import android.telephony.PhoneNumberUtils;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -95,6 +97,10 @@ public class BrowserActivity extends ActionBarActivity
     public String userPhoneNumber = "";
     public int listOffset = 0;
     public int listPosition = 0;
+    public static boolean shouldSaveState = false;
+    public LoadFluffs getFluffsTask;
+    public LoadFluffs getFavoritesTask;
+    public LoadInbox getInboxTask;
 
     // Nav Drawer Stuff
     private ArrayList<NavItem> pages = new ArrayList<NavItem>();
@@ -169,6 +175,7 @@ public class BrowserActivity extends ActionBarActivity
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    BrowserActivity.this.shouldSaveState = false;
                     BrowserActivity.this.finish();
                 }
             });
@@ -294,7 +301,13 @@ public class BrowserActivity extends ActionBarActivity
             meteor.disconnect();
             this.unregisterReceiver(FluffReceiver);
         }
+
+        if (getFluffsTask != null) getFluffsTask.cancel(true);
+        if (getFavoritesTask != null) getFavoritesTask.cancel(true);
+        if (getInboxTask!= null) getInboxTask.cancel(true);
+
     }
+
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -375,13 +388,16 @@ public class BrowserActivity extends ActionBarActivity
 
         //Load initial data
         Log.d("onCreate","Executing initial LoadFluff...");
-        new LoadFluffs(this, "init", false, index).execute();
+        getFluffsTask = new LoadFluffs(this, "init", false, index);
+        getFluffsTask.execute();
 
         // get favorites list
-        new LoadFluffs(this,"favorites").execute();
+        getFavoritesTask = new LoadFluffs(this,"favorites");
+        getFavoritesTask.execute();
 
         // get inbox list
-        new LoadInbox(this,"inbox").execute();
+        getInboxTask = new LoadInbox(this,"inbox");
+        getInboxTask.execute();
 
     }
 
@@ -389,7 +405,7 @@ public class BrowserActivity extends ActionBarActivity
     protected void onStop() {
         super.onStop();
 
-        if (isInternetAvailable()) SaveState();
+        if (shouldSaveState) SaveState();
     }
 
     @Override
@@ -596,6 +612,21 @@ public class BrowserActivity extends ActionBarActivity
             dialog.setContentView(R.layout.loading_dialog);
             dialog.setCanceledOnTouchOutside(false);
 
+            //override back button
+            dialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+                @Override
+                public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                    if (keyCode == KeyEvent.KEYCODE_BACK) {
+                        Log.d("LoadingSpinner","Back Key caught and spinner " + Boolean.valueOf(spinner.isVisible));
+                        LoadingSpinner.this.exit();
+                        return true;
+                    }
+
+
+                    return false;
+                }
+            });
+
             ImageView splash = (ImageView) dialog.findViewById(R.id.splash);
             splash.setImageResource(R.drawable.fluffr_splash);
 
@@ -609,8 +640,14 @@ public class BrowserActivity extends ActionBarActivity
             Log.d("LoadingSpinner","dismissing dialog: " + dialog.toString());
             dialog.dismiss();
             isVisible = false;
+            BrowserActivity.this.shouldSaveState = true;
 
 
+        }
+
+        private void exit() {
+            BrowserActivity.this.shouldSaveState = false;
+            BrowserActivity.this.finish();
         }
     }
 

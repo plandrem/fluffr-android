@@ -51,7 +51,8 @@ public class FluffScrollListener implements AbsListView.OnScrollListener {
                 //TODO -- note, the above will not work for "most liked" or indices that
                 // allow degeneracy
 
-                new LoadFluffs(parent, "more_" + state + "_up", true, index).execute();
+                parent.getFluffsTask = new LoadFluffs(parent, "more_" + state + "_up", true, index);
+                parent.getFluffsTask.execute();
 
             } else if (view.getLastVisiblePosition() >= maxPosition - threshold) {
                 // end of list
@@ -64,9 +65,11 @@ public class FluffScrollListener implements AbsListView.OnScrollListener {
 
                 if (state.equals("inbox")) {
                     index = parent.inbox.size();
-                    new LoadInbox(parent, "more_inbox", index).execute();
+                    parent.getInboxTask = new LoadInbox(parent, "more_inbox", index);
+                    parent.getInboxTask.execute();
                 } else {
-                    new LoadFluffs(parent, "more_" + state, true, index).execute();
+                    parent.getFluffsTask = new LoadFluffs(parent, "more_" + state, true, index);
+                    parent.getFluffsTask.execute();
                 }
 
             }

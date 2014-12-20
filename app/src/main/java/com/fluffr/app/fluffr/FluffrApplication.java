@@ -43,7 +43,7 @@ public class FluffrApplication extends Application {
         // Instantiate Universal Image Loader (https://github.com/nostra13/Android-Universal-Image-Loader)
         DisplayImageOptions options = new DisplayImageOptions.Builder()
                 // display options go here
-                .showImageOnLoading(R.drawable.spinner)
+//                .showImageOnLoading(R.drawable.spinner)
                 .cacheInMemory(true)
                 .cacheOnDisk(true)
                 .build();
