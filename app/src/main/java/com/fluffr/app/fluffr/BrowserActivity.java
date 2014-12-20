@@ -123,7 +123,7 @@ public class BrowserActivity extends ActionBarActivity
 
             Fluff newFluff = Fluff.fromString(extras.getString("fluffId"));
             newFluff.sender = extras.getString("sender");
-            newFluff.sendDate = extras.getLong("date");
+            newFluff.sendDate = Long.valueOf(extras.getString("date"));
 
             inbox.add(0, newFluff);
 
