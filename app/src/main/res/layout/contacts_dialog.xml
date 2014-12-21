@@ -28,7 +28,7 @@
         <LinearLayout
             android:id="@+id/contact_dialog_recent_recipients"
             android:layout_width="match_parent"
-            android:layout_height="150dp"
+            android:layout_height="160dp"
             android:weightSum="1"
             android:orientation="vertical"
             android:padding="5dp"
@@ -37,8 +37,7 @@
             <!-- Row 1 -->
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="0.5"
+                android:layout_height="75dp"
                 android:weightSum="4"
                 android:orientation="horizontal">
 
@@ -66,8 +65,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
                         android:layout_weight="0.3"
-                        android:paddingTop="3dp"
-                        android:text="Namey"
+                        android:layout_marginTop="3dp"
+                        android:text="Namey Namerson"
                         android:textSize="8sp"
                         android:textColor="#FFFFFF"/>
 
@@ -97,7 +96,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
                         android:layout_weight="0.3"
-                        android:paddingTop="3dp"
+                        android:layout_marginTop="3dp"
                         android:text="Namey Namerson"
                         android:textSize="8sp"
                         android:textColor="#FFFFFF"/>
@@ -128,7 +127,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
                         android:layout_weight="0.3"
-                        android:paddingTop="3dp"
+                        android:layout_marginTop="3dp"
                         android:text="Namey Namerson"
                         android:textSize="8sp"
                         android:textColor="#FFFFFF"/>
@@ -159,7 +158,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
                         android:layout_weight="0.3"
-                        android:paddingTop="3dp"
+                        android:layout_marginTop="3dp"
                         android:text="Namey Namerson"
                         android:textSize="8sp"
                         android:textColor="#FFFFFF"/>
@@ -171,8 +170,7 @@
             <!-- Row 2 -->
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="0.5"
+                android:layout_height="75dp"
                 android:weightSum="4"
                 android:orientation="horizontal">
 
@@ -200,7 +198,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
                         android:layout_weight="0.3"
-                        android:paddingTop="3dp"
+                        android:layout_marginTop="3dp"
                         android:text="Namey Namerson"
                         android:textSize="8sp"
                         android:textColor="#FFFFFF"/>
@@ -231,7 +229,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
                         android:layout_weight="0.3"
-                        android:paddingTop="3dp"
+                        android:layout_marginTop="3dp"
                         android:text="Namey Namerson"
                         android:textSize="8sp"
                         android:textColor="#FFFFFF"/>
@@ -262,7 +260,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
                         android:layout_weight="0.3"
-                        android:paddingTop="3dp"
+                        android:layout_marginTop="3dp"
                         android:text="Namey Namerson"
                         android:textSize="8sp"
                         android:textColor="#FFFFFF"/>
@@ -293,7 +291,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
                         android:layout_weight="0.3"
-                        android:paddingTop="3dp"
+                        android:layout_marginTop="3dp"
                         android:text="Namey Namerson"
                         android:textSize="8sp"
                         android:textColor="#FFFFFF"/>
