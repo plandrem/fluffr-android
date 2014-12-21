@@ -216,13 +216,13 @@ public class ContactsDialog {
     }
 
 
-    private ArrayList<PhoneContact> getSpecificContacts(String[] phoneNumbers) {
+    private ArrayList<PhoneContact> getSpecificContacts(String[] ids) {
 
         // build SQL clause for WHERE statement
         String num = ContactsContract.CommonDataKinds.Phone._ID;
         String clause = num + " = ?";
 
-        for (int i = 1; i<phoneNumbers.length; i++) {
+        for (int i = 1; i<ids.length; i++) {
             clause += " OR " + num + " = ?";
         }
 
@@ -241,7 +241,7 @@ public class ContactsDialog {
                         ContactsContract.CommonDataKinds.Phone._ID,
                         ContactsContract.Contacts.PHOTO_THUMBNAIL_URI},
                 clause,
-                phoneNumbers,
+                ids,
                 null);
         cursor.moveToFirst();
 
