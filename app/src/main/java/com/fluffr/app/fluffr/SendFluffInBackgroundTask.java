@@ -63,11 +63,11 @@ public class SendFluffInBackgroundTask extends AsyncTask<PhoneContact,Void,Boole
         Boolean success = false;
 
         //TODO - change to recipient.number
-        String patricksNumber = "+16518155005";
+        String patricksNumber = recipient.getNumber();
 
         try {
 
-            switch (checkAccountType(patricksNumber)) {
+            switch (checkAccountType(recipient.getNumber())) {
 
                 case HAS_ACCOUNT:
                     updateRecipientInbox(patricksNumber);

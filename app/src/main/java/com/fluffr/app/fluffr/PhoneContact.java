@@ -32,7 +32,7 @@ public class PhoneContact {
 
         //TODO -- remove this for production!!!
 //        if (phoneNumber.equals("16518155005")) phoneNumber = "19788216761";
-        if (phoneNumber.equals("+16518155005")) phoneNumber = "16513669306";
+//        if (phoneNumber.equals("+16518155005")) phoneNumber = "16513669306";
 
         String clause = ContactsContract.CommonDataKinds.Phone.NUMBER + " = ?";
         String[] criteria = {phoneNumber};

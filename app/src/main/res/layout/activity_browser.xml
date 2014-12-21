@@ -97,7 +97,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:background="@drawable/fluffr_tutorial_background"
+            android:background="@null"
             android:weightSum="1"
             android:gravity="center"
             android:visibility="gone">
@@ -129,7 +129,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:background="@drawable/fluffr_no_internet_background"
+            android:background="@null"
             android:weightSum="1"
             android:gravity="center"
             android:visibility="gone">
