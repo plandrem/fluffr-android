@@ -202,6 +202,7 @@ public class ContactsDialog {
 
             if (contact != null)
             {
+                contact.ValidateName(context);
                 arrContacts.add(contact);
             }
             contact = null;
@@ -280,6 +281,8 @@ public class ContactsDialog {
                 newContact.photo = tileProvider.getLetterTile(text,text, tileSize, tileSize);
 
             }
+
+            newContact.ValidateName(context);
 
             arrContacts.add(newContact);
             newContact = null;

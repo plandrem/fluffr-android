@@ -12,6 +12,7 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 /**
  * Created by Patrick on 11/2/14.
@@ -75,6 +76,8 @@ public class PhoneContact {
                 this.photo = tileProvider.getLetterTile(text,text, tileSize, tileSize);
 
             }
+
+            ValidateName(context);
         }
 
         cursor.close();
@@ -88,5 +91,16 @@ public class PhoneContact {
 
     public String getNumber() {
         return number;
+    }
+
+    public boolean ValidateName(Context context) {
+        Pattern pattern = Pattern.compile("^[a-zA-Z].*");
+        if (!pattern.matcher(this.name).matches()) {
+            // name doesn't start with a letter, replace the photo
+            this.photo = null;
+            return false;
+        } else {
+            return true;
+        }
     }
 }

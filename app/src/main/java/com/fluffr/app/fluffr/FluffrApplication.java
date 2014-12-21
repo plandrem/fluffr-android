@@ -44,14 +44,14 @@ public class FluffrApplication extends Application {
         DisplayImageOptions options = new DisplayImageOptions.Builder()
                 // display options go here
 //                .showImageOnLoading(R.drawable.spinner)
-//                .cacheInMemory(true)
+                .cacheInMemory(true)
                 .cacheOnDisk(true)
                 .build();
 
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this)
                 // configuration options go here
                 .defaultDisplayImageOptions(options)
-//                .memoryCache(new LruMemoryCache(4 * 1024 * 1024))
+                .memoryCache(new LruMemoryCache(4 * 1024 * 1024))
                 .build();
 
 
