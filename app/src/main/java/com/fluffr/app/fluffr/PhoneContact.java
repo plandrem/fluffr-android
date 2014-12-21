@@ -35,7 +35,7 @@ public class PhoneContact {
 //        if (phoneNumber.equals("+16518155005")) phoneNumber = "16513669306";
 
         String clause = ContactsContract.CommonDataKinds.Phone.NUMBER + " = ?";
-        String[] criteria = {phoneNumber};
+        String[] criteria = {phoneNumber.replace("+","")};
 
         Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
         Cursor cursor = context.getContentResolver().query(uri, new String[] {
