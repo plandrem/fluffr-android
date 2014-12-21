@@ -42,12 +42,12 @@ public class InboxBadge extends RelativeLayout {
 
     }
 
-    public void setFrom(String sender) {
+    public void setFrom(Long id) {
 
-        nameText.setText("From: " + sender);
+        nameText.setText("From: " + id.toString());
 
         //sender is a phone number. Try to find the contact's name from the local address book
-        PhoneContact contact = new PhoneContact(getContext(),sender);
+        PhoneContact contact = new PhoneContact(getContext(),id);
 
         if (contact.name != null) nameText.setText("From: " + contact.name);
         if (contact.photo != null) thumbnailImage.setImageBitmap(contact.photo);

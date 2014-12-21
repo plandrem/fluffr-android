@@ -4,6 +4,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
@@ -48,7 +49,24 @@ public class LoadInbox extends AsyncTask<Void,Void,ArrayList<Fluff>> {
     protected ArrayList<Fluff> doInBackground(Void... params) {
 
         ParseUser user = ParseUser.getCurrentUser();
-        ArrayList<HashMap<String,Object>> hashmaps = (ArrayList) user.get("inbox");
+        //TODO - dead code
+//        String inboxId = user.getString("inbox");
+//        ParseQuery inboxQuery = ParseQuery.getQuery("inboxObject");
+//        ParseObject inboxObject = null;
+//        try {
+//            inboxObject = inboxQuery.get(inboxId);
+//        } catch (ParseException e) {
+//            e.printStackTrace();
+//        }
+//
+//        if (inboxObject == null) return null;
+        try {
+            parentActivity.userInboxObject.fetch();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Log.d("LoadInbox",parentActivity.userInboxObject.getObjectId());
+        ArrayList<HashMap<String,Object>> hashmaps = (ArrayList) parentActivity.userInboxObject.get("inbox");
         if (hashmaps == null) {
             Log.d("LoadInbox","Inbox empty.");
             return null;

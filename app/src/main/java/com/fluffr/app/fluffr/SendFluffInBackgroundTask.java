@@ -159,6 +159,8 @@ public class SendFluffInBackgroundTask extends AsyncTask<PhoneContact,Void,Boole
 
         accountType returnVal = accountType.ACCOUNT_ERROR;
 
+        Log.d("checkAccountType","checking number: " + number);
+
         ParseQuery userQuery = ParseUser.getQuery();
         userQuery.whereEqualTo("username",number);
         try {
@@ -167,18 +169,21 @@ public class SendFluffInBackgroundTask extends AsyncTask<PhoneContact,Void,Boole
 
                 // account does not exist; check pending accounts
 
-                ParseQuery pendingQuery = ParseQuery.getQuery("pendingUser");
+                ParseQuery pendingQuery = ParseQuery.getQuery("inboxObject");
                 pendingQuery.whereEqualTo("number",number);
 
                 if (pendingQuery.count() > 0) {
                     returnVal = accountType.PENDING_ACCOUNT;
+                    Log.d("checkAccountType","type: pending account.");
                 } else {
                     returnVal = accountType.NO_ACCOUNT;
+                    Log.d("checkAccountType","type: no account.");
                 }
 
             } else {
                 // account exists
                 returnVal = accountType.HAS_ACCOUNT;
+                Log.d("checkAccountType","type: existing account.");
 
             }
 
@@ -239,6 +244,8 @@ public class SendFluffInBackgroundTask extends AsyncTask<PhoneContact,Void,Boole
 
         String TAG = "SendPushNotification";
 
+        Log.d("SendFluffInBackground","sending push notification");
+
         // get details for recipient
         ParseQuery userQuery = ParseUser.getQuery();
         userQuery.whereEqualTo("username", number);
@@ -276,37 +283,39 @@ public class SendFluffInBackgroundTask extends AsyncTask<PhoneContact,Void,Boole
 
     private void updateRecipientInbox(String number) throws ParseException{
 
+        Log.d("SendFluffInBackground","updating recepient inbox");
+
         // get details for recipient
-        ParseQuery userQuery = ParseUser.getQuery();
-        userQuery.whereEqualTo("username", number);
-        ParseUser recipientUser = (ParseUser) userQuery.getFirst();
+        ParseQuery inboxQuery = ParseQuery.getQuery("inboxObject");
+        inboxQuery.whereEqualTo("number", number);
+        ParseObject inboxObject = inboxQuery.getFirst();
 
         JSONObject obj = getObjectForInbox();
 
-        recipientUser.add("inbox", obj);
-        recipientUser.put("hasUnseenFluffs", "true");
-        recipientUser.save();
+        inboxObject.add("inbox", obj);
+        inboxObject.put("hasUnseenFluffs", "true");
+        inboxObject.save();
 
     }
 
     private void createPendingAccount(String number) throws ParseException {
 
-        ParseObject newUser = new ParseObject("pendingUser");
-        newUser.put("number",number);
-        newUser.save();
-
+        ParseObject newUserInbox = new ParseObject("inboxObject");
+        newUserInbox.put("number",number);
+        newUserInbox.save();
 
         }
 
     private void updatePendingUserInbox(String number) throws ParseException {
-        ParseQuery query = ParseQuery.getQuery("pendingUser");
+        ParseQuery query = ParseQuery.getQuery("inboxObject");
         query.whereEqualTo("number",number);
-        ParseObject pendingUser = query.getFirst();
+        ParseObject pendingUserInbox = query.getFirst();
 
         JSONObject obj = getObjectForInbox();
 
-        pendingUser.add("inbox", obj);
-        pendingUser.save();
+        pendingUserInbox.add("inbox", obj);
+        pendingUserInbox.put("hasUnseenFluffs","true");
+        pendingUserInbox.save();
 
     }
 

@@ -81,10 +81,8 @@ public class BrowserActivity extends ActionBarActivity
 
     //UI Stuff
     private static String currentState = "Browse";
-    private static int currentBrowseIndex = 0;
-    private static int currentFavoritesIndex = 0;
+//    private static int currentBrowseIndex = 0;
     private static boolean hasUnseenFluffs = false;
-    public static boolean newUser = false;
 
     // ListView and Data Stuff
     public ListView listView;
@@ -102,6 +100,7 @@ public class BrowserActivity extends ActionBarActivity
     public LoadFluffs getFavoritesTask;
     public LoadInbox getInboxTask;
     public ImageView emptyView;
+    public ParseObject userInboxObject = new ParseObject("inboxObject");
 
     // Nav Drawer Stuff
     private ArrayList<NavItem> pages = new ArrayList<NavItem>();
@@ -324,7 +323,6 @@ public class BrowserActivity extends ActionBarActivity
         Parcelable listState = listView.onSaveInstanceState();
         outState.putParcelable("listState",listState);
         outState.putString("currentState",currentState);
-        outState.putInt("currentBrowseIndex", currentBrowseIndex);
 
     }
 
@@ -332,7 +330,6 @@ public class BrowserActivity extends ActionBarActivity
         SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("currentState",currentState);
-        editor.putInt("currentBrowseIndex",currentBrowseIndex);
 
         if (getCurrentState().equals("Browse")) savePosition();
 
@@ -349,7 +346,6 @@ public class BrowserActivity extends ActionBarActivity
         Log.d("SaveState", "saving...");
         String logStr = "";
         logStr += String.format("currentState: %s, ", currentState);
-        logStr += String.format("currentBrowseIndex: %d, ", currentBrowseIndex);
         logStr += String.format("index: %d, ", index);
         logStr += String.format("offset: %d, ", listOffset);
         Log.d("SaveState", logStr);
@@ -363,7 +359,6 @@ public class BrowserActivity extends ActionBarActivity
         final SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
 
         currentState = sharedPreferences.getString("currentState","Browse");
-        currentBrowseIndex = sharedPreferences.getInt("currentBrowseIndex",0);
         int index = sharedPreferences.getInt("fluffIndex", 0);
         listOffset = sharedPreferences.getInt("listOffset",0);
         listPosition = sharedPreferences.getInt("listPosition",0);
@@ -371,7 +366,6 @@ public class BrowserActivity extends ActionBarActivity
 
         String logStr = "";
         logStr += String.format("currentState: %s, ", currentState);
-        logStr += String.format("currentBrowseIndex: %d, ", currentBrowseIndex);
         logStr += String.format("index: %d, ", index);
         logStr += String.format("offset: %d, ", listOffset);
         Log.d("LoadState", logStr);
@@ -757,9 +751,8 @@ public class BrowserActivity extends ActionBarActivity
         listView.setSelection(0);
 
         // mark fluffs as seen
-        ParseUser user = ParseUser.getCurrentUser();
-        user.put("hasUnseenFluffs","false");
-        user.saveInBackground();
+        userInboxObject.put("hasUnseenFluffs","false");
+        userInboxObject.saveInBackground();
         hasUnseenFluffs = false;
     }
 
@@ -990,6 +983,9 @@ public class BrowserActivity extends ActionBarActivity
 
         ParseUser existingUser = null;
 
+        ParseQuery inboxQuery = ParseQuery.getQuery("inboxObject");
+        inboxQuery.whereEqualTo("number",userPhoneNumber);
+
         try {
             existingUser = (ParseUser) query.getFirst();
         } catch (ParseException e) {
@@ -1001,11 +997,13 @@ public class BrowserActivity extends ActionBarActivity
             try {
                 ParseUser.logIn(userPhoneNumber, "password");
                 user = existingUser;
+                userInboxObject = inboxQuery.get(existingUser.getString("inbox"));
+
             } catch (ParseException e) {
                 e.printStackTrace();
             }
 
-            String huf = user.getString("hasUnseenFluffs");
+            String huf = userInboxObject.getString("hasUnseenFluffs");
             hasUnseenFluffs = huf.equals("true");
 
         } else {
@@ -1013,30 +1011,30 @@ public class BrowserActivity extends ActionBarActivity
             // create new user account
             Log.d("setParseUser", "New account for user: " + userPhoneNumber);
 
-            this.newUser = true;
-
             try {
                 user = new ParseUser();
+
                 user.setUsername(userPhoneNumber);
                 user.setPassword("password");
                 user.put("platform","android");
 
                 // check if there's a pending user account; if so, we need
-                // to copy over the inbox and tell them they should check their inbox
+                // to copy over the inbox id and tell them they should check their inbox
 
-                ParseQuery pendingQuery = ParseQuery.getQuery("pendingUser");
-                query.whereEqualTo("number",userPhoneNumber);
-
-                if (pendingQuery.count() > 0) {
+                if (inboxQuery.count() > 0) {
                     // pending account exists
-                    ParseObject pendingUser = pendingQuery.getFirst();
-                    user.addAll("inbox",pendingUser.getList("inbox"));
-                    user.put("hasUnseenFluffs","true");
+                    userInboxObject = inboxQuery.getFirst();
+                    userInboxObject.put("hasUnseenFluffs","true");
 
                 } else {
-                    // not a pending account
-                    user.put("hasUnseenFluffs","false");
+                    // not a pending account; create an inboxObject for the user
+                    userInboxObject.put("number",userPhoneNumber);
+                    userInboxObject.put("hasUnseenFluffs","false");
                 }
+
+                userInboxObject.save();
+
+                user.put("inbox",userInboxObject.getObjectId());
 
                 user.signUp();
 
