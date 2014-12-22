@@ -175,7 +175,7 @@ public class BrowserActivity extends ActionBarActivity
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    BrowserActivity.this.shouldSaveState = false;
+                    shouldSaveState = false;
                     BrowserActivity.this.finish();
                 }
             });
@@ -295,6 +295,23 @@ public class BrowserActivity extends ActionBarActivity
     protected void onResume() {
         Log.d("onResume", "onResume");
         super.onResume();
+
+        if (!isInternetAvailable()) {
+            // No connection - bail.
+
+            findViewById(R.id.no_internet).setVisibility(View.VISIBLE);
+
+            ImageButton button = (ImageButton) findViewById(R.id.no_internet_button);
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    shouldSaveState = false;
+                    BrowserActivity.this.finish();
+                }
+            });
+        }
+
+
         checkPlayServices();
         checkStartupInstructions();
     }
@@ -1025,6 +1042,7 @@ public class BrowserActivity extends ActionBarActivity
                     // pending account exists
                     userInboxObject = inboxQuery.getFirst();
                     userInboxObject.put("hasUnseenFluffs","true");
+                    hasUnseenFluffs = true;
 
                 } else {
                     // not a pending account; create an inboxObject for the user
