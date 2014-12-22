@@ -39,7 +39,7 @@
                     android:src="@drawable/header_main"
                     android:layout_gravity="center"
                     android:paddingBottom="0dp"
-                    android:scaleType="centerInside"
+                    android:scaleType="fitCenter"
                     android:visibility="visible"/>
 
                 <TextView
@@ -82,6 +82,7 @@
             android:dividerHeight="0dp"
             android:visibility="visible"/>
 
+        <!--Empty List-->
         <ImageView
             android:id="@+id/empty_list"
             android:layout_width="match_parent"

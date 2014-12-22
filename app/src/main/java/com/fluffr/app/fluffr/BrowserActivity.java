@@ -658,6 +658,7 @@ public class BrowserActivity extends ActionBarActivity
 
         public void dismiss() {
             Log.d("LoadingSpinner","dismissing dialog: " + dialog.toString());
+            checkStartupInstructions();
             dialog.dismiss();
             isVisible = false;
             BrowserActivity.this.shouldSaveState = true;
